@@ -790,7 +790,6 @@ app.delete('/api/orders/:id', async (c) => {
     return c.json({ error: err.message || 'Failed to delete order' }, 500);
   }
 });
-
 // ==========================================
 // 4. IMAGEKIT MEDIA ASSET ENDPOINTS
 // ==========================================
