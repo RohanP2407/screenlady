@@ -8,64 +8,8 @@
  * - Seamless real-time sync with Admin Editorial Desk via localStorage (`screenlady_custom_photos`)
  */
 
-const DEFAULT_SCREENLADY_PHOTOS = [
-  {
-    id: 'photo-cinema-1',
-    title: 'Screenlady Cinema Exclusive: Studio Portrait Session',
-    date: '2026-11-06',
-    displayDate: 'November 6, 2026',
-    venue: 'Film City Studios, Mumbai',
-    category: 'Cinema & Studio',
-    photo: 'assets/images/magazine-photos/3.1.jpg',
-    caption: 'Exclusive studio photo session and conversation with renowned Marathi cinema artists.',
-    description: 'Exclusive studio photo session and conversation with renowned Marathi cinema artists.',
-    credit: 'Accolade Screenlady Photography',
-    tags: ['Cinema', 'Studio', 'Portraits'],
-    timestamp: 1793800000000
-  },
-  {
-    id: 'photo-bodyshaming-1',
-    title: 'Body Shaming and Women: A Mindset Needing Urgent Change',
-    date: '2026-11-05',
-    displayDate: 'November 5, 2026',
-    venue: 'Screenlady Studios, Mumbai',
-    category: 'Social Commentary',
-    photo: 'assets/images/articles/article-2.jpg',
-    caption: 'Body Shaming and Women: A Mindset Needing Urgent Change',
-    description: 'Body Shaming and Women: A Mindset Needing Urgent Change',
-    credit: 'Accolade Screenlady Photography',
-    tags: ['Social Commentary', 'Digital Awareness'],
-    timestamp: 1793800001000
-  },
-  {
-    id: 'photo-awards-1',
-    title: 'Women of Distinction Annual Honors Ceremony',
-    date: '2026-11-04',
-    displayDate: 'November 4, 2026',
-    venue: 'Screenlady Cultural Foundation, Mumbai',
-    category: 'Cinema & Studio',
-    photo: 'assets/images/magazine-photos/4.2.jpg',
-    caption: 'Official felicitation ceremony celebrating remarkable women achievers across Maharashtra.',
-    description: 'Official felicitation ceremony celebrating remarkable women achievers across Maharashtra.',
-    credit: 'Accolade Screenlady Photography',
-    tags: ['Honors', 'Awards', 'Leadership'],
-    timestamp: 1793799999000
-  },
-  {
-    id: 'photo-tantuh-1',
-    title: 'Tantuh Handcrafted Jewellery Collection',
-    date: '2026-10-15',
-    displayDate: 'October 15, 2026',
-    venue: 'Screenlady Studios, Mumbai',
-    category: 'Heritage & Craftsmanship',
-    photo: 'assets/images/articles/article-1.jpg',
-    caption: 'Tantuh: – Celebrating Indian Heritage Through Handcrafted Jewellery',
-    description: 'Tantuh: – Celebrating Indian Heritage Through Handcrafted Jewellery',
-    credit: 'Accolade Screenlady Photography',
-    tags: ['Jewellery', 'Heritage', 'Handcrafted'],
-    timestamp: 1793800002000
-  }
-];
+// Official Screenlady Photography: Fetched dynamically from Cloudflare D1 Backend
+const DEFAULT_SCREENLADY_PHOTOS = [];
 
 // Initialize on DOM Ready
 document.addEventListener('DOMContentLoaded', () => {
@@ -126,11 +70,16 @@ function getAllPhotos() {
     ? window.getScreenladyDeletedIds() 
     : (() => { try { const r = localStorage.getItem('screenlady_deleted_ids'); return r ? JSON.parse(r) : []; } catch(e){ return []; } })();
 
-  const customIds = new Set(customList.map(item => item.id));
-  const merged = [
-    ...customList,
-    ...DEFAULT_SCREENLADY_PHOTOS.filter(item => !customIds.has(item.id))
-  ].filter(item => !deletedIds.includes(item.id));
+  const backendItems = window.backendLivePhotos || [];
+  const seenIds = new Set();
+  const merged = [];
+
+  for (const item of [...customList, ...backendItems, ...DEFAULT_SCREENLADY_PHOTOS]) {
+    if (item && item.id && !seenIds.has(item.id) && !deletedIds.includes(item.id)) {
+      seenIds.add(item.id);
+      merged.push(item);
+    }
+  }
 
   // Sort strictly descending by date & timestamp (Latest First)
   return merged.sort((a, b) => {
@@ -145,6 +94,16 @@ let activePhotoFilter = 'all';
 
 function initPhotosFeed() {
   renderPhotosFeed();
+
+  // Async sync with Cloudflare Worker Backend once on load:
+  if (window.ScreenladyAPI && typeof window.ScreenladyAPI.getPhotos === 'function') {
+    window.ScreenladyAPI.getPhotos().then(liveData => {
+      if (Array.isArray(liveData)) {
+        window.backendLivePhotos = liveData;
+        renderPhotosFeed();
+      }
+    }).catch(() => {});
+  }
 }
 
 function initPhotosFilters() {

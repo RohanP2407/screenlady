@@ -48,7 +48,8 @@ function getAllPodcasts() {
     ? window.getScreenladyDeletedIds() 
     : (() => { try { const r = localStorage.getItem('screenlady_deleted_ids'); return r ? JSON.parse(r) : []; } catch(e){ return []; } })();
 
-  const combined = [...custom, ...DEFAULT_SCREENLADY_PODCASTS].filter(item => !deletedIds.includes(item.id));
+  const backendItems = window.backendLivePodcasts || [];
+  const combined = [...custom, ...backendItems, ...DEFAULT_SCREENLADY_PODCASTS].filter(item => !deletedIds.includes(item.id));
 
   // Strictly sort descending by date / timestamp
   combined.sort((a, b) => {
@@ -455,6 +456,16 @@ function openPodcastModal(id) {
 function initPodcastPage() {
   purgeLegacyMockPodcasts();
   renderPodcasts('all');
+
+  // Async sync with Cloudflare Worker Backend:
+  if (window.ScreenladyAPI && typeof window.ScreenladyAPI.getPodcasts === 'function') {
+    window.ScreenladyAPI.getPodcasts().then(liveData => {
+      if (liveData && liveData.length > 0) {
+        window.backendLivePodcasts = liveData;
+        renderPodcasts('all');
+      }
+    });
+  }
 
   // Filter Buttons
   const filterBtns = document.querySelectorAll('.podcast-filter-btn');

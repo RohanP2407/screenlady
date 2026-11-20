@@ -26,8 +26,8 @@ const DEFAULT_MAGAZINE_SETTINGS = {
   edition: 'November 2026 — Power, Art & Corporate Leadership Issue',
   monthYear: 'November 2026',
   price: 220,
-  coverImage: 'assets/images/magazine-cover-latest.jpg',
-  page2Image: 'assets/images/magazine-page2-feature.jpg',
+  coverImage: 'https://ik.imagekit.io/acooladescreenlady/assets/images/magazine-cover-latest.jpg',
+  page2Image: 'https://ik.imagekit.io/acooladescreenlady/assets/images/magazine-page2-feature.jpg',
   headline: 'THE ARCHITECTS OF MODERN INFLUENCE',
   subtitle: 'Celebrating Trailblazing Women Behind the Screen & Across Boardrooms',
   popupBadge: 'Screenlady Print Magazine',
@@ -36,69 +36,8 @@ const DEFAULT_MAGAZINE_SETTINGS = {
   curator: 'Conceived & Curated under the Editorial Vision of Mr. Prashant Chandrakant Sagvekar'
 };
 
-// Default Initial Orders for Demonstration in Editorial Desk
-const DEFAULT_MAGAZINE_ORDERS = [
-  {
-    id: 'SL-MAG-948201',
-    date: '2026-11-03',
-    displayDate: 'November 3, 2026, 04:30 PM',
-    timestamp: 1793637000000,
-    fullName: 'Smt. Ananya Deshmukh',
-    phone: '+91 98201 45892',
-    email: 'ananya.deshmukh@gmail.com',
-    address: 'Flat 602, Gulmohar Heights, Juhu Tara Road, Juhu',
-    city: 'Mumbai',
-    state: 'Maharashtra',
-    pincode: '400049',
-    edition: 'November 2026 — Power & Art Issue',
-    plan: 'Monthly Edition',
-    quantity: 'Monthly (1 Copy)',
-    amount: 220,
-    paymentMethod: 'UPI (Google Pay)',
-    paymentStatus: 'Paid (Online)',
-    shippingStatus: 'Pending Dispatch'
-  },
-  {
-    id: 'SL-MAG-831920',
-    date: '2026-11-02',
-    displayDate: 'November 2, 2026, 11:15 AM',
-    timestamp: 1793610000000,
-    fullName: 'Dr. Radhika Singhania',
-    phone: '+91 98112 34567',
-    email: 'radhika.singhania@greengrid.asia',
-    address: 'Bungalow 14, Amrita Shergil Marg, Lutyens Zone',
-    city: 'New Delhi',
-    state: 'Delhi',
-    pincode: '110003',
-    edition: 'November 2026 — Power & Art Issue',
-    plan: 'Yearly Subscription (12 Issues)',
-    quantity: 'Yearly (12 Issues)',
-    amount: 2450,
-    paymentMethod: 'Credit Card (Visa)',
-    paymentStatus: 'Paid (Online)',
-    shippingStatus: 'Shipped / In Transit'
-  },
-  {
-    id: 'SL-MAG-710482',
-    date: '2026-10-30',
-    displayDate: 'October 30, 2026, 02:45 PM',
-    timestamp: 1793400000000,
-    fullName: 'Meera Krishnan',
-    phone: '+91 98450 78912',
-    email: 'meera.krishnan@outlook.com',
-    address: '42 Prestige Palms, Indiranagar 100ft Road',
-    city: 'Bengaluru',
-    state: 'Karnataka',
-    pincode: '560038',
-    edition: 'November 2026 — Power & Art Issue',
-    plan: 'Monthly Edition',
-    quantity: 'Monthly (1 Copy)',
-    amount: 220,
-    paymentMethod: 'UPI (PhonePe)',
-    paymentStatus: 'Paid (Online)',
-    shippingStatus: 'Delivered'
-  }
-];
+// Default Initial Orders: Fetched dynamically from Cloudflare D1 Backend
+const DEFAULT_MAGAZINE_ORDERS = [];
 
 /* =============================================================
    1. Data Helpers (Settings & Orders)
@@ -135,6 +74,11 @@ function saveMagazineSettings(settings) {
       bc.close();
     }
   } catch (e) {}
+
+  // Sync to Cloudflare Worker backend
+  if (window.ScreenladyAPI && typeof window.ScreenladyAPI.updateMagazineSettings === 'function') {
+    window.ScreenladyAPI.updateMagazineSettings(settings).catch(() => {});
+  }
 }
 window.saveMagazineSettings = saveMagazineSettings;
 
@@ -143,13 +87,8 @@ function getAllMagazineOrders() {
   try {
     const raw = localStorage.getItem('screenlady_magazine_orders');
     if (raw) custom = JSON.parse(raw);
-    else {
-      // First time initialization with sample orders
-      localStorage.setItem('screenlady_magazine_orders', JSON.stringify(DEFAULT_MAGAZINE_ORDERS));
-      custom = DEFAULT_MAGAZINE_ORDERS;
-    }
   } catch (e) {
-    custom = DEFAULT_MAGAZINE_ORDERS;
+    custom = [];
   }
 
   // Sort descending by date/timestamp
@@ -650,6 +589,23 @@ window.handleMagazineOrderSubmit = function(e) {
   const existingOrders = getAllMagazineOrders();
   existingOrders.unshift(newOrder);
   saveMagazineOrders(existingOrders);
+
+  // 1.1 Sync directly with Cloudflare Worker Backend API
+  if (window.ScreenladyAPI && typeof window.ScreenladyAPI.placeOrder === 'function') {
+    window.ScreenladyAPI.placeOrder({
+      name: fullName,
+      phone: phone,
+      email: email,
+      address: address,
+      pincode: pincode,
+      city: city,
+      state: state,
+      issue: settings.edition || "Collector's Print Edition",
+      amount: totalAmount
+    }).catch(function(err) {
+      console.warn('[Screenlady Orders] Backend sync warning:', err);
+    });
+  }
 
   // 2. Prepare WhatsApp notification message to Screenlady (+91 96650 35503)
   const whatsappMsg = 

@@ -1,26 +1,8 @@
 import { Hono } from 'hono';
 import { cors } from 'hono/cors';
 import { logger } from 'hono/logger';
-import {
-  DEFAULT_UPDATES,
-  DEFAULT_EDITORIALS,
-  DEFAULT_PHOTOS,
-  DEFAULT_PODCASTS,
-  DEFAULT_MAGAZINE
-} from './data.js';
 
 const app = new Hono();
-
-// Global In-Memory Store (serves as fast cache and graceful fallback if D1 is not bound)
-const store = {
-  updates: [...DEFAULT_UPDATES],
-  editorials: [...DEFAULT_EDITORIALS],
-  photos: [...DEFAULT_PHOTOS],
-  podcasts: [...DEFAULT_PODCASTS],
-  magazine: { ...DEFAULT_MAGAZINE },
-  orders: [],
-  deletedIds: []
-};
 
 // Global Middleware
 app.use('*', logger());
@@ -224,131 +206,32 @@ function rowToOrder(row) {
 }
 
 function rowToMagazine(row) {
-  if (!row) return DEFAULT_MAGAZINE;
-  let availableIssues = DEFAULT_MAGAZINE.availableIssues;
+  if (!row) {
+    return {
+      activeIssue: 'Latest Edition',
+      coverImage: '/assets/images/magazine-cover-latest.jpg',
+      page2Image: '/assets/images/magazine-page2-feature.jpg',
+      price: 220,
+      currency: 'INR',
+      homeDelivery: true,
+      availableIssues: []
+    };
+  }
+  let availableIssues = [];
   if (row.available_issues) {
     try {
       availableIssues = JSON.parse(row.available_issues);
     } catch {}
   }
   return {
-    activeIssue: row.active_issue || DEFAULT_MAGAZINE.activeIssue,
-    coverImage: row.cover_image || DEFAULT_MAGAZINE.coverImage,
-    page2Image: row.page2_image || DEFAULT_MAGAZINE.page2Image,
-    price: row.price || DEFAULT_MAGAZINE.price,
-    currency: row.currency || DEFAULT_MAGAZINE.currency,
+    activeIssue: row.active_issue || 'Latest Edition',
+    coverImage: row.cover_image || '/assets/images/magazine-cover-latest.jpg',
+    page2Image: row.page2_image || '/assets/images/magazine-page2-feature.jpg',
+    price: row.price || 220,
+    currency: row.currency || 'INR',
     homeDelivery: Boolean(row.home_delivery),
     availableIssues
   };
-}
-
-// ==========================================
-// D1 AUTOMATIC SEEDING HELPER
-// ==========================================
-let dbInitialized = false;
-
-async function ensureDbInitialized(db) {
-  if (dbInitialized || !db) return;
-  try {
-    const countRes = await db.prepare('SELECT COUNT(*) as count FROM content_items').first();
-    if (countRes && countRes.count === 0) {
-      console.log('Seeding initial data into Cloudflare D1 database...');
-      const statements = [];
-
-      // 1. Seed Updates & Curated Sections
-      for (const u of DEFAULT_UPDATES) {
-        const sec = u.curatedSection || (u.isHomepageNews ? 'news' : 'updates');
-        const r = itemToRow(sec, u);
-        statements.push(
-          db.prepare(`
-            INSERT OR REPLACE INTO content_items (
-              id, section, curated_section, type, title, headline, woman_name, author,
-              author_designation, category, category_badge, summary, pull_quote, full_body,
-              photo, venue, date, display_date, read_time, duration, host, guest,
-              audio_url, social_link, tags, is_homepage_news, is_custom, timestamp, created_at, extra_data
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-          `).bind(
-            r.id, r.section, r.curated_section, r.type, r.title, r.headline, r.woman_name,
-            r.author, r.author_designation, r.category, r.category_badge, r.summary,
-            r.pull_quote, r.full_body, r.photo, r.venue, r.date, r.display_date,
-            r.read_time, r.duration, r.host, r.guest, r.audio_url, r.social_link,
-            r.tags, r.is_homepage_news, r.is_custom, r.timestamp, r.created_at, r.extra_data
-          )
-        );
-      }
-
-      // 2. Seed Editorials
-      for (const e of DEFAULT_EDITORIALS) {
-        const r = itemToRow('editorials', e);
-        statements.push(
-          db.prepare(`
-            INSERT OR REPLACE INTO content_items (
-              id, section, curated_section, type, title, headline, woman_name, author,
-              author_designation, category, category_badge, summary, pull_quote, full_body,
-              photo, venue, date, display_date, read_time, duration, host, guest,
-              audio_url, social_link, tags, is_homepage_news, is_custom, timestamp, created_at, extra_data
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-          `).bind(
-            r.id, r.section, r.curated_section, r.type, r.title, r.headline, r.woman_name,
-            r.author, r.author_designation, r.category, r.category_badge, r.summary,
-            r.pull_quote, r.full_body, r.photo, r.venue, r.date, r.display_date,
-            r.read_time, r.duration, r.host, r.guest, r.audio_url, r.social_link,
-            r.tags, r.is_homepage_news, r.is_custom, r.timestamp, r.created_at, r.extra_data
-          )
-        );
-      }
-
-      // 3. Seed Photos
-      for (const p of DEFAULT_PHOTOS) {
-        const r = itemToRow('photos', p);
-        statements.push(
-          db.prepare(`
-            INSERT OR REPLACE INTO content_items (
-              id, section, curated_section, type, title, headline, woman_name, author,
-              author_designation, category, category_badge, summary, pull_quote, full_body,
-              photo, venue, date, display_date, read_time, duration, host, guest,
-              audio_url, social_link, tags, is_homepage_news, is_custom, timestamp, created_at, extra_data
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-          `).bind(
-            r.id, r.section, r.curated_section, r.type, r.title, r.headline, r.woman_name,
-            r.author, r.author_designation, r.category, r.category_badge, r.summary,
-            r.pull_quote, r.full_body, r.photo, r.venue, r.date, r.display_date,
-            r.read_time, r.duration, r.host, r.guest, r.audio_url, r.social_link,
-            r.tags, r.is_homepage_news, r.is_custom, r.timestamp, r.created_at, r.extra_data
-          )
-        );
-      }
-
-      // 4. Seed Magazine Settings
-      statements.push(
-        db.prepare(`
-          INSERT OR REPLACE INTO magazine_settings (
-            id, active_issue, cover_image, page2_image, price, currency, home_delivery, available_issues, updated_at
-          ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-        `).bind(
-          'current',
-          DEFAULT_MAGAZINE.activeIssue || 'October 2026',
-          DEFAULT_MAGAZINE.coverImage || '/assets/images/magazine-cover-latest.jpg',
-          DEFAULT_MAGAZINE.page2Image || '/assets/images/magazine-page2-feature.jpg',
-          DEFAULT_MAGAZINE.price || 220,
-          DEFAULT_MAGAZINE.currency || 'INR',
-          DEFAULT_MAGAZINE.homeDelivery ? 1 : 0,
-          JSON.stringify(DEFAULT_MAGAZINE.availableIssues || []),
-          new Date().toISOString()
-        )
-      );
-
-      // Execute statements in batches of 40 (D1 batch limit is 100)
-      const chunkSize = 40;
-      for (let i = 0; i < statements.length; i += chunkSize) {
-        await db.batch(statements.slice(i, i + chunkSize));
-      }
-      console.log('D1 Seed successfully populated!');
-    }
-    dbInitialized = true;
-  } catch (err) {
-    console.error('Error during D1 initialization check:', err);
-  }
 }
 
 // ==========================================
@@ -405,45 +288,39 @@ app.get('/', (c) => {
   });
 });
 
+function getDb(c) {
+  if (!c.env?.DB) {
+    throw new Error('Database binding (DB) is not configured in backend environment');
+  }
+  return c.env.DB;
+}
+
 // GET /api/stats - Global counters for Admin Dashboard
 app.get('/api/stats', async (c) => {
   try {
-    if (c.env?.DB) {
-      await ensureDbInitialized(c.env.DB);
-      const rows = await c.env.DB.prepare(`
-        SELECT section, COUNT(*) as count 
-        FROM content_items 
-        WHERE id NOT IN (SELECT id FROM deleted_records)
-        GROUP BY section
-      `).all();
+    const db = getDb(c);
+    const rows = await db.prepare(`
+      SELECT section, COUNT(*) as count 
+      FROM content_items 
+      WHERE id NOT IN (SELECT id FROM deleted_records)
+      GROUP BY section
+    `).all();
 
-      const counts = {};
-      for (const r of rows.results || []) {
-        counts[r.section] = r.count;
-      }
-
-      const orderCount = await c.env.DB.prepare('SELECT COUNT(*) as count FROM orders').first();
-
-      return c.json({
-        success: true,
-        stats: {
-          editorials: counts['editorials'] || 0,
-          updates: (counts['updates'] || 0) + (counts['news'] || 0) + (counts['filmy_adda'] || 0) + (counts['bizz_world'] || 0) + (counts['women_inspiration'] || 0) + (counts['fashion_lifestyle'] || 0),
-          photos: counts['photos'] || 0,
-          podcasts: counts['podcast'] || 0,
-          orders: orderCount?.count || 0
-        }
-      });
+    const counts = {};
+    for (const r of rows.results || []) {
+      counts[r.section] = r.count;
     }
+
+    const orderCount = await db.prepare('SELECT COUNT(*) as count FROM orders').first();
 
     return c.json({
       success: true,
       stats: {
-        editorials: store.editorials.length,
-        updates: store.updates.length,
-        photos: store.photos.length,
-        podcasts: store.podcasts.length,
-        orders: store.orders.length
+        editorials: counts['editorials'] || 0,
+        updates: (counts['updates'] || 0) + (counts['news'] || 0) + (counts['filmy_adda'] || 0) + (counts['bizz_world'] || 0) + (counts['women_inspiration'] || 0) + (counts['fashion_lifestyle'] || 0),
+        photos: counts['photos'] || 0,
+        podcasts: counts['podcast'] || 0,
+        orders: orderCount?.count || 0
       }
     });
   } catch (err) {
@@ -458,20 +335,12 @@ app.get('/api/stats', async (c) => {
 // GET /api/deleted-ids - List of globally removed IDs
 app.get('/api/deleted-ids', async (c) => {
   try {
-    if (c.env?.DB) {
-      await ensureDbInitialized(c.env.DB);
-      const rows = await c.env.DB.prepare('SELECT id FROM deleted_records').all();
-      const dbDeletedIds = (rows.results || []).map((r) => r.id);
-      const combined = Array.from(new Set([...store.deletedIds, ...dbDeletedIds]));
-      return c.json({
-        success: true,
-        deletedIds: combined
-      });
-    }
-
+    const db = getDb(c);
+    const rows = await db.prepare('SELECT id FROM deleted_records').all();
+    const dbDeletedIds = (rows.results || []).map((r) => r.id);
     return c.json({
       success: true,
-      deletedIds: store.deletedIds
+      deletedIds: dbDeletedIds
     });
   } catch (err) {
     return c.json({ error: err.message }, 500);
@@ -481,32 +350,16 @@ app.get('/api/deleted-ids', async (c) => {
 // GET /api/updates - Live news, events, bulletins & curated sections
 app.get('/api/updates', async (c) => {
   try {
+    const db = getDb(c);
     const sectionFilter = c.req.query('section');
 
-    if (c.env?.DB) {
-      await ensureDbInitialized(c.env.DB);
-      if (sectionFilter) {
-        const rows = await c.env.DB.prepare(`
-          SELECT * FROM content_items
-          WHERE id NOT IN (SELECT id FROM deleted_records)
-            AND (curated_section = ? OR section = ?)
-          ORDER BY timestamp DESC
-        `).bind(sectionFilter, sectionFilter).all();
-
-        const items = (rows.results || []).map(rowToItem);
-        return c.json({
-          success: true,
-          total: items.length,
-          data: items
-        });
-      }
-
-      const rows = await c.env.DB.prepare(`
+    if (sectionFilter) {
+      const rows = await db.prepare(`
         SELECT * FROM content_items
         WHERE id NOT IN (SELECT id FROM deleted_records)
-          AND (section = 'updates' OR curated_section IS NOT NULL)
+          AND (curated_section = ? OR section = ?)
         ORDER BY timestamp DESC
-      `).all();
+      `).bind(sectionFilter, sectionFilter).all();
 
       const items = (rows.results || []).map(rowToItem);
       return c.json({
@@ -516,15 +369,18 @@ app.get('/api/updates', async (c) => {
       });
     }
 
-    // In-memory fallback
-    let data = store.updates.filter((u) => u && !store.deletedIds.includes(u.id));
-    if (sectionFilter) {
-      data = data.filter((u) => u && (u.curatedSection === sectionFilter || u.section === sectionFilter));
-    }
+    const rows = await db.prepare(`
+      SELECT * FROM content_items
+      WHERE id NOT IN (SELECT id FROM deleted_records)
+        AND (section = 'updates' OR curated_section IS NOT NULL)
+      ORDER BY timestamp DESC
+    `).all();
+
+    const items = (rows.results || []).map(rowToItem);
     return c.json({
       success: true,
-      total: data.length,
-      data
+      total: items.length,
+      data: items
     });
   } catch (err) {
     return c.json({ error: err.message }, 500);
@@ -534,46 +390,24 @@ app.get('/api/updates', async (c) => {
 // GET /api/news - Dedicated endpoint for Screenlady Updates (Real-Time Live News)
 app.get('/api/news', async (c) => {
   try {
-    if (c.env?.DB) {
-      await ensureDbInitialized(c.env.DB);
-      const rows = await c.env.DB.prepare(`
-        SELECT * FROM content_items
-        WHERE id NOT IN (SELECT id FROM deleted_records)
-          AND (
-            is_homepage_news = 1 
-            OR section = 'news' 
-            OR (section = 'updates' AND (curated_section IS NULL OR curated_section = '' OR curated_section = 'news' OR curated_section = 'updates'))
-          )
-          AND (curated_section NOT IN ('filmy_adda', 'bizz_world', 'women_inspiration', 'fashion_lifestyle') OR curated_section IS NULL)
-        ORDER BY timestamp DESC
-      `).all();
+    const db = getDb(c);
+    const rows = await db.prepare(`
+      SELECT * FROM content_items
+      WHERE id NOT IN (SELECT id FROM deleted_records)
+        AND (
+          is_homepage_news = 1 
+          OR section = 'news' 
+          OR (section = 'updates' AND (curated_section IS NULL OR curated_section = '' OR curated_section = 'news' OR curated_section = 'updates'))
+        )
+        AND (curated_section NOT IN ('filmy_adda', 'bizz_world', 'women_inspiration', 'fashion_lifestyle') OR curated_section IS NULL)
+      ORDER BY timestamp DESC
+    `).all();
 
-      const items = (rows.results || []).map(rowToItem);
-      return c.json({
-        success: true,
-        total: items.length,
-        data: items
-      });
-    }
-
-    // In-memory fallback
-    const newsItems = store.updates.filter((u) => {
-      if (!u || store.deletedIds.includes(u.id)) return false;
-      if (
-        u.curatedSection === 'filmy_adda' ||
-        u.curatedSection === 'bizz_world' ||
-        u.curatedSection === 'women_inspiration' ||
-        u.curatedSection === 'fashion_lifestyle'
-      ) {
-        return false;
-      }
-      return true;
-    });
-
+    const items = (rows.results || []).map(rowToItem);
     return c.json({
       success: true,
-      total: newsItems.length,
-      data: newsItems
+      total: items.length,
+      data: items
     });
   } catch (err) {
     return c.json({ error: err.message }, 500);
@@ -583,28 +417,19 @@ app.get('/api/news', async (c) => {
 // GET /api/editorials - In-depth editorial columns & articles
 app.get('/api/editorials', async (c) => {
   try {
-    if (c.env?.DB) {
-      await ensureDbInitialized(c.env.DB);
-      const rows = await c.env.DB.prepare(`
-        SELECT * FROM content_items
-        WHERE id NOT IN (SELECT id FROM deleted_records)
-          AND section = 'editorials'
-        ORDER BY timestamp DESC
-      `).all();
+    const db = getDb(c);
+    const rows = await db.prepare(`
+      SELECT * FROM content_items
+      WHERE id NOT IN (SELECT id FROM deleted_records)
+        AND section = 'editorials'
+      ORDER BY timestamp DESC
+    `).all();
 
-      const items = (rows.results || []).map(rowToItem);
-      return c.json({
-        success: true,
-        total: items.length,
-        data: items
-      });
-    }
-
-    const data = store.editorials.filter((e) => e && !store.deletedIds.includes(e.id));
+    const items = (rows.results || []).map(rowToItem);
     return c.json({
       success: true,
-      total: data.length,
-      data
+      total: items.length,
+      data: items
     });
   } catch (err) {
     return c.json({ error: err.message }, 500);
@@ -614,28 +439,19 @@ app.get('/api/editorials', async (c) => {
 // GET /api/photos - Curated event photos & gallery archives
 app.get('/api/photos', async (c) => {
   try {
-    if (c.env?.DB) {
-      await ensureDbInitialized(c.env.DB);
-      const rows = await c.env.DB.prepare(`
-        SELECT * FROM content_items
-        WHERE id NOT IN (SELECT id FROM deleted_records)
-          AND section IN ('photos', 'home_photos')
-        ORDER BY timestamp DESC
-      `).all();
+    const db = getDb(c);
+    const rows = await db.prepare(`
+      SELECT * FROM content_items
+      WHERE id NOT IN (SELECT id FROM deleted_records)
+        AND section IN ('photos', 'home_photos')
+      ORDER BY timestamp DESC
+    `).all();
 
-      const items = (rows.results || []).map(rowToItem);
-      return c.json({
-        success: true,
-        total: items.length,
-        data: items
-      });
-    }
-
-    const data = store.photos.filter((p) => p && !store.deletedIds.includes(p.id));
+    const items = (rows.results || []).map(rowToItem);
     return c.json({
       success: true,
-      total: data.length,
-      data
+      total: items.length,
+      data: items
     });
   } catch (err) {
     return c.json({ error: err.message }, 500);
@@ -645,28 +461,19 @@ app.get('/api/photos', async (c) => {
 // GET /api/podcast - Podcast episodes & streaming previews
 app.get('/api/podcast', async (c) => {
   try {
-    if (c.env?.DB) {
-      await ensureDbInitialized(c.env.DB);
-      const rows = await c.env.DB.prepare(`
-        SELECT * FROM content_items
-        WHERE id NOT IN (SELECT id FROM deleted_records)
-          AND section = 'podcast'
-        ORDER BY timestamp DESC
-      `).all();
+    const db = getDb(c);
+    const rows = await db.prepare(`
+      SELECT * FROM content_items
+      WHERE id NOT IN (SELECT id FROM deleted_records)
+        AND section = 'podcast'
+      ORDER BY timestamp DESC
+    `).all();
 
-      const items = (rows.results || []).map(rowToItem);
-      return c.json({
-        success: true,
-        total: items.length,
-        data: items
-      });
-    }
-
-    const data = store.podcasts.filter((p) => p && !store.deletedIds.includes(p.id));
+    const items = (rows.results || []).map(rowToItem);
     return c.json({
       success: true,
-      total: data.length,
-      data
+      total: items.length,
+      data: items
     });
   } catch (err) {
     return c.json({ error: err.message }, 500);
@@ -676,20 +483,11 @@ app.get('/api/podcast', async (c) => {
 // GET /api/magazine - Magazine settings & available issues
 app.get('/api/magazine', async (c) => {
   try {
-    if (c.env?.DB) {
-      await ensureDbInitialized(c.env.DB);
-      const row = await c.env.DB.prepare('SELECT * FROM magazine_settings WHERE id = ?').bind('current').first();
-      if (row) {
-        return c.json({
-          success: true,
-          data: rowToMagazine(row)
-        });
-      }
-    }
-
+    const db = getDb(c);
+    const row = await db.prepare('SELECT * FROM magazine_settings WHERE id = ?').bind('current').first();
     return c.json({
       success: true,
-      data: store.magazine
+      data: rowToMagazine(row)
     });
   } catch (err) {
     return c.json({ error: err.message }, 500);
@@ -706,32 +504,29 @@ app.post('/api/magazine', async (c) => {
       return c.json({ error: 'Unauthorized: Invalid Administrator Passcode' }, 401);
     }
 
-    if (settings && typeof settings === 'object') {
-      store.magazine = { ...store.magazine, ...settings };
-    }
+    const db = getDb(c);
+    const existingRow = await db.prepare('SELECT * FROM magazine_settings WHERE id = ?').bind('current').first();
+    const current = rowToMagazine(existingRow);
+    const m = { ...current, ...settings };
 
-    if (c.env?.DB) {
-      await ensureDbInitialized(c.env.DB);
-      const m = store.magazine;
-      await c.env.DB.prepare(`
-        INSERT OR REPLACE INTO magazine_settings (
-          id, active_issue, cover_image, page2_image, price, currency, home_delivery, available_issues, updated_at
-        ) VALUES ('current', ?, ?, ?, ?, ?, ?, ?, ?)
-      `).bind(
-        m.activeIssue || 'October 2026',
-        m.coverImage || '/assets/images/magazine-cover-latest.jpg',
-        m.page2Image || '/assets/images/magazine-page2-feature.jpg',
-        m.price || 220,
-        m.currency || 'INR',
-        m.homeDelivery ? 1 : 0,
-        JSON.stringify(m.availableIssues || []),
-        new Date().toISOString()
-      ).run();
-    }
+    await db.prepare(`
+      INSERT OR REPLACE INTO magazine_settings (
+        id, active_issue, cover_image, page2_image, price, currency, home_delivery, available_issues, updated_at
+      ) VALUES ('current', ?, ?, ?, ?, ?, ?, ?, ?)
+    `).bind(
+      m.activeIssue || 'Latest Edition',
+      m.coverImage || '/assets/images/magazine-cover-latest.jpg',
+      m.page2Image || '/assets/images/magazine-page2-feature.jpg',
+      m.price || 220,
+      m.currency || 'INR',
+      m.homeDelivery ? 1 : 0,
+      JSON.stringify(m.availableIssues || []),
+      new Date().toISOString()
+    ).run();
 
     return c.json({
       success: true,
-      data: store.magazine,
+      data: m,
       message: 'Magazine settings updated successfully.'
     });
   } catch (err) {
@@ -762,30 +557,23 @@ app.post('/api/publish', async (c) => {
     item.createdAt = item.createdAt || new Date().toISOString();
     item.timestamp = item.timestamp || Date.now();
 
-    // Map section name to target store
-    let targetStore = null;
     let normalizedSection = section;
 
     if (section === 'editorials') {
-      targetStore = store.editorials;
       normalizedSection = 'editorials';
     } else if (section === 'news') {
-      targetStore = store.updates;
       item.curatedSection = 'news';
       item.isHomepageNews = true;
       item.type = 'news';
       normalizedSection = 'news';
     } else if (section === 'updates') {
-      targetStore = store.updates;
       item.curatedSection = 'updates';
       item.isHomepageNews = false;
       normalizedSection = 'updates';
     } else if (section === 'photos' || section === 'home_photos') {
-      targetStore = store.photos;
       item.curatedSection = section;
       normalizedSection = 'photos';
     } else if (section === 'podcast') {
-      targetStore = store.podcasts;
       normalizedSection = 'podcast';
     } else if (
       section === 'filmy_adda' ||
@@ -793,7 +581,6 @@ app.post('/api/publish', async (c) => {
       section === 'women_inspiration' ||
       section === 'fashion_lifestyle'
     ) {
-      targetStore = store.updates;
       item.curatedSection = section;
       item.isHomepageNews = false;
       item.type = section;
@@ -802,40 +589,24 @@ app.post('/api/publish', async (c) => {
       return c.json({ error: `Unknown section: ${section}` }, 400);
     }
 
-    // 1. Persist to Cloudflare D1 Database if connected
-    if (c.env?.DB) {
-      await ensureDbInitialized(c.env.DB);
-      const r = itemToRow(normalizedSection, item);
-      await c.env.DB.prepare(`
-        INSERT OR REPLACE INTO content_items (
-          id, section, curated_section, type, title, headline, woman_name, author,
-          author_designation, category, category_badge, summary, pull_quote, full_body,
-          photo, venue, date, display_date, read_time, duration, host, guest,
-          audio_url, social_link, tags, is_homepage_news, is_custom, timestamp, created_at, extra_data
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-      `).bind(
-        r.id, r.section, r.curated_section, r.type, r.title, r.headline, r.woman_name,
-        r.author, r.author_designation, r.category, r.category_badge, r.summary,
-        r.pull_quote, r.full_body, r.photo, r.venue, r.date, r.display_date,
-        r.read_time, r.duration, r.host, r.guest, r.audio_url, r.social_link,
-        r.tags, r.is_homepage_news, r.is_custom, r.timestamp, r.created_at, r.extra_data
-      ).run();
+    const db = getDb(c);
+    const r = itemToRow(normalizedSection, item);
+    await db.prepare(`
+      INSERT OR REPLACE INTO content_items (
+        id, section, curated_section, type, title, headline, woman_name, author,
+        author_designation, category, category_badge, summary, pull_quote, full_body,
+        photo, venue, date, display_date, read_time, duration, host, guest,
+        audio_url, social_link, tags, is_homepage_news, is_custom, timestamp, created_at, extra_data
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    `).bind(
+      r.id, r.section, r.curated_section, r.type, r.title, r.headline, r.woman_name,
+      r.author, r.author_designation, r.category, r.category_badge, r.summary,
+      r.pull_quote, r.full_body, r.photo, r.venue, r.date, r.display_date,
+      r.read_time, r.duration, r.host, r.guest, r.audio_url, r.social_link,
+      r.tags, r.is_homepage_news, r.is_custom, r.timestamp, r.created_at, r.extra_data
+    ).run();
 
-      // If item was previously deleted, remove from deleted_records
-      await c.env.DB.prepare('DELETE FROM deleted_records WHERE id = ?').bind(item.id).run();
-    }
-
-    // 2. Sync to in-memory store
-    const existingIndex = targetStore.findIndex((i) => i.id === item.id);
-    if (existingIndex >= 0) {
-      targetStore[existingIndex] = { ...targetStore[existingIndex], ...item };
-    } else {
-      targetStore.unshift(item);
-    }
-
-    // Remove from in-memory deletedIds if present
-    const delIdx = store.deletedIds.indexOf(item.id);
-    if (delIdx >= 0) store.deletedIds.splice(delIdx, 1);
+    await db.prepare('DELETE FROM deleted_records WHERE id = ?').bind(item.id).run();
 
     return c.json({
       success: true,
@@ -862,45 +633,21 @@ app.post('/api/delete', async (c) => {
       return c.json({ error: 'Section and item id are required' }, 400);
     }
 
-    // 1. Delete from Cloudflare D1 Database if connected
-    if (c.env?.DB) {
-      await ensureDbInitialized(c.env.DB);
-      await c.env.DB.prepare('DELETE FROM content_items WHERE id = ?').bind(id).run();
-      await c.env.DB.prepare('INSERT OR REPLACE INTO deleted_records (id, deleted_at) VALUES (?, ?)').bind(
-        id,
-        new Date().toISOString()
-      ).run();
-    }
+    const db = getDb(c);
+    await db.prepare('DELETE FROM content_items WHERE id = ?').bind(id).run();
+    await db.prepare('INSERT OR REPLACE INTO deleted_records (id, deleted_at) VALUES (?, ?)').bind(
+      id,
+      new Date().toISOString()
+    ).run();
 
-    // 2. Sync to in-memory store
-    let targetStore = null;
-    if (section === 'editorials') targetStore = store.editorials;
-    else if (section === 'updates' || section === 'news') targetStore = store.updates;
-    else if (section === 'photos' || section === 'home_photos') targetStore = store.photos;
-    else if (section === 'podcast') targetStore = store.podcasts;
-    else if (
-      section === 'filmy_adda' ||
-      section === 'bizz_world' ||
-      section === 'women_inspiration' ||
-      section === 'fashion_lifestyle'
-    ) targetStore = store.updates;
-
-    if (targetStore) {
-      const index = targetStore.findIndex((i) => i.id === id);
-      if (index >= 0) {
-        targetStore.splice(index, 1);
-      }
-    }
-
-    if (!store.deletedIds.includes(id)) {
-      store.deletedIds.push(id);
-    }
+    const rows = await db.prepare('SELECT id FROM deleted_records').all();
+    const deletedIds = (rows.results || []).map((r) => r.id);
 
     return c.json({
       success: true,
       section,
       id,
-      deletedIds: store.deletedIds,
+      deletedIds,
       message: `Item ${id} deleted successfully from ${section} (persisted in database).`
     });
   } catch (err) {
@@ -948,23 +695,19 @@ app.post('/api/orders', async (c) => {
       status: 'received'
     };
 
-    if (c.env?.DB) {
-      await ensureDbInitialized(c.env.DB);
-      await c.env.DB.prepare(`
-        INSERT INTO orders (
-          id, order_id, name, phone, email, address, city, pincode, state, edition,
-          quantity, amount, status, payment_status, dispatch_status, payment_method,
-          payment_id, tracking_number, notes, timestamp, created_at, extra_data
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-      `).bind(
-        newOrder.id, newOrder.orderId, newOrder.name, newOrder.phone, newOrder.email,
-        newOrder.address, newOrder.city, newOrder.pincode, newOrder.state, newOrder.issue,
-        1, newOrder.amount, newOrder.status, newOrder.paymentStatus, newOrder.dispatchStatus,
-        'COD', '', '', '', Date.now(), newOrder.createdAt, null
-      ).run();
-    }
-
-    store.orders.unshift(newOrder);
+    const db = getDb(c);
+    await db.prepare(`
+      INSERT INTO orders (
+        id, order_id, name, phone, email, address, city, pincode, state, edition,
+        quantity, amount, status, payment_status, dispatch_status, payment_method,
+        payment_id, tracking_number, notes, timestamp, created_at, extra_data
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    `).bind(
+      newOrder.id, newOrder.orderId, newOrder.name, newOrder.phone, newOrder.email,
+      newOrder.address, newOrder.city, newOrder.pincode, newOrder.state, newOrder.issue,
+      1, newOrder.amount, newOrder.status, newOrder.paymentStatus, newOrder.dispatchStatus,
+      'COD', '', '', '', Date.now(), newOrder.createdAt, null
+    ).run();
 
     return c.json({
       success: true,
@@ -979,21 +722,13 @@ app.post('/api/orders', async (c) => {
 // GET /api/orders - List all orders (Admin or internal verification)
 app.get('/api/orders', async (c) => {
   try {
-    if (c.env?.DB) {
-      await ensureDbInitialized(c.env.DB);
-      const rows = await c.env.DB.prepare('SELECT * FROM orders ORDER BY timestamp DESC').all();
-      const orders = (rows.results || []).map(rowToOrder);
-      return c.json({
-        success: true,
-        total: orders.length,
-        orders
-      });
-    }
-
+    const db = getDb(c);
+    const rows = await db.prepare('SELECT * FROM orders ORDER BY timestamp DESC').all();
+    const orders = (rows.results || []).map(rowToOrder);
     return c.json({
       success: true,
-      total: store.orders.length,
-      orders: store.orders
+      total: orders.length,
+      orders
     });
   } catch (err) {
     return c.json({ error: err.message }, 500);
@@ -1011,27 +746,21 @@ app.put('/api/orders/:id', async (c) => {
       return c.json({ error: 'Unauthorized: Invalid Administrator Passcode' }, 401);
     }
 
-    if (c.env?.DB) {
-      await ensureDbInitialized(c.env.DB);
-      await c.env.DB.prepare(`
-        UPDATE orders SET
-          status = COALESCE(?, status),
-          payment_status = COALESCE(?, payment_status),
-          dispatch_status = COALESCE(?, dispatch_status)
-        WHERE id = ? OR order_id = ?
-      `).bind(status || null, paymentStatus || null, dispatchStatus || null, id, id).run();
-    }
+    const db = getDb(c);
+    await db.prepare(`
+      UPDATE orders SET
+        status = COALESCE(?, status),
+        payment_status = COALESCE(?, payment_status),
+        dispatch_status = COALESCE(?, dispatch_status)
+      WHERE id = ? OR order_id = ?
+    `).bind(status || null, paymentStatus || null, dispatchStatus || null, id, id).run();
 
-    const order = store.orders.find((o) => o.id === id || o.orderId === id);
-    if (order) {
-      if (status) order.status = status;
-      if (paymentStatus) order.paymentStatus = paymentStatus;
-      if (dispatchStatus) order.dispatchStatus = dispatchStatus;
-    }
+    const row = await db.prepare('SELECT * FROM orders WHERE id = ? OR order_id = ?').bind(id, id).first();
+    const updated = rowToOrder(row);
 
     return c.json({
       success: true,
-      order: order || { id, paymentStatus, dispatchStatus, status },
+      order: updated || { id, paymentStatus, dispatchStatus, status },
       message: `Order ${id} updated successfully.`
     });
   } catch (err) {
@@ -1049,15 +778,8 @@ app.delete('/api/orders/:id', async (c) => {
       return c.json({ error: 'Unauthorized: Invalid Administrator Passcode' }, 401);
     }
 
-    if (c.env?.DB) {
-      await ensureDbInitialized(c.env.DB);
-      await c.env.DB.prepare('DELETE FROM orders WHERE id = ? OR order_id = ?').bind(id, id).run();
-    }
-
-    const index = store.orders.findIndex((o) => o.id === id || o.orderId === id);
-    if (index >= 0) {
-      store.orders.splice(index, 1);
-    }
+    const db = getDb(c);
+    await db.prepare('DELETE FROM orders WHERE id = ? OR order_id = ?').bind(id, id).run();
 
     return c.json({
       success: true,

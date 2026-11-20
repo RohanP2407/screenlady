@@ -90,274 +90,8 @@ window.isInspirationUpdate = isInspirationUpdate;
 window.isFashionUpdate = isFashionUpdate;
 window.isNewsUpdate = isNewsUpdate;
 
-// Official Screenlady Team Updates: Meetings, Awards, Movie Talks, Meet & Greets, Events
-const DEFAULT_SCREENLADY_UPDATES = [
-  {
-    id: "update-ramayana-1",
-    type: "photo-info",
-    category: "Movie Talk",
-    womanName: "Ranbir Kapoor, Sai Pallavi & Yash",
-    title: "Ramayana Makes a Strong Mark at the Box Office! Audiences Give an Enthusiastic Response",
-    headline: "Ramayana Makes a Strong Mark at the Box Office! Audiences Give an Enthusiastic Response",
-    date: "2026-11-15",
-    displayDate: "November 15, 2026",
-    venue: "Theatres Nationwide & Mumbai Box Office",
-    photo: "assets/images/news/ramayana.jpeg",
-    infoSummary: "The epic Ramayana, a symbol of pride in Indian culture, has now taken a grand form on the big screen directed by Nitesh Tiwari. With Ranbir Kapoor as Lord Ram, Sai Pallavi as Sita, and Yash as Ravana, the magnum opus crossed the remarkable ₹819.50 crore mark in its opening week.",
-    fullInfo: `<p>The epic <em>Ramayana</em>, a symbol of pride in Indian culture, has now taken a grand form on the big screen. Director Nitesh Tiwari’s film <em>Ramayana: Rise of a Legend</em> has captured the audience’s attention following its release.</p>
-    <p>Ranbir Kapoor’s powerful portrayal of Lord Shri Ram, Sai Pallavi’s graceful performance as Sita, and Yash’s commanding appearance as Ravana have become major talking points among viewers.</p>
-    <p>The film’s grand visuals, modern visual effects, music, and performances by the cast are receiving appreciation from audiences. The movie is reportedly getting a strong response in theatres across the country and has also delivered an impressive performance at the box office.</p>
-    <p>According to reports, the film’s India net collection crossed the remarkable ₹819.50 crore mark within its first week of release. It has also reportedly earned significantly at the global box office.</p>
-    <blockquote style="margin: 1.5rem 0; padding: 1.25rem 1.75rem; border-left: 3px solid var(--gold-primary); background: rgba(212, 175, 55, 0.05); font-style: italic; color: var(--gold-light);">
-      "Ramayana – Not just a film, but a grand cinematic experience celebrating Indian culture, faith, and traditions!" — Accolade Screenlady Magazine
-    </blockquote>
-    <p>The film continues to witness housefull screenings across single screens and multiplexes in Maharashtra and nationwide, setting new industry benchmarks for mythological storytelling.</p>`,
-    tags: ["Ramayana", "RanbirKapoor", "SaiPallaviOfficial", "Yash", "YashFans", "SaiPallaviFansClub", "RamayanMovie", "AccoladeScreenlady", "SharadKelkar", "Movies", "BollywoodNews", "Bollywood", "BollywoodSongs", "BollywoodMusic", "BollywoodMovies", "BollywoodUpdates"],
-    timestamp: 1794753600000
-  },
-  {
-    id: "update-sindhutai-1",
-    type: "photo-info",
-    category: "Events",
-    womanName: "Padma Shri Sindhutai Sapkal ('Mai')",
-    title: "Birth Anniversary of Sindhutai Sapkal, the Mother of Orphans – A Loving Shelter for Thousands of Orphaned Children!",
-    headline: "Birth Anniversary of Sindhutai Sapkal, the Mother of Orphans – A Loving Shelter for Thousands of Orphaned Children!",
-    date: "2026-11-14",
-    displayDate: "November 14, 2026",
-    venue: "Navi Mumbai & Across Maharashtra",
-    photo: "assets/images/news/sindhutai-sapkal.jpeg",
-    infoSummary: "Today, November 14, marks the birth anniversary of Padma Shri Sindhutai Sapkal, who faced countless challenges in her own life yet went on to provide love, care, and shelter to thousands of orphaned and underprivileged children.",
-    fullInfo: `<p><strong>Correspondent (Accolade Screenlady, Mumbai):</strong> Today, November 14, marks the birth anniversary of Padma Shri Sindhutai Sapkal, who faced countless challenges in her own life yet went on to provide love, care, and support to thousands of orphaned and underprivileged children.</p>
-    <p>Fondly known across Maharashtra as the <strong>“Mother of Orphans”</strong> and <strong>“Mai,”</strong> Sindhutai’s remarkable contribution to society continues to inspire generations. Her life and selfless dedication remain a shining example of compassion, courage, and humanity.</p>
-    <blockquote style="margin: 1.5rem 0; padding: 1.25rem 1.75rem; border-left: 3px solid var(--gold-primary); background: rgba(212, 175, 55, 0.05); font-style: italic; color: var(--gold-light);">
-      "When life gives you thorns, make them a garden of love for the abandoned. Mai taught the world what true motherhood means."
-    </blockquote>
-    <p>Accolade Screenlady pays heartfelt homage to this divine soul whose legacy of shelter, education, and motherly protection continues to nurture thousands of young lives across Maharashtra.</p>
-    <p>— Navi Mumbai</p>`,
-    tags: ["AccoladeScreenlady", "Magazine", "SindhutaiSapkal", "SindhutaiMajhiMai", "Press", "NaviMumbai", "WomenOfDistinction"],
-    timestamp: 1794667200000
-  },
-  {
-    id: "update-boxoffice-1",
-    type: "photo-info",
-    category: "Movie Talk",
-    womanName: "Amitabh Bachchan, Sharvari & Rashmika Mandanna",
-    title: "A Treat for Movie Lovers! Big-Budget Films Set to Hit the Box Office in the Second Half of November",
-    headline: "A Treat for Movie Lovers! Big-Budget Films Set to Hit the Box Office in the Second Half of November",
-    date: "2026-11-13",
-    displayDate: "November 13, 2026",
-    venue: "Navi Mumbai / Bollywood Bureau",
-    photo: "assets/images/news/films-box-office.jpeg",
-    infoSummary: "Amitabh Bachchan, Jackie Shroff, Amit Sadh, Ayushmann Khurrana, Sharvari, and Rashmika Mandanna are set to entertain audiences with major box-office clashes scheduled for November 20 and 27.",
-    fullInfo: `<p><strong>Correspondent (Accolade Screenlady, Mumbai):</strong> Amitabh Bachchan, Jackie Shroff, and Amit Sadh, along with Ayushmann Khurrana, Sharvari, and Rashmika Mandanna, are all set to entertain audiences with their upcoming films. November 20 and 27 are expected to witness major box-office clashes.</p>
-    <p>The second half of November is going to be particularly exciting for movie lovers. Several prominent actors from the Hindi film industry, along with films belonging to different genres, are all set to arrive on the big screen.</p>
-    <p>With several much-awaited films scheduled for release on November 20 and November 27, the box office is expected to witness an exciting battle for audience attention.</p>
-    <blockquote style="margin: 1.5rem 0; padding: 1.25rem 1.75rem; border-left: 3px solid var(--gold-primary); background: rgba(212, 175, 55, 0.05); font-style: italic; color: var(--gold-light);">
-      "From multi-starrer dramas to high-octane thrillers, November’s box office line-up is set to reignite single screens and multiplexes alike."
-    </blockquote>
-    <p>— Navi Mumbai</p>`,
-    tags: ["AccoladeScreenlady", "Entertainment", "Films", "Marathi", "Movie", "NaviMumbai", "Bollywood"],
-    timestamp: 1794580800000
-  },
-  {
-    id: "update-jalsa-threat-1",
-    type: "photo-info",
-    category: "Events",
-    womanName: "Mumbai Police & Security Agencies",
-    title: "Bomb Threat Once Again Targets Amitabh Bachchan’s Jalsa Bungalow; Security Agencies on High Alert in Mumbai!",
-    headline: "Bomb Threat Once Again Targets Amitabh Bachchan’s Jalsa Bungalow; Security Agencies on High Alert in Mumbai!",
-    date: "2026-11-12",
-    displayDate: "November 12, 2026",
-    venue: "Juhu & Public Landmarks, Mumbai",
-    photo: "assets/images/news/amitabh-bachchan.jpeg",
-    infoSummary: "Mumbai was put on alert after Amitabh Bachchan received another bomb threat targeting his residence 'Jalsa' in Juhu alongside other key public landmarks. Mumbai Police and security agencies stepped up alertness.",
-    fullInfo: `<p><strong>Correspondent (Accolade Screenlady, Mumbai):</strong> Mumbai was put on alert after Amitabh Bachchan, the legendary Bollywood actor, received another bomb threat targeting his residence, ‘Jalsa’, located in Juhu, Mumbai.</p>
-    <p>Interestingly, the threatening email reportedly mentioned not only Amitabh Bachchan’s residence but also several other important public places across Mumbai. Following this threat, the Mumbai Police and security agencies have stepped up their alertness and security measures.</p>
-    <blockquote style="margin: 1.5rem 0; padding: 1.25rem 1.75rem; border-left: 3px solid var(--gold-primary); background: rgba(212, 175, 55, 0.05); font-style: italic; color: var(--gold-light);">
-      "Security protocols have been reinforced with bomb disposal squads and 24/7 patrol units deployed around Jalsa and key transit nodes."
-    </blockquote>
-    <p>The Mumbai Police Cyber Cell has initiated a probe to trace the origin of the IP address and email headers associated with the communication.</p>
-    <p>— Navi Mumbai</p>`,
-    tags: ["Accolade", "AccoladeScreenlady", "Entertainment", "AmitabhBachchan", "Jalsa", "MumbaiAlert", "Security"],
-    timestamp: 1794494400000
-  },
-  {
-    id: "update-meeting-1",
-    type: "photo-info",
-    category: "Meetings",
-    womanName: "Mr. Prashant Sagvekar & Executive Board",
-    title: "Executive Editorial & Publishing Board Meeting Led by Founder Mr. Prashant Sagvekar",
-    headline: "Executive Editorial & Publishing Board Meeting Led by Founder Mr. Prashant Sagvekar",
-    date: "2026-11-06",
-    displayDate: "November 6, 2026",
-    venue: "Screenlady Publishing Headquarters, Mumbai",
-    photo: "assets/images/team/prashant-sagvekar.jpeg",
-    infoSummary: "Founder & Publisher Mr. Prashant Chandrakant Sagvekar, Managing Director Mrs. Sakshi Sagvekar, and Marketing Director Mr. Vedang Sagvekar convened the fourth-quarter executive board meeting in Mumbai. The leadership reviewed expanded statewide print circulation across Maharashtra, finalised editorial commissions for the upcoming issues, and approved direct reader engagement initiatives.",
-    fullInfo: `<p>Conducted at the Accolade Screenlady publishing headquarters in Mumbai, Founder and Publisher <strong>Mr. Prashant Chandrakant Sagvekar</strong> chaired a comprehensive strategic conclave with Managing Director <strong>Mrs. Sakshi Sagvekar</strong> and Marketing Director <strong>Mr. Vedang Sagvekar</strong>.</p>
-    <p>The leadership reviewed subscriber growth following the PRGI registration under number <em>MHMAR/26/A3113</em>, expanding doorstep delivery across Raigad, Pune, Thane, and Mumbai with insured courier logistics. Special focus was given to commissioning exclusive interviews with women achievers in medicine, civil administration, and corporate governance.</p>
-    <blockquote style="margin: 1.5rem 0; padding: 1.25rem 1.75rem; border-left: 3px solid var(--gold-primary); background: rgba(212, 175, 55, 0.05); font-style: italic; color: var(--gold-light);">
-      "Accolade Screenlady’s mission is to be the unyielding voice celebrating women's resilience, triumphs, and dignity across every district of our state."
-    </blockquote>
-    <p>The board also approved upcoming partnerships with women-led handicraft enterprises and corporate sponsorship packages for upcoming collector's editions.</p>`,
-    tags: ["Meetings", "Strategy", "Screenlady Leadership"],
-    timestamp: 1793976000000
-  },
-  {
-    id: "update-awards-1",
-    type: "photo-info",
-    category: "Awards",
-    womanName: "Mrs. Amruta Rao, Mrs. Supriya Vinod & Mrs. Manasi Ingle",
-    title: "Accolade Screenlady 'Women of Distinction' Annual Honors Announced",
-    headline: "Accolade Screenlady 'Women of Distinction' Annual Honors Announced",
-    date: "2026-11-04",
-    displayDate: "November 4, 2026",
-    venue: "Screenlady Cultural Foundation, Mumbai",
-    photo: "assets/images/magazine-photos/4.2.jpg",
-    infoSummary: "Editor-in-Chief Mrs. Amruta Rao alongside Board Members Mrs. Supriya Vinod and Mrs. Manasi Ingle officially announced the nomination guidelines for the 2026 Screenlady Honors. The prestigious platform celebrates remarkable women leaders, medical pioneers, entrepreneurs, and unsung grassroots achievers who turned struggle into lasting triumph.",
-    fullInfo: `<p>In a joint announcement from the Screenlady Cultural Foundation, Editor-in-Chief <strong>Mrs. Amruta Rao</strong> together with Board Members <strong>Mrs. Supriya Vinod</strong> and <strong>Mrs. Manasi Ingle</strong> unveiled the official guidelines for the upcoming <em>Accolade Screenlady Women of Distinction Awards</em>.</p>
-    <p>The honors recognize women who have broken glass ceilings in politics, corporate enterprise, healthcare, aviation, and social reform. A jury comprising esteemed journalists, senior jurists, and cultural scholars will evaluate nominations across 12 distinct categories.</p>
-    <blockquote style="margin: 1.5rem 0; padding: 1.25rem 1.75rem; border-left: 3px solid var(--gold-primary); background: rgba(212, 175, 55, 0.05); font-style: italic; color: var(--gold-light);">
-      "True recognition belongs not merely to fame, but to the tireless courage of women who rebuild societies quietly with their determination."
-    </blockquote>
-    <p>Public nominations open next month via the official Screenlady portal, with the gala felicitation evening scheduled for early 2027 in Mumbai.</p>`,
-    tags: ["Awards", "Honors", "Women Leadership"],
-    timestamp: 1793803200000
-  },
-  {
-    id: "update-movietalk-1",
-    type: "photo-info",
-    category: "Movie Talk",
-    womanName: "Screenlady Cinematography & Creative Desk",
-    title: "Cinema Exclusive: Behind-the-Scenes Photo Session & Dialogue with Actresses",
-    headline: "Cinema Exclusive: Behind-the-Scenes Photo Session & Dialogue with Actresses",
-    date: "2026-11-01",
-    displayDate: "November 1, 2026",
-    venue: "Film City Studios, Goregaon, Mumbai",
-    photo: "assets/images/magazine-photos/3.1.jpg",
-    infoSummary: "The Screenlady creative production team hosted a behind-the-scenes photoshoot and in-depth cinema conversation exploring contemporary Marathi and Hindi cinema. Acclaimed actresses opened up about challenging roles, the shift toward women-centric narratives, and lesser-known aspects of their artistic journeys.",
-    fullInfo: `<p>The creative and photography team of Accolade Screenlady spent an intensive day on set at Film City Studios, capturing exclusive high-fashion portraits and conducting candid dialogues with prominent actresses from the Marathi and Hindi film industries.</p>
-    <p>Going beyond the glittering public glamour, the discussion delved into the emotional demands of character acting, the preparation required for complex historical and modern roles, and the growing influence of female filmmakers.</p>
-    <blockquote style="margin: 1.5rem 0; padding: 1.25rem 1.75rem; border-left: 3px solid var(--gold-primary); background: rgba(212, 175, 55, 0.05); font-style: italic; color: var(--gold-light);">
-      "When actresses portray real women with authenticity, cinema ceases to be mere entertainment and becomes a mirror of societal transformation."
-    </blockquote>
-    <p>The full photographic portfolio and comprehensive interview feature will appear across an 8-page glossy spread in the forthcoming print edition.</p>`,
-    tags: ["Movie Talk", "Cinema", "Photo Shoot"],
-    timestamp: 1793544000000
-  },
-  {
-    id: "update-meetgreet-1",
-    type: "photo-info",
-    category: "Meet & Greet",
-    womanName: "Mrs. Sakshi Sagvekar & Mrs. Amruta Rao",
-    title: "Screenlady Reader & Women Entrepreneurs Meet & Greet Conclave in Pune",
-    headline: "Screenlady Reader & Women Entrepreneurs Meet & Greet Conclave in Pune",
-    date: "2026-10-28",
-    displayDate: "October 28, 2026",
-    venue: "JW Marriott Senapati Bapat Road, Pune",
-    photo: "assets/images/magazine-photos/4.1.jpg",
-    infoSummary: "Managing Director Mrs. Sakshi Sagvekar and Editor-in-Chief Mrs. Amruta Rao hosted an interactive meet-and-greet session with dedicated magazine subscribers, women startup founders, and college scholars in Pune. Discussions centered around self-reliance, financial literacy, and contributing personal success memoirs to future issues.",
-    fullInfo: `<p>Screenlady’s regional reader outreach program kicked off with an energetic gathering at the JW Marriott in Pune, led by Managing Director <strong>Mrs. Sakshi Sagvekar</strong> and Editor-in-Chief <strong>Mrs. Amruta Rao</strong>.</p>
-    <p>More than 150 women entrepreneurs, subscribers, boutique owners, and young professionals joined the interactive round-table. Attendees shared firsthand accounts of overcoming small-business challenges, building sustainable enterprises, and seeking greater media representation.</p>
-    <blockquote style="margin: 1.5rem 0; padding: 1.25rem 1.75rem; border-left: 3px solid var(--gold-primary); background: rgba(212, 175, 55, 0.05); font-style: italic; color: var(--gold-light);">
-      "Direct conversations with our readers keep Screenlady grounded in the genuine aspirations and dreams of today’s women."
-    </blockquote>
-    <p>Attendees received early-release copies of the latest issue, with several entrepreneur journeys selected for upcoming feature coverage.</p>`,
-    tags: ["Meet & Greet", "Entrepreneurs", "Community"],
-    timestamp: 1793198400000
-  },
-  {
-    id: "update-events-1",
-    type: "photo-info",
-    curatedSection: "fashion_lifestyle",
-    category: "Fashion & Lifestyle",
-    categoryBadge: "✦ 💎 Heritage Jewellery",
-    womanName: "Tantuh Artisanal Handcrafted Jewellery",
-    title: "Tantuh Artisanal Handcrafted Jewellery",
-    headline: "Tantuh Artisanal Handcrafted Jewellery",
-    date: "2026-10-20",
-    displayDate: "October 20, 2026",
-    venue: "The St. Regis, Lower Parel, Mumbai",
-    photo: "assets/images/articles/article-1.jpg",
-    infoSummary: "Marketing Director Mr. Vedang Sagvekar hosted the formal partnership event unveiling Tantuh Handcrafted Jewellery as the official cover sponsor for Accolade Screenlady’s October 2026 edition. The collaboration highlights how heritage brass wirework and contemporary sustainable fashion empower women’s cultural identity.",
-    fullInfo: `<p>In a grand celebration of indigenous artisanal craftsmanship and luxury publishing, Marketing Director <strong>Mr. Vedang Sagvekar</strong> joined <strong>Prasad Ghodke</strong> and <strong>Swati Ghodke</strong> of Tantuh to unveil their landmark cover sponsorship for Accolade Screenlady’s October 2026 edition.</p>
-    <p>The event brought together jewellery connoisseurs, fashion editors, and prominent business leaders. The partnership illustrates Screenlady's commitment to offering purposeful, high-visibility promotional platforms for creative enterprises.</p>
-    <blockquote style="margin: 1.5rem 0; padding: 1.25rem 1.75rem; border-left: 3px solid var(--gold-primary); background: rgba(212, 175, 55, 0.05); font-style: italic; color: var(--gold-light);">
-      "When traditional artistry joins hands with forward-looking media, the cultural legacy of our nation reaches a whole new generation."
-    </blockquote>
-    <p>Special edition jewellery pieces from the Tantuh showcase will tour upcoming Screenlady cultural exhibitions across Maharashtra.</p>`,
-    tags: ["Fashion & Lifestyle", "Heritage Jewellery", "Tantuh", "Partnerships", "Brand Launch"],
-    timestamp: 1792507200000
-  },
-  {
-    id: "fashion-spread-1",
-    type: "photo-info",
-    curatedSection: "fashion_lifestyle",
-    category: "Fashion & Lifestyle",
-    categoryBadge: "✦ 👗 High Fashion Spread",
-    womanName: "Contemporary Silhouettes & Ethnic Grace",
-    title: "Contemporary Silhouettes & Ethnic Grace",
-    headline: "Contemporary Silhouettes & Ethnic Grace",
-    date: "2026-10-25",
-    displayDate: "October 25, 2026",
-    venue: "Mumbai Fashion Week / Screenlady Studios",
-    photo: "assets/images/magazine-photos/5.1.jpg",
-    infoSummary: "Exclusive designer wear and high-gloss fashion spreads from our published magazine pages, bringing together artisanal weaves with modern couture.",
-    fullInfo: `<p>Accolade Screenlady's creative fashion desk presents an exclusive visual chronicle celebrating the confluence of traditional handlooms and modern haute couture.</p>
-    <p>Featuring handpicked ensembles from Maharashtra's premier textile artisans, the spread captures delicate Paithani silks, contemporary drapery, and minimalist styling tailored for the discerning modern woman.</p>
-    <blockquote style="margin: 1.5rem 0; padding: 1.25rem 1.75rem; border-left: 3px solid var(--gold-primary); background: rgba(212, 175, 55, 0.05); font-style: italic; color: var(--gold-light);">
-      "Fashion is the living canvas of a woman's confidence, culture, and sovereign identity." — Accolade Screenlady Fashion Desk
-    </blockquote>
-    <p>The feature highlights sustainable production cycles, ethical sourcing, and women artisans driving India's handloom renaissance.</p>`,
-    tags: ["Fashion", "Haute Couture", "Lifestyle", "Paithani", "Ethnic Grace"],
-    timestamp: 1792939200000
-  },
-  {
-    id: "fashion-jewel-2",
-    type: "photo-info",
-    curatedSection: "fashion_lifestyle",
-    category: "Fashion & Lifestyle",
-    categoryBadge: "✦ ✨ Royal Adornments",
-    womanName: "Timeless Jewellery for the Modern Era",
-    title: "Timeless Jewellery for the Modern Era",
-    headline: "Timeless Jewellery for the Modern Era",
-    date: "2026-10-22",
-    displayDate: "October 22, 2026",
-    venue: "Heritage Jewellery Conclave, Pune",
-    photo: "assets/images/magazine-photos/5.2.jpg",
-    infoSummary: "Intricate patterns and festive adornments that highlight the timeless beauty of Indian traditions, temple motifs, and bridal heirlooms.",
-    fullInfo: `<p>A celebration of enduring regal craftsmanship, this special feature showcases heritage jewellery traditions preserved by master silversmiths and goldsmiths across Western India.</p>
-    <p>From Kolhapuri saaj to intricate filigree choker sets and uncut polki masterpieces, the showcase documents the historical symbolism embedded within classical adornment.</p>
-    <blockquote style="margin: 1.5rem 0; padding: 1.25rem 1.75rem; border-left: 3px solid var(--gold-primary); background: rgba(212, 175, 55, 0.05); font-style: italic; color: var(--gold-light);">
-      "Every handcrafted jewel carries forward the resilience and regal dignity of generations of Indian women."
-    </blockquote>
-    <p>Curated alongside practical styling guides for festive occasions, boardroom gatherings, and wedding seasons.</p>`,
-    tags: ["Jewellery", "Heritage", "Adornments", "Bridal", "Lifestyle"],
-    timestamp: 1792680000000
-  },
-  {
-    id: "fashion-well-3",
-    type: "photo-info",
-    curatedSection: "fashion_lifestyle",
-    category: "Fashion & Lifestyle",
-    categoryBadge: "✦ 🌿 Wellness & Living",
-    womanName: "Holistic Wellness & Modern Balance",
-    title: "Holistic Wellness & Modern Balance",
-    headline: "Holistic Wellness & Modern Balance",
-    date: "2026-10-18",
-    displayDate: "October 18, 2026",
-    venue: "Holistic Health Summit, Navi Mumbai",
-    photo: "assets/images/magazine-photos/5.3.jpg",
-    infoSummary: "Navigating lifestyle, mental well-being, financial independence, and personal growth for modern women balancing ambition and serenity.",
-    fullInfo: `<p>In our fast-paced modern world, wellness extends far beyond physical fitness — encompassing mental tranquility, emotional resilience, mindful living, and financial autonomy.</p>
-    <p>Accolade Screenlady speaks with wellness coaches, holistic medical practitioners, and lifestyle mentors to compile an empowering daily blueprint for healthy living.</p>
-    <blockquote style="margin: 1.5rem 0; padding: 1.25rem 1.75rem; border-left: 3px solid var(--gold-primary); background: rgba(212, 175, 55, 0.05); font-style: italic; color: var(--gold-light);">
-      "True balance begins when a woman honors her own well-being with the same passion she dedicates to her career and family."
-    </blockquote>
-    <p>Featuring mindfulness practices, nutritional advice tailored for active lifestyles, and stress management routines.</p>`,
-    tags: ["Wellness", "Lifestyle", "Mindfulness", "Balance", "Health"],
-    timestamp: 1792334400000
-  }
-];
+// Official Screenlady Team Updates: Fetched dynamically from Cloudflare D1 Backend
+const DEFAULT_SCREENLADY_UPDATES = [];
 
 // Photo Presets for quick selection across team members and events
 const PHOTO_PRESETS = [
@@ -408,6 +142,22 @@ function initUpdatesManager() {
 
   renderUpdates('all');
   initUpdatesToolbar();
+
+  // Async sync with Cloudflare Worker Backend once on load:
+  async function syncUpdatesFromBackend() {
+    if (!window.ScreenladyAPI) return;
+    try {
+      const liveData = typeof window.ScreenladyAPI.getUpdates === 'function' ? await window.ScreenladyAPI.getUpdates() : [];
+      if (Array.isArray(liveData)) {
+        window.backendLiveUpdates = liveData;
+        renderUpdates(activeUpdatesFilter || 'all');
+      }
+    } catch (e) {
+      console.warn('[Screenlady Updates] Backend sync notice:', e.message);
+    }
+  }
+
+  syncUpdatesFromBackend();
 
   // If a hash exists in URL, scroll to it and open the reader modal
   const hash = window.location.hash.replace('#', '');
@@ -482,13 +232,32 @@ function getAllUpdates() {
     if (rawFashion) customFashion = JSON.parse(rawFashion);
   } catch (e) {}
 
+  let customFilmy = [];
+  try {
+    const rawFilmy = localStorage.getItem('screenlady_custom_filmy');
+    if (rawFilmy) customFilmy = JSON.parse(rawFilmy);
+  } catch (e) {}
+
+  let customBizz = [];
+  try {
+    const rawBizz = localStorage.getItem('screenlady_custom_bizz');
+    if (rawBizz) customBizz = JSON.parse(rawBizz);
+  } catch (e) {}
+
+  let customInspiration = [];
+  try {
+    const rawInspiration = localStorage.getItem('screenlady_custom_inspiration');
+    if (rawInspiration) customInspiration = JSON.parse(rawInspiration);
+  } catch (e) {}
+
   const deletedIds = (typeof window.getScreenladyDeletedIds === 'function') 
     ? window.getScreenladyDeletedIds() 
     : (() => { try { const r = localStorage.getItem('screenlady_deleted_ids'); return r ? JSON.parse(r) : []; } catch(e){ return []; } })();
 
+  const backendItems = window.backendLiveUpdates || [];
   const seenIds = new Set();
   const deduped = [];
-  for (const item of [...custom, ...customNews, ...customFashion, ...DEFAULT_SCREENLADY_UPDATES]) {
+  for (const item of [...custom, ...customNews, ...customFashion, ...customFilmy, ...customBizz, ...customInspiration, ...backendItems, ...DEFAULT_SCREENLADY_UPDATES]) {
     if (item && item.id && !seenIds.has(item.id)) {
       seenIds.add(item.id);
       deduped.push(item);

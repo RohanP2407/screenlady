@@ -6,32 +6,69 @@
 const SCREENLADY_API_BASE = (function() {
   if (typeof window !== 'undefined') {
     if (window.SCREENLADY_API_URL) return window.SCREENLADY_API_URL;
+    const stored = localStorage.getItem('screenlady_api_url');
+    if (stored) return stored;
+    // When running locally on localhost, default to local wrangler dev server if port 8787 is used
+    if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+      // By default use local backend if developing locally, or set localStorage.setItem('screenlady_api_url', '...')
+      if (window.location.search.includes('api=remote')) {
+        return 'https://screenlady-backend.patilrohan2407.workers.dev';
+      }
+      if (window.location.search.includes('api=local')) {
+        return 'http://localhost:8787';
+      }
+    }
   }
   return 'https://screenlady-backend.patilrohan2407.workers.dev';
 })();
 
+// Request deduplication & short-TTL cache (prevents duplicate bursts to backend)
+const _requestCache = new Map();
+
+function cachedGet(endpoint, ttlMs = 20000) {
+  const now = Date.now();
+  if (_requestCache.has(endpoint)) {
+    const entry = _requestCache.get(endpoint);
+    if (now - entry.time < ttlMs) {
+      return entry.promise;
+    }
+  }
+  const promise = (async () => {
+    const res = await fetch(`${SCREENLADY_API_BASE}${endpoint}`);
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    return await res.json();
+  })().catch(err => {
+    _requestCache.delete(endpoint);
+    throw err;
+  });
+
+  _requestCache.set(endpoint, { time: now, promise });
+  return promise;
+}
+
+function clearApiCache() {
+  _requestCache.clear();
+}
+
 window.ScreenladyAPI = {
   baseUrl: SCREENLADY_API_BASE,
+  clearCache: clearApiCache,
 
   // Fetch real-time live news and updates
   async getUpdates() {
     try {
-      const res = await fetch(`${SCREENLADY_API_BASE}/api/updates`);
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      const json = await res.json();
+      const json = await cachedGet('/api/updates');
       return json.data || [];
     } catch (err) {
-      console.warn('[Screenlady API] Using fallback updates data:', err.message);
-      return null;
+      console.warn('[Screenlady API] Notice fetching updates:', err.message);
+      return [];
     }
   },
 
   // Fetch dedicated real-time homepage news
   async getNews() {
     try {
-      const res = await fetch(`${SCREENLADY_API_BASE}/api/news`);
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      const json = await res.json();
+      const json = await cachedGet('/api/news');
       return json.data || [];
     } catch (err) {
       return this.getUpdates();
@@ -41,9 +78,7 @@ window.ScreenladyAPI = {
   // Fetch globally deleted item IDs
   async getDeletedIds() {
     try {
-      const res = await fetch(`${SCREENLADY_API_BASE}/api/deleted-ids`);
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      const json = await res.json();
+      const json = await cachedGet('/api/deleted-ids');
       return json.deletedIds || [];
     } catch (err) {
       return [];
@@ -53,51 +88,43 @@ window.ScreenladyAPI = {
   // Fetch in-depth editorial writings
   async getEditorials() {
     try {
-      const res = await fetch(`${SCREENLADY_API_BASE}/api/editorials`);
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      const json = await res.json();
+      const json = await cachedGet('/api/editorials');
       return json.data || [];
     } catch (err) {
-      console.warn('[Screenlady API] Using fallback editorials data:', err.message);
-      return null;
+      console.warn('[Screenlady API] Notice fetching editorials:', err.message);
+      return [];
     }
   },
 
   // Fetch event photo gallery
   async getPhotos() {
     try {
-      const res = await fetch(`${SCREENLADY_API_BASE}/api/photos`);
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      const json = await res.json();
+      const json = await cachedGet('/api/photos');
       return json.data || [];
     } catch (err) {
-      console.warn('[Screenlady API] Using fallback photos data:', err.message);
-      return null;
+      console.warn('[Screenlady API] Notice fetching photos:', err.message);
+      return [];
     }
   },
 
   // Fetch podcast episodes
   async getPodcasts() {
     try {
-      const res = await fetch(`${SCREENLADY_API_BASE}/api/podcast`);
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      const json = await res.json();
+      const json = await cachedGet('/api/podcast');
       return json.data || [];
     } catch (err) {
-      console.warn('[Screenlady API] Using fallback podcast data:', err.message);
-      return null;
+      console.warn('[Screenlady API] Notice fetching podcast:', err.message);
+      return [];
     }
   },
 
   // Fetch active magazine issue settings & spreads
   async getMagazineSettings() {
     try {
-      const res = await fetch(`${SCREENLADY_API_BASE}/api/magazine`);
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      const json = await res.json();
+      const json = await cachedGet('/api/magazine');
       return json.data || null;
     } catch (err) {
-      console.warn('[Screenlady API] Using fallback magazine data:', err.message);
+      console.warn('[Screenlady API] Notice fetching magazine settings:', err.message);
       return null;
     }
   },
@@ -153,6 +180,7 @@ window.ScreenladyAPI = {
 
   // Publish or edit item across sections (Editorials, Updates, News, Photos, Podcast)
   async publishItem(section, item, adminPin) {
+    clearApiCache();
     const pin = adminPin || (typeof getSavedPin === 'function' ? getSavedPin() : localStorage.getItem('screenlady_admin_pin')) || 'screenlady2026';
     try {
       const res = await fetch(`${SCREENLADY_API_BASE}/api/publish`, {
@@ -174,6 +202,7 @@ window.ScreenladyAPI = {
 
   // Delete item from backend feed
   async deleteItem(section, id, adminPin) {
+    clearApiCache();
     const pin = adminPin || (typeof getSavedPin === 'function' ? getSavedPin() : localStorage.getItem('screenlady_admin_pin')) || 'screenlady2026';
     try {
       const res = await fetch(`${SCREENLADY_API_BASE}/api/delete`, {

@@ -95,19 +95,14 @@ let activePhotoFilter = 'all';
 function initPhotosFeed() {
   renderPhotosFeed();
 
-  // Async sync with Cloudflare Worker Backend:
+  // Async sync with Cloudflare Worker Backend once on load:
   if (window.ScreenladyAPI && typeof window.ScreenladyAPI.getPhotos === 'function') {
-    const syncPhotos = () => {
-      window.ScreenladyAPI.getPhotos().then(liveData => {
-        if (Array.isArray(liveData)) {
-          window.backendLivePhotos = liveData;
-          renderPhotosFeed();
-        }
-      }).catch(() => {});
-    };
-    syncPhotos();
-    setInterval(syncPhotos, 8000);
-    window.addEventListener('focus', syncPhotos);
+    window.ScreenladyAPI.getPhotos().then(liveData => {
+      if (Array.isArray(liveData)) {
+        window.backendLivePhotos = liveData;
+        renderPhotosFeed();
+      }
+    }).catch(() => {});
   }
 }
 
