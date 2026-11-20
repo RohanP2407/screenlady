@@ -624,22 +624,13 @@
   async function syncFromBackend() {
     if (!window.ScreenladyAPI) return;
     try {
-      const [liveUpdates, liveNews, livePhotos, deletedIds] = await Promise.all([
+      const [liveUpdates, livePhotos] = await Promise.all([
         typeof window.ScreenladyAPI.getUpdates === 'function' ? window.ScreenladyAPI.getUpdates() : Promise.resolve([]),
-        typeof window.ScreenladyAPI.getNews === 'function' ? window.ScreenladyAPI.getNews() : Promise.resolve([]),
-        typeof window.ScreenladyAPI.getPhotos === 'function' ? window.ScreenladyAPI.getPhotos() : Promise.resolve([]),
-        typeof window.ScreenladyAPI.getDeletedIds === 'function' ? window.ScreenladyAPI.getDeletedIds() : Promise.resolve([])
+        typeof window.ScreenladyAPI.getPhotos === 'function' ? window.ScreenladyAPI.getPhotos() : Promise.resolve([])
       ]);
 
-      if (deletedIds && Array.isArray(deletedIds)) {
-        window.backendDeletedIds = deletedIds;
-      }
       if (liveUpdates && Array.isArray(liveUpdates)) {
         window.backendLiveUpdates = liveUpdates;
-      }
-      if (liveNews && Array.isArray(liveNews) && liveNews.length > 0) {
-        window.backendLiveNews = liveNews;
-      } else if (liveUpdates && Array.isArray(liveUpdates) && liveUpdates.length > 0) {
         window.backendLiveNews = liveUpdates;
       }
       if (livePhotos && Array.isArray(livePhotos) && livePhotos.length > 0) {
@@ -659,11 +650,8 @@
     renderPhotoSlideshow();
     renderCuratedSections();
 
-    // Async sync with Cloudflare Worker Backend immediately
+    // Fetch once on page load
     syncFromBackend();
-
-    // Periodic live sync every 6 seconds so changes made in admin reflect automatically
-    setInterval(syncFromBackend, 6000);
 
     // Re-render when Editorial Desk publishes or modifies news, updates, fashion, or home photos
     window.addEventListener('storage', (e) => {
@@ -674,11 +662,6 @@
       if (e.key === 'screenlady_custom_home_photos') {
         renderPhotoSlideshow();
       }
-    });
-
-    // Also re-render and re-fetch immediately when the user switches tabs back to the homepage
-    window.addEventListener('focus', () => {
-      syncFromBackend();
     });
   }
 

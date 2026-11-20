@@ -432,14 +432,7 @@ window.toggleInlineEditorial = function(id) {
 async function syncEditorialsFromBackend() {
   if (!window.ScreenladyAPI) return;
   try {
-    const [liveData, deletedIds] = await Promise.all([
-      typeof window.ScreenladyAPI.getEditorials === 'function' ? window.ScreenladyAPI.getEditorials() : Promise.resolve([]),
-      typeof window.ScreenladyAPI.getDeletedIds === 'function' ? window.ScreenladyAPI.getDeletedIds() : Promise.resolve([])
-    ]);
-
-    if (deletedIds && Array.isArray(deletedIds)) {
-      window.backendDeletedIds = deletedIds;
-    }
+    const liveData = typeof window.ScreenladyAPI.getEditorials === 'function' ? await window.ScreenladyAPI.getEditorials() : [];
     if (Array.isArray(liveData)) {
       window.backendLiveEditorials = liveData;
       renderEditorials('all');
@@ -455,13 +448,8 @@ function initEditorialsPage() {
   renderEditorials('all');
   renderQuickJumpBar();
 
-  // Async sync with Cloudflare Worker Backend:
+  // Async sync with Cloudflare Worker Backend once on load:
   syncEditorialsFromBackend();
-  setInterval(syncEditorialsFromBackend, 8000);
-
-  window.addEventListener('focus', () => {
-    syncEditorialsFromBackend();
-  });
 
   // Filter Buttons
   const filterBtns = document.querySelectorAll('.editorials-filter-btn, .editorial-filter-btn');

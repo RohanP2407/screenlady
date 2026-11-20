@@ -25,247 +25,27 @@
   }
 
   /* ==========================================================================
-     1. DEFAULT DATA REGISTRIES (All News & Chronicles in Strict Chronological Order)
+     1. DATA REGISTRIES (Loaded dynamically from Cloudflare D1 Database)
      ========================================================================== */
-  const DEFAULT_LATEST_NEWS = [
-    // --- PAGE 1: LATEST NEWS (Current Dispatches) ---
-    {
-      id: "update-ramayana-1",
-      category: "Movie Talk",
-      categoryBadge: "🎬 Movie Talk",
-      date: "November 15, 2026",
-      title: "Ramayana Makes a Strong Mark at the Box Office! Audiences Give an Enthusiastic Response",
-      summary: "Director Nitesh Tiwari’s epic spectacle with Ranbir Kapoor, Sai Pallavi, and Yash crosses ₹819.50 Cr India net in its opening week.",
-      photo: "assets/images/news/ramayana.jpeg",
-      link: "updates.html#update-ramayana-1"
-    },
-    {
-      id: "update-sindhutai-1",
-      category: "Tribute",
-      categoryBadge: "👑 Tribute",
-      date: "November 14, 2026",
-      title: "Birth Anniversary of Sindhutai Sapkal, the Mother of Orphans – A Loving Shelter for Thousands of Children!",
-      summary: "Remembering Padma Shri Sindhutai Sapkal ('Mai'), who overcame boundless hardships to give shelter, love, and education to thousands.",
-      photo: "assets/images/news/sindhutai-sapkal.jpeg",
-      link: "updates.html#update-sindhutai-1"
-    },
-    {
-      id: "update-boxoffice-1",
-      category: "Entertainment",
-      categoryBadge: "🍿 Entertainment",
-      date: "November 13, 2026",
-      title: "A Treat for Movie Lovers! Big-Budget Films Set to Hit the Box Office in the Second Half of November",
-      summary: "Exciting box-office clashes slated for November 20 & 27 starring Amitabh Bachchan, Jackie Shroff, Ayushmann Khurrana, Sharvari, and Rashmika Mandanna.",
-      photo: "assets/images/news/films-box-office.jpeg",
-      link: "updates.html#update-boxoffice-1"
-    },
-    {
-      id: "update-jalsa-threat-1",
-      category: "City Alert",
-      categoryBadge: "🚨 City Alert",
-      date: "November 12, 2026",
-      title: "Bomb Threat Once Again Targets Amitabh Bachchan’s Jalsa Bungalow; Security Agencies on High Alert in Mumbai!",
-      summary: "Mumbai Police and security agencies reinforce round-the-clock surveillance around Jalsa and key transit nodes following a fresh email threat.",
-      photo: "assets/images/news/amitabh-bachchan.jpeg",
-      link: "updates.html#update-jalsa-threat-1"
-    },
-
-    // --- PAGE 2: PREVIOUS NEWS (Earlier Chronicles) ---
-    {
-      id: "update-meeting-1",
-      category: "Meetings",
-      categoryBadge: "🤝 Meetings",
-      date: "November 6, 2026",
-      title: "Executive Editorial & Publishing Board Meeting Led by Founder Mr. Prashant Sagvekar",
-      summary: "Strategic conclave on statewide print circulation, reader outreach across Maharashtra, and upcoming commissions.",
-      photo: "assets/images/team/prashant-sagvekar.jpeg",
-      link: "updates.html#update-meeting-1"
-    },
-    {
-      id: "update-awards-1",
-      category: "Awards",
-      categoryBadge: "🏆 Awards",
-      date: "November 4, 2026",
-      title: "Accolade Screenlady 'Women of Distinction' Annual Honors Announced",
-      summary: "Official guidelines and jury nominations unveiled honoring courage, leadership, and grassroots impact across 12 categories.",
-      photo: "assets/images/magazine-photos/4.2.jpg",
-      link: "updates.html#update-awards-1"
-    },
-    {
-      id: "update-movietalk-1",
-      category: "Movie Talk",
-      categoryBadge: "🎬 Movie Talk",
-      date: "November 1, 2026",
-      title: "Cinema Exclusive: Behind-the-Scenes Photo Session & Dialogue with Actresses",
-      summary: "Candid discussions on authentic acting journeys and women-led storytelling in contemporary Marathi cinema.",
-      photo: "assets/images/magazine-photos/3.1.jpg",
-      link: "updates.html#update-movietalk-1"
-    },
-    {
-      id: "update-meetgreet-1",
-      category: "Meet & Greet",
-      categoryBadge: "👥 Meet & Greet",
-      date: "October 28, 2026",
-      title: "Screenlady Reader & Women Entrepreneurs Meet & Greet Conclave in Pune",
-      summary: "Interactive dialogue at JW Marriott on enterprise resilience, small-business growth, and women's self-reliance.",
-      photo: "assets/images/magazine-photos/4.1.jpg",
-      link: "updates.html#update-meetgreet-1"
-    },
-
-    // --- PAGE 3: OLDER ARCHIVES ---
-    {
-      id: "update-events-1",
-      category: "Events",
-      categoryBadge: "🌟 Events",
-      date: "October 20, 2026",
-      title: "Official Launch of Tantuh Handcrafted Jewellery Strategic Brand Partnership",
-      summary: "Grand celebration of indigenous artisanal craftsmanship and luxury publishing partnership at The St. Regis.",
-      photo: "assets/images/articles/article-1.jpg",
-      link: "updates.html#update-events-1"
-    },
-    {
-      id: "update-bodyshaming-1",
-      category: "Special Report",
-      categoryBadge: "✒️ Special Report",
-      date: "October 12, 2026",
-      title: "Body Shaming and Women: A Mindset Needing Urgent Change — Special Investigation",
-      summary: "An in-depth investigative feature addressing toxic aesthetic standards and reclaiming dignity and self-worth.",
-      photo: "assets/images/articles/article-2.jpg",
-      link: "editorials.html#editorial-bodyshaming-1"
-    },
-    {
-      id: "update-literature-1",
-      category: "Culture",
-      categoryBadge: "📚 Culture",
-      date: "October 5, 2026",
-      title: "Women in Marathi Literature: Voices of Courage, Reform & Poetic Expression",
-      summary: "A tribute to pioneering female Marathi authors who shaped feminist literary traditions and social reform.",
-      photo: "assets/images/magazine-photos/2.1.jpg",
-      link: "updates.html#update-literature-1"
-    },
-    {
-      id: "update-convention-1",
-      category: "Summits",
-      categoryBadge: "🏛️ Summits",
-      date: "September 28, 2026",
-      title: "Maharashtra Women Cultural Guild Annual Convention Convenes in Mumbai",
-      summary: "Over 500 women leaders, artists, and educators deliberate on grassroots cultural preservation and media.",
-      photo: "assets/images/magazine-photos/1.1.jpg",
-      link: "updates.html#update-convention-1"
-    }
-  ];
-
-  const DEFAULT_SLIDESHOW_PHOTOS = [
-    {
-      id: "photo-ramayana-1",
-      category: "Cinema & Box Office",
-      badge: "🎬 Blockbuster News",
-      title: "Ramayana: Rise of a Legend — Monumental Box Office Triumph",
-      location: "Nationwide Theatres, India",
-      date: "November 15, 2026",
-      photo: "assets/images/news/ramayana.jpeg",
-      link: "updates.html#update-ramayana-1"
-    },
-    {
-      id: "photo-sindhutai-1",
-      category: "Tribute & Inspiration",
-      badge: "👑 Mother of Orphans",
-      title: "Birth Anniversary of Padma Shri Sindhutai Sapkal ('Mai')",
-      location: "Navi Mumbai, Maharashtra",
-      date: "November 14, 2026",
-      photo: "assets/images/news/sindhutai-sapkal.jpeg",
-      link: "updates.html#update-sindhutai-1"
-    },
-    {
-      id: "photo-boxoffice-1",
-      category: "Cinema & Entertainment",
-      badge: "🍿 November Clashes",
-      title: "Big-Budget Films Set to Hit Box Office in Late November",
-      location: "Bollywood Bureau, Mumbai",
-      date: "November 13, 2026",
-      photo: "assets/images/news/films-box-office.jpeg",
-      link: "updates.html#update-boxoffice-1"
-    },
-    {
-      id: "photo-jalsa-1",
-      category: "City & National Dispatch",
-      badge: "🚨 Mumbai Alert",
-      title: "High Alert Around Amitabh Bachchan's Jalsa Residence",
-      location: "Juhu, Mumbai",
-      date: "November 12, 2026",
-      photo: "assets/images/news/amitabh-bachchan.jpeg",
-      link: "updates.html#update-jalsa-threat-1"
-    },
-    {
-      id: "photo-tantuh-1",
-      category: "Heritage & Craftsmanship",
-      badge: "🏛️ Heritage",
-      title: "Tantuh: Celebrating Indian Heritage Through Handcrafted Jewellery",
-      location: "Screenlady Studios, Mumbai",
-      date: "October 15, 2026",
-      photo: "assets/images/articles/article-1.jpg",
-      link: "photos.html#photo-tantuh-1"
-    },
-    {
-      id: "photo-cinema-1",
-      category: "Cinema & Studio",
-      badge: "🎬 Cinema & Studio",
-      title: "Exclusive Studio Photo Session with Marathi Film Actresses",
-      location: "Film City Studios, Mumbai",
-      date: "November 1, 2026",
-      photo: "assets/images/magazine-photos/3.1.jpg",
-      link: "photos.html#photo-cinema-1"
-    },
-    {
-      id: "photo-meetgreet-1",
-      category: "Meet & Greet",
-      badge: "👥 Meet & Greet",
-      title: "Screenlady Reader & Women Entrepreneurs Conclave in Pune",
-      location: "JW Marriott, Pune",
-      date: "October 28, 2026",
-      photo: "assets/images/magazine-photos/4.1.jpg",
-      link: "photos.html#photo-meetgreet-1"
-    },
-    {
-      id: "photo-awards-1",
-      category: "Awards & Honors",
-      badge: "🏆 Annual Honors",
-      title: "Accolade Screenlady Women of Distinction Honors Announced",
-      location: "Cultural Foundation, Mumbai",
-      date: "November 4, 2026",
-      photo: "assets/images/magazine-photos/4.2.jpg",
-      link: "photos.html#photo-awards-1"
-    },
-    {
-      id: "photo-bodyshaming-1",
-      category: "Social Commentary",
-      badge: "✒️ Special Investigation",
-      title: "Body Shaming and Women: A Mindset Needing Urgent Change",
-      location: "Screenlady Editorial Bureau, Mumbai",
-      date: "November 5, 2026",
-      photo: "assets/images/articles/article-2.jpg",
-      link: "photos.html#photo-bodyshaming-1"
-    },
-    {
-      id: "photo-board-1",
-      category: "Executive Leadership",
-      badge: "👑 Leadership Board",
-      title: "Executive Editorial & Publishing Board Meeting Led by Founder Mr. Prashant Sagvekar",
-      location: "Publishing Headquarters, Mumbai",
-      date: "November 6, 2026",
-      photo: "assets/images/team/prashant-sagvekar.jpeg",
-      link: "updates.html#update-meeting-1"
-    }
-  ];
+  const DEFAULT_LATEST_NEWS = [];
+  const DEFAULT_SLIDESHOW_PHOTOS = [];
 
   /* ==========================================================================
-     2. RETRIEVE ALL SORTED NEWS (Only News Displays on Homepage Screenlady Updates)
+     2. RETRIEVE ALL SORTED NEWS (Screenlady Updates Left Column)
      ========================================================================== */
+  function isCuratedSubSection(item) {
+    if (!item) return false;
+    return item.curatedSection === 'filmy_adda' ||
+           item.curatedSection === 'bizz_world' ||
+           item.curatedSection === 'women_inspiration' ||
+           item.curatedSection === 'fashion_lifestyle';
+  }
+
   function getAllNews() {
     try {
-      const deletedIds = (typeof window.getScreenladyDeletedIds === 'function') 
-        ? window.getScreenladyDeletedIds() 
-        : (() => { try { const r = localStorage.getItem('screenlady_deleted_ids'); return r ? JSON.parse(r) : []; } catch(e){ return []; } })();
+      const localDeleted = (() => { try { const r = localStorage.getItem('screenlady_deleted_ids'); return r ? JSON.parse(r) : []; } catch(e){ return []; } })();
+      const backendDeleted = window.backendDeletedIds || [];
+      const deletedIds = Array.from(new Set([...localDeleted, ...backendDeleted]));
 
       // Dedicated homepage live news from Editorial Desk
       let customNews = [];
@@ -274,39 +54,64 @@
         customNews = JSON.parse(rawNews);
       }
 
-      // Also support news posted via updates marked as type 'news'
-      const rawUpdates = localStorage.getItem('screenlady_custom_updates');
-      if (rawUpdates) {
-        try {
-          const parsed = JSON.parse(rawUpdates);
-          const taggedNews = parsed.filter(u => u && (u.type === 'news' || u.isHomepageNews));
-          for (const item of taggedNews) {
-            if (!customNews.some(n => n.id === item.id)) {
-              customNews.push(item);
-            }
-          }
-        } catch(e) {}
+      // Live backend worker news (news and updates not reserved for curated showcases)
+      const backendNews = (window.backendLiveNews || []).filter(n => n && !isCuratedSubSection(n));
+
+      // Deduplicate strictly by ID
+      const seenIds = new Set();
+      const dedupedNews = [];
+
+      // 1st Priority: Custom user news from admin desk
+      for (const item of customNews) {
+        if (item && item.id && !seenIds.has(item.id) && !deletedIds.includes(item.id)) {
+          seenIds.add(item.id);
+          dedupedNews.push({ ...item, isCustom: true });
+        }
       }
 
-      // Combine custom news and default news (Filtered by deletedIds)
-      const combined = [...customNews, ...DEFAULT_LATEST_NEWS].filter(item => item && !deletedIds.includes(item.id));
+      // 2nd Priority: Live backend worker news
+      for (const item of backendNews) {
+        if (item && item.id && !seenIds.has(item.id) && !deletedIds.includes(item.id)) {
+          seenIds.add(item.id);
+          const isCustom = Boolean(item.isCustom || (item.id && (item.id.includes('custom') || item.id.startsWith('news-'))));
+          dedupedNews.push({ ...item, isCustom });
+        }
+      }
 
-      // Strictly sort descending by date / timestamp
-      combined.sort((a, b) => {
-        const dateA = new Date(a.date || a.displayDate || 0).getTime() || a.timestamp || 0;
-        const dateB = new Date(b.date || b.displayDate || 0).getTime() || b.timestamp || 0;
-        return dateB - dateA;
+      // 3rd Priority: Default seed news (only if not already added)
+      for (const item of DEFAULT_LATEST_NEWS) {
+        if (item && item.id && !seenIds.has(item.id) && !deletedIds.includes(item.id)) {
+          seenIds.add(item.id);
+          dedupedNews.push(item);
+        }
+      }
+
+      // Strictly sort: newly published custom items ALWAYS lead at #1, sorted latest first
+      dedupedNews.sort((a, b) => {
+        const isCustomA = Boolean(a.isCustom || (a.id && (a.id.includes('custom') || a.id.startsWith('news-'))));
+        const isCustomB = Boolean(b.isCustom || (b.id && (b.id.includes('custom') || b.id.startsWith('news-'))));
+        if (isCustomA && !isCustomB) return -1;
+        if (!isCustomA && isCustomB) return 1;
+
+        const timeA = Number(a.timestamp) || new Date(a.date || a.displayDate || 0).getTime() || 0;
+        const timeB = Number(b.timestamp) || new Date(b.date || b.displayDate || 0).getTime() || 0;
+        return timeB - timeA;
       });
 
-      return combined.map(item => ({
+      return dedupedNews.map(item => ({
         id: item.id,
         category: item.category || 'Updates',
         categoryBadge: item.categoryBadge || (item.category ? `✦ ${item.category}` : '✦ News'),
         date: item.displayDate || item.date || 'Recent',
         title: item.title || item.headline || 'Screenlady Update',
         summary: item.summary || item.infoSummary || 'Latest dispatch from Accolade Screenlady leadership and editorial council.',
-        photo: item.photo || 'assets/images/news/ramayana.jpeg',
-        link: item.link || `updates.html#${item.id}`
+        fullInfo: item.fullInfo || item.fullBody || item.summary || '',
+        fullBody: item.fullBody || item.fullInfo || item.summary || '',
+        photo: item.photo || 'https://ik.imagekit.io/acooladescreenlady/screenlady/news/ramayana_MHoDF4dFm.jpeg',
+        link: 'javascript:void(0)',
+        isHomepageNews: true,
+        isCustom: item.isCustom,
+        timestamp: item.timestamp
       }));
     } catch (e) {
       console.warn('Error loading news list:', e);
@@ -330,7 +135,29 @@
         customHomePhotos = JSON.parse(rawHomePhotos);
       }
 
-      const combined = [...customHomePhotos, ...DEFAULT_SLIDESHOW_PHOTOS].filter(item => item && !deletedIds.includes(item.id));
+      const backendPhotos = window.backendLivePhotos || [];
+
+      // Preload current news items into the slideshow so every news story has an instant slide
+      const allNews = (typeof getAllNews === 'function') ? getAllNews() : [];
+      const newsSlides = allNews.map(n => ({
+        id: `slide-news-${n.id}`,
+        newsId: n.id,
+        isNews: true,
+        category: n.category || 'Live News',
+        badge: n.categoryBadge || (n.category ? `✦ ${n.category}` : '⚡ Live News'),
+        title: n.title || 'Screenlady Update',
+        location: n.venue || 'Screenlady News Desk, Mumbai',
+        date: n.date || 'Recent',
+        photo: n.photo,
+        link: 'javascript:void(0)'
+      }));
+
+      const combined = [
+        ...newsSlides,
+        ...customHomePhotos,
+        ...backendPhotos,
+        ...DEFAULT_SLIDESHOW_PHOTOS
+      ].filter(item => item && item.photo && !deletedIds.includes(item.id) && !deletedIds.includes(item.newsId));
 
       // Dedup by photo src
       const seen = new Set();
@@ -341,18 +168,20 @@
           seen.add(p.photo);
           deduped.push({
             id: p.id || 'photo-' + deduped.length,
+            newsId: p.newsId || null,
+            isNews: Boolean(p.isNews),
             category: p.category || 'Gallery',
             badge: p.badge || `✦ ${p.category || 'Featured'}`,
             title: p.title || p.caption || 'Accolade Screenlady Photograph',
             location: p.venue || p.location || 'Mumbai, India',
             date: p.displayDate || p.date || '2026',
             photo: p.photo,
-            link: p.link || `photos.html#${p.id || ''}`
+            link: p.isNews ? 'javascript:void(0)' : (p.link || `/photos#${p.id || ''}`)
           });
         }
       }
 
-      return deduped.length > 0 ? deduped.slice(0, 12) : DEFAULT_SLIDESHOW_PHOTOS;
+      return deduped.length > 0 ? deduped.slice(0, 16) : DEFAULT_SLIDESHOW_PHOTOS;
     } catch (e) {
       console.warn('Error loading slideshow photos:', e);
       return DEFAULT_SLIDESHOW_PHOTOS;
@@ -392,18 +221,18 @@
       const overallIndex = startIndex + index + 1;
       const isActive = index === 0 ? 'active' : '';
       return `
-        <a href="${item.link}" class="home-news-h-card ${isActive}" data-page-idx="${index}" data-photo="${item.photo}" id="homeNewsCard-${index}" title="${item.title}">
+        <a href="javascript:void(0)" class="home-news-h-card ${isActive}" data-page-idx="${index}" data-photo="${item.photo}" data-news-id="${item.id}" id="homeNewsCard-${index}" title="${escapeHtml(item.title)}" onclick="if(window.openHomeNewsReader){ window.openHomeNewsReader('${item.id}'); return false; }">
           <div class="home-news-h-thumb-wrap">
-            <img src="${item.photo}" alt="${item.title}" class="home-news-h-thumb" loading="lazy">
+            <img src="${item.photo}" alt="${escapeHtml(item.title)}" class="home-news-h-thumb" loading="lazy">
             <div class="home-news-h-badge-overlay">${overallIndex}</div>
           </div>
           <div class="home-news-h-content">
             <div class="home-news-h-meta">
-              <span class="home-news-h-cat">${item.categoryBadge || item.category}</span>
-              <span class="home-news-h-date">📅 ${item.date}</span>
+              <span class="home-news-h-cat">${escapeHtml(item.categoryBadge || item.category)}</span>
+              <span class="home-news-h-date">📅 ${escapeHtml(item.date)}</span>
             </div>
-            <h3 class="home-news-h-title">${item.title}</h3>
-            <p class="home-news-h-desc">${item.summary}</p>
+            <h3 class="home-news-h-title">${escapeHtml(item.title)}</h3>
+            <p class="home-news-h-desc">${escapeHtml(item.summary)}</p>
           </div>
           <div class="home-news-h-progress" id="homeNewsProgress-${index}"></div>
         </a>
@@ -416,16 +245,25 @@
       card.addEventListener('mouseenter', () => {
         newsIsPaused = true;
         setHighlightedNewsCard(idx);
-        syncSlideshowWithNewsPhoto(pageItems[idx]);
+        syncSlideshowWithNewsItem(pageItems[idx]);
       });
       card.addEventListener('mouseleave', () => {
         newsIsPaused = false;
+      });
+      card.addEventListener('click', (e) => {
+        e.preventDefault();
+        if (window.openHomeNewsReader) {
+          window.openHomeNewsReader(pageItems[idx].id);
+        }
       });
     });
 
     renderNewsPaginationControls(totalPages);
     activeNewsCardIndex = 0;
     setHighlightedNewsCard(0);
+    if (pageItems[0]) {
+      syncSlideshowWithNewsItem(pageItems[0]);
+    }
     startNewsCycleTimer(pageItems.length);
   }
 
@@ -540,8 +378,15 @@
         // Also sync slideshow
         const cards = document.querySelectorAll('.home-news-h-card');
         if (cards[activeNewsCardIndex]) {
-          const photoUrl = cards[activeNewsCardIndex].getAttribute('data-photo');
-          if (photoUrl) syncSlideshowWithPhotoUrl(photoUrl);
+          const currentNewsId = cards[activeNewsCardIndex].getAttribute('data-news-id');
+          const allNewsList = getAllNews();
+          const activeItem = allNewsList.find(n => n && n.id === currentNewsId);
+          if (activeItem) {
+            syncSlideshowWithNewsItem(activeItem);
+          } else {
+            const photoUrl = cards[activeNewsCardIndex].getAttribute('data-photo');
+            if (photoUrl) syncSlideshowWithPhotoUrl(photoUrl);
+          }
         }
       }
     }, tick);
@@ -568,16 +413,22 @@
     // Render Slides
     stage.innerHTML = activePhotosList.map((item, index) => {
       const isActive = index === 0 ? 'active' : '';
+      const isNews = Boolean(item.isNews || item.newsId);
+      const clickAttr = isNews
+        ? `onclick="if(window.openHomeNewsReader && '${item.newsId || ''}'){ window.openHomeNewsReader('${item.newsId || ''}'); return false; }"`
+        : '';
+      const slideHref = isNews ? 'javascript:void(0)' : (item.link || '/photos');
+
       return `
-        <a href="${item.link || 'photos.html'}" class="home-photo-slide ${isActive}" data-slide-index="${index}" id="homePhotoSlide-${index}" title="${item.title}">
-          <img src="${item.photo}" alt="${item.title}" class="home-photo-slide-img" loading="lazy">
-          <div class="home-photo-slide-kicker">${item.badge || item.category}</div>
+        <a href="${slideHref}" class="home-photo-slide ${isActive}" data-slide-index="${index}" id="homePhotoSlide-${index}" title="${escapeHtml(item.title)}" ${clickAttr}>
+          <img src="${item.photo}" alt="${escapeHtml(item.title)}" class="home-photo-slide-img" loading="lazy">
+          <div class="home-photo-slide-kicker">${escapeHtml(item.badge || item.category)}</div>
           <div class="home-photo-caption-bar">
-            <h3 class="home-photo-caption-title">${item.title}</h3>
+            <h3 class="home-photo-caption-title">${escapeHtml(item.title)}</h3>
             <div class="home-photo-caption-meta">
-              <span>📍 ${item.location}</span>
+              <span>📍 ${escapeHtml(item.location)}</span>
               <span>•</span>
-              <span>📅 ${item.date}</span>
+              <span>📅 ${escapeHtml(item.date)}</span>
             </div>
           </div>
         </a>
@@ -669,13 +520,89 @@
   }
 
   function syncSlideshowWithNewsPhoto(newsItem) {
-    if (!newsItem || !newsItem.photo) return;
-    syncSlideshowWithPhotoUrl(newsItem.photo);
+    syncSlideshowWithNewsItem(newsItem);
+  }
+
+  function syncSlideshowWithNewsItem(newsItem) {
+    if (!newsItem) return;
+    const photoUrl = newsItem.photo;
+    if (!photoUrl) return;
+
+    if (!activePhotosList || activePhotosList.length === 0) {
+      activePhotosList = getSlideshowPhotos();
+    }
+
+    // Try finding by exact photo or newsId or id
+    let matchIdx = activePhotosList.findIndex(p => 
+      p && (p.photo === photoUrl || (p.newsId && p.newsId === newsItem.id) || p.id === newsItem.id)
+    );
+
+    // If not found in current slides list, dynamically inject this slide into activePhotosList & DOM!
+    if (matchIdx === -1) {
+      const dynamicSlide = {
+        id: `slide-news-${newsItem.id}`,
+        newsId: newsItem.id,
+        isNews: true,
+        category: newsItem.category || 'Live News',
+        badge: newsItem.categoryBadge || (newsItem.category ? `✦ ${newsItem.category}` : '⚡ Live News'),
+        title: newsItem.title || newsItem.headline || 'Accolade Screenlady Dispatch',
+        location: newsItem.venue || 'Screenlady News Desk, Mumbai',
+        date: newsItem.date || newsItem.displayDate || 'Recent',
+        photo: newsItem.photo,
+        link: 'javascript:void(0)'
+      };
+      activePhotosList.push(dynamicSlide);
+      matchIdx = activePhotosList.length - 1;
+
+      const stage = document.getElementById('homePhotoSlidesStage');
+      const dotsContainer = document.getElementById('homePhotoDots');
+      if (stage) {
+        const slideEl = document.createElement('a');
+        slideEl.href = 'javascript:void(0)';
+        slideEl.className = 'home-photo-slide';
+        slideEl.setAttribute('data-slide-index', matchIdx);
+        slideEl.id = `homePhotoSlide-${matchIdx}`;
+        slideEl.title = dynamicSlide.title;
+        slideEl.onclick = (e) => {
+          e.preventDefault();
+          if (window.openHomeNewsReader) window.openHomeNewsReader(newsItem.id);
+        };
+        slideEl.innerHTML = `
+          <img src="${escapeHtml(dynamicSlide.photo)}" alt="${escapeHtml(dynamicSlide.title)}" class="home-photo-slide-img" loading="lazy">
+          <div class="home-photo-slide-kicker">${escapeHtml(dynamicSlide.badge)}</div>
+          <div class="home-photo-caption-bar">
+            <h3 class="home-photo-caption-title">${escapeHtml(dynamicSlide.title)}</h3>
+            <div class="home-photo-caption-meta">
+              <span>📍 ${escapeHtml(dynamicSlide.location)}</span>
+              <span>•</span>
+              <span>📅 ${escapeHtml(dynamicSlide.date)}</span>
+            </div>
+          </div>
+        `;
+        stage.appendChild(slideEl);
+      }
+
+      if (dotsContainer) {
+        const dot = document.createElement('button');
+        dot.type = 'button';
+        dot.className = 'home-photo-dot';
+        dot.setAttribute('data-dot-index', matchIdx);
+        dot.setAttribute('aria-label', `Go to slide ${matchIdx + 1}`);
+        const thisIdx = matchIdx;
+        dot.onclick = () => changePhotoSlide(thisIdx);
+        dotsContainer.appendChild(dot);
+      }
+    }
+
+    if (matchIdx !== -1 && matchIdx !== currentPhotoIndex) {
+      changePhotoSlide(matchIdx);
+    }
   }
 
   function syncSlideshowWithPhotoUrl(photoUrl) {
+    if (!photoUrl) return;
     if (!activePhotosList || activePhotosList.length === 0) return;
-    const matchIdx = activePhotosList.findIndex(p => p.photo === photoUrl);
+    const matchIdx = activePhotosList.findIndex(p => p && p.photo === photoUrl);
     if (matchIdx !== -1 && matchIdx !== currentPhotoIndex) {
       changePhotoSlide(matchIdx);
     }
@@ -694,10 +621,37 @@
   /* ==========================================================================
      6. INITIALIZATION & STORAGE REACTION
      ========================================================================== */
+  async function syncFromBackend() {
+    if (!window.ScreenladyAPI) return;
+    try {
+      const [liveUpdates, livePhotos] = await Promise.all([
+        typeof window.ScreenladyAPI.getUpdates === 'function' ? window.ScreenladyAPI.getUpdates() : Promise.resolve([]),
+        typeof window.ScreenladyAPI.getPhotos === 'function' ? window.ScreenladyAPI.getPhotos() : Promise.resolve([])
+      ]);
+
+      if (liveUpdates && Array.isArray(liveUpdates)) {
+        window.backendLiveUpdates = liveUpdates;
+        window.backendLiveNews = liveUpdates;
+      }
+      if (livePhotos && Array.isArray(livePhotos) && livePhotos.length > 0) {
+        window.backendLivePhotos = livePhotos;
+        renderPhotoSlideshow();
+      }
+
+      renderNewsPage(currentNewsPage);
+      renderCuratedSections();
+    } catch (e) {
+      console.warn('[Screenlady Home] Backend fetch notice:', e.message);
+    }
+  }
+
   function init() {
     renderNewsPage(1);
     renderPhotoSlideshow();
     renderCuratedSections();
+
+    // Fetch once on page load
+    syncFromBackend();
 
     // Re-render when Editorial Desk publishes or modifies news, updates, fashion, or home photos
     window.addEventListener('storage', (e) => {
@@ -708,12 +662,6 @@
       if (e.key === 'screenlady_custom_home_photos') {
         renderPhotoSlideshow();
       }
-    });
-
-    // Also re-render immediately when the user switches tabs back to the homepage
-    window.addEventListener('focus', () => {
-      renderCuratedSections();
-      renderNewsPage(currentNewsPage);
     });
   }
 
@@ -729,42 +677,54 @@
 
     if (!filmyGrid && !bizzGrid && !inspireGrid && !fashionGrid) return;
 
-    let updates = [];
-    if (typeof window.getAllUpdates === 'function') {
-      try {
-        updates = window.getAllUpdates();
-      } catch (e) {
-        updates = [];
-      }
-    } else {
-      try {
-        const raw = localStorage.getItem('screenlady_custom_updates');
-        if (raw) updates = JSON.parse(raw);
-      } catch (e) {
-        updates = [];
-      }
-    }
+    const deletedIds = (typeof window.getScreenladyDeletedIds === 'function') 
+      ? window.getScreenladyDeletedIds() 
+      : (() => { try { const r = localStorage.getItem('screenlady_deleted_ids'); return r ? JSON.parse(r) : []; } catch(e){ return []; } })();
+
+    let customFilmy = [];
+    try {
+      const rawFi = localStorage.getItem('screenlady_custom_filmy');
+      if (rawFi) customFilmy = JSON.parse(rawFi);
+    } catch (e) { customFilmy = []; }
+
+    let customBizz = [];
+    try {
+      const rawB = localStorage.getItem('screenlady_custom_bizz');
+      if (rawB) customBizz = JSON.parse(rawB);
+    } catch (e) { customBizz = []; }
+
+    let customInspire = [];
+    try {
+      const rawI = localStorage.getItem('screenlady_custom_inspiration');
+      if (rawI) customInspire = JSON.parse(rawI);
+    } catch (e) { customInspire = []; }
 
     let customFashion = [];
     try {
       const rawF = localStorage.getItem('screenlady_custom_fashion');
       if (rawF) customFashion = JSON.parse(rawF);
-    } catch (e) {
-      customFashion = [];
-    }
+    } catch (e) { customFashion = []; }
 
-    const allPool = [...customFashion, ...updates, ...getAllNews()];
+    // Backend updates dedicated to curated sections (strictly excluding news items)
+    const backendCurated = (window.backendLiveUpdates || []).filter(u => 
+      u && !deletedIds.includes(u.id) && !u.isHomepageNews && u.curatedSection !== 'news' && u.type !== 'news' && !(u.id && u.id.startsWith('news-'))
+    );
 
-    // 1. Filmy Adda: 4 items related to cinema, movies, Bollywood, film
+    // 1. FILMY ADDA: Only items explicitly published to filmy_adda
     if (filmyGrid) {
-      const filmyItems = allPool.filter(item => {
-        if (item.curatedSection) return item.curatedSection === 'filmy_adda';
-        const cat = (item.category || '').toLowerCase();
-        const title = (item.title || item.headline || '').toLowerCase();
-        const tags = (item.tags || []).join(' ').toLowerCase();
-        return cat.includes('film') || cat.includes('movie') || cat.includes('cinema') || cat.includes('box office') ||
-               tags.includes('film') || tags.includes('movie') || tags.includes('cinema') || tags.includes('bollywood') ||
-               title.includes('ramayana') || title.includes('box office') || title.includes('jalsa');
+      const filmyItems = [
+        ...customFilmy.filter(i => i && !deletedIds.includes(i.id)),
+        ...backendCurated.filter(i => i && i.curatedSection === 'filmy_adda')
+      ];
+
+      filmyItems.sort((a, b) => {
+        const aIsCustom = Boolean(a.isCustom || (a.id && (a.id.startsWith('curated-') || a.id.includes('-custom-'))));
+        const bIsCustom = Boolean(b.isCustom || (b.id && (b.id.startsWith('curated-') || b.id.includes('-custom-'))));
+        if (aIsCustom && !bIsCustom) return -1;
+        if (!aIsCustom && bIsCustom) return 1;
+        const timeA = (a.timestamp || 0) || new Date(a.date || 0).getTime() || 0;
+        const timeB = (b.timestamp || 0) || new Date(b.date || 0).getTime() || 0;
+        return timeB - timeA;
       });
 
       const uniqueFilmy = [];
@@ -778,29 +738,15 @@
         if (uniqueFilmy.length >= 4) break;
       }
 
-      const defaultFilmSeeds = [
-        { id: "update-ramayana-1", categoryBadge: "🎬 Box Office", title: "Ramayana: Rise of a Legend", photo: "assets/images/news/ramayana.jpeg" },
-        { id: "update-boxoffice-1", categoryBadge: "🍿 Cinema", title: "November Box Office Battles", photo: "assets/images/news/films-box-office.jpeg" },
-        { id: "update-movietalk-1", categoryBadge: "🎥 Behind The Screen", title: "Behind-the-Scenes Photo Session", photo: "assets/images/magazine-photos/3.1.jpg" },
-        { id: "update-jalsa-threat-1", categoryBadge: "🚨 Industry Alert", title: "Amitabh Bachchan Jalsa Alert", photo: "assets/images/news/amitabh-bachchan.jpeg" }
-      ];
-      for (const seed of defaultFilmSeeds) {
-        if (uniqueFilmy.length >= 4) break;
-        if (!seen.has(seed.id)) {
-          seen.add(seed.id);
-          uniqueFilmy.push(seed);
-        }
-      }
-
       filmyGrid.innerHTML = uniqueFilmy.slice(0, 4).map(item => `
-        <div class="curated-photo-card" onclick="if(window.openUpdateModal) window.openUpdateModal('${item.id}'); else window.location.href='updates.html#${item.id}';" title="${item.title || item.headline}">
-          <img src="${item.photo}" alt="${item.title || item.headline || 'Film Photo'}" loading="lazy">
+        <div class="curated-photo-card" onclick="if(window.openCuratedCardModal) window.openCuratedCardModal('${item.id}', 'filmy_adda'); else if(window.openUpdateModal) window.openUpdateModal('${item.id}');" title="${escapeHtml(item.title || item.headline || 'Cinema Feature')}">
+          <img src="${item.photo}" alt="${escapeHtml(item.title || item.headline || 'Film Photo')}" loading="lazy">
           <div class="curated-photo-overlay">
-            <span class="curated-photo-badge">${item.categoryBadge || item.category || '🎬 Cinema'}</span>
+            <span class="curated-photo-badge">${escapeHtml(item.categoryBadge || item.category || '🎬 Cinema')}</span>
             <div>
-              <h4 class="curated-photo-title">${item.title || item.headline}</h4>
+              <h4 class="curated-photo-title">${escapeHtml(item.title || item.headline)}</h4>
               <div class="curated-photo-action">
-                <span>Read Story in Updates</span>
+                <span>View Details & Photo</span>
                 <span>→</span>
               </div>
             </div>
@@ -809,16 +755,21 @@
       `).join('');
     }
 
-    // 2. Bizz World: 4 items related to business, corporate, leadership, startups
+    // 2. BIZZ WORLD: Only items explicitly published to bizz_world
     if (bizzGrid) {
-      const bizzItems = allPool.filter(item => {
-        if (item.curatedSection) return item.curatedSection === 'bizz_world';
-        const cat = (item.category || '').toLowerCase();
-        const title = (item.title || item.headline || '').toLowerCase();
-        const tags = (item.tags || []).join(' ').toLowerCase();
-        return cat.includes('bizz') || cat.includes('business') || cat.includes('meeting') || cat.includes('enterprise') || cat.includes('corporate') ||
-               tags.includes('business') || tags.includes('meeting') || tags.includes('enterprise') || tags.includes('leadership') || tags.includes('entrepreneur') ||
-               title.includes('meeting') || title.includes('entrepreneur') || title.includes('leadership') || title.includes('partner');
+      const bizzItems = [
+        ...customBizz.filter(i => i && !deletedIds.includes(i.id)),
+        ...backendCurated.filter(i => i && i.curatedSection === 'bizz_world')
+      ];
+
+      bizzItems.sort((a, b) => {
+        const aIsCustom = Boolean(a.isCustom || (a.id && (a.id.startsWith('curated-') || a.id.includes('-custom-'))));
+        const bIsCustom = Boolean(b.isCustom || (b.id && (b.id.startsWith('curated-') || b.id.includes('-custom-'))));
+        if (aIsCustom && !bIsCustom) return -1;
+        if (!aIsCustom && bIsCustom) return 1;
+        const timeA = (a.timestamp || 0) || new Date(a.date || 0).getTime() || 0;
+        const timeB = (b.timestamp || 0) || new Date(b.date || 0).getTime() || 0;
+        return timeB - timeA;
       });
 
       const uniqueBizz = [];
@@ -832,29 +783,15 @@
         if (uniqueBizz.length >= 4) break;
       }
 
-      const defaultBizzSeeds = [
-        { id: "update-meeting-1", categoryBadge: "💼 Leadership", title: "Executive Publishing Conclave", photo: "assets/images/team/prashant-sagvekar.jpeg" },
-        { id: "update-meetgreet-1", categoryBadge: "🤝 Entrepreneurs", title: "Women Entrepreneurs Conclave", photo: "assets/images/magazine-photos/4.1.jpg" },
-        { id: "update-events-1", categoryBadge: "✨ Brand Partnership", title: "Tantuh Jewellery Partnership", photo: "assets/images/articles/article-1.jpg" },
-        { id: "update-awards-1", categoryBadge: "🏆 Corporate Honors", title: "Women of Distinction Honors", photo: "assets/images/magazine-photos/4.2.jpg" }
-      ];
-      for (const seed of defaultBizzSeeds) {
-        if (uniqueBizz.length >= 4) break;
-        if (!seen.has(seed.id)) {
-          seen.add(seed.id);
-          uniqueBizz.push(seed);
-        }
-      }
-
       bizzGrid.innerHTML = uniqueBizz.slice(0, 4).map(item => `
-        <div class="curated-photo-card" onclick="if(window.openUpdateModal) window.openUpdateModal('${item.id}'); else window.location.href='updates.html#${item.id}';" title="${item.title || item.headline}">
-          <img src="${item.photo}" alt="${item.title || item.headline || 'Business Photo'}" loading="lazy">
+        <div class="curated-photo-card" onclick="if(window.openCuratedCardModal) window.openCuratedCardModal('${item.id}', 'bizz_world'); else if(window.openUpdateModal) window.openUpdateModal('${item.id}');" title="${escapeHtml(item.title || item.headline || 'Business Feature')}">
+          <img src="${item.photo}" alt="${escapeHtml(item.title || item.headline || 'Business Photo')}" loading="lazy">
           <div class="curated-photo-overlay">
-            <span class="curated-photo-badge">${item.categoryBadge || item.category || '💼 Business'}</span>
+            <span class="curated-photo-badge">${escapeHtml(item.categoryBadge || item.category || '💼 Business')}</span>
             <div>
-              <h4 class="curated-photo-title">${item.title || item.headline}</h4>
+              <h4 class="curated-photo-title">${escapeHtml(item.title || item.headline)}</h4>
               <div class="curated-photo-action">
-                <span>Read Story in Updates</span>
+                <span>View Details & Photo</span>
                 <span>→</span>
               </div>
             </div>
@@ -863,16 +800,21 @@
       `).join('');
     }
 
-    // 3. Women of Inspiration: 4 struggle to success items
+    // 3. WOMEN OF INSPIRATION: Only items explicitly published to women_inspiration
     if (inspireGrid) {
-      const inspireItems = allPool.filter(item => {
-        if (item.curatedSection) return item.curatedSection === 'women_inspiration';
-        const cat = (item.category || '').toLowerCase();
-        const title = (item.title || item.headline || '').toLowerCase();
-        const tags = (item.tags || []).join(' ').toLowerCase();
-        return cat.includes('inspiration') || cat.includes('struggle') || cat.includes('tribute') || cat.includes('award') ||
-               tags.includes('inspiration') || tags.includes('struggle') || tags.includes('sindhutai') || tags.includes('mai') ||
-               title.includes('sindhutai') || title.includes('distinction') || title.includes('tribute');
+      const inspireItems = [
+        ...customInspire.filter(i => i && !deletedIds.includes(i.id)),
+        ...backendCurated.filter(i => i && i.curatedSection === 'women_inspiration')
+      ];
+
+      inspireItems.sort((a, b) => {
+        const aIsCustom = Boolean(a.isCustom || (a.id && (a.id.startsWith('curated-') || a.id.includes('-custom-'))));
+        const bIsCustom = Boolean(b.isCustom || (b.id && (b.id.startsWith('curated-') || b.id.includes('-custom-'))));
+        if (aIsCustom && !bIsCustom) return -1;
+        if (!aIsCustom && bIsCustom) return 1;
+        const timeA = (a.timestamp || 0) || new Date(a.date || 0).getTime() || 0;
+        const timeB = (b.timestamp || 0) || new Date(b.date || 0).getTime() || 0;
+        return timeB - timeA;
       });
 
       const uniqueInspire = [];
@@ -886,55 +828,33 @@
         if (uniqueInspire.length >= 4) break;
       }
 
-      const defaultInspireSeeds = [
-        { id: "update-sindhutai-1", categoryBadge: "👑 Mai — Mother of Orphans", title: "Birth Anniversary of Sindhutai Sapkal", summary: "A loving shelter and maternal care for thousands of orphaned children across Maharashtra.", photo: "assets/images/news/sindhutai-sapkal.jpeg" },
-        { id: "update-awards-1", categoryBadge: "🏆 Annual Honors", title: "Accolade Screenlady Distinction Honors", summary: "Official nomination platform celebrating trailblazers in healthcare, aviation, and reforms.", photo: "assets/images/magazine-photos/4.2.jpg" },
-        { id: "update-meetgreet-1", categoryBadge: "💡 Self-Reliance", title: "Grassroots Women Building Enterprises", summary: "Women entrepreneurs sharing memoirs of overcoming hardship to build self-sustaining businesses.", photo: "assets/images/magazine-photos/4.1.jpg" },
-        { id: "update-meeting-1", categoryBadge: "🖋️ Editorial Vision", title: "The Unyielding Voice of Resilience", summary: "Founder Mr. Prashant Sagvekar’s vision to bring women's triumphs into the statewide spotlight.", photo: "assets/images/team/prashant-sagvekar.jpeg" }
-      ];
-      for (const seed of defaultInspireSeeds) {
-        if (uniqueInspire.length >= 4) break;
-        if (!seen.has(seed.id)) {
-          seen.add(seed.id);
-          uniqueInspire.push(seed);
-        }
-      }
-
       inspireGrid.innerHTML = uniqueInspire.slice(0, 4).map(item => {
         const honoreeName = item.womanName || item.title || item.headline || 'Honoree Profile';
         return `
-        <div class="curated-showcase-card" onclick="if(window.openUpdateModal) window.openUpdateModal('${item.id}'); else window.location.href='updates.html#${item.id}';" title="${honoreeName}">
+        <div class="curated-showcase-card" onclick="if(window.openCuratedCardModal) window.openCuratedCardModal('${item.id}', 'women_inspiration'); else if(window.openUpdateModal) window.openUpdateModal('${item.id}');" title="${escapeHtml(honoreeName)}">
           <div class="curated-showcase-img-wrap">
-            <img src="${item.photo}" alt="${honoreeName}" class="curated-showcase-img" loading="lazy">
+            <img src="${item.photo}" alt="${escapeHtml(honoreeName)}" class="curated-showcase-img" loading="lazy">
           </div>
           <div class="curated-showcase-minimal-footer">
-            <h3 class="curated-showcase-name">${honoreeName}</h3>
+            <h3 class="curated-showcase-name">${escapeHtml(honoreeName)}</h3>
           </div>
         </div>
       `;
       }).join('');
     }
 
-    // 4. Fashion and Lifestyle: 4 couture, jewellery & lifestyle items
+    // 4. FASHION AND LIFESTYLE: Only items explicitly published to fashion_lifestyle
     if (fashionGrid) {
-      const fashionItems = allPool.filter(item => {
-        if (!item) return false;
-        if (item.curatedSection) return item.curatedSection === 'fashion_lifestyle';
-        const cat = (item.category || '').toLowerCase();
-        const title = (item.title || item.headline || '').toLowerCase();
-        const tags = (item.tags || []).join(' ').toLowerCase();
-        return cat.includes('fashion') || cat.includes('lifestyle') || cat.includes('jewellery') || cat.includes('couture') ||
-               tags.includes('fashion') || tags.includes('lifestyle') || tags.includes('jewellery') || tags.includes('beauty') ||
-               title.includes('fashion') || title.includes('jewellery') || title.includes('tantuh');
-      });
+      const fashionItems = [
+        ...customFashion.filter(i => i && !deletedIds.includes(i.id)),
+        ...backendCurated.filter(i => i && i.curatedSection === 'fashion_lifestyle')
+      ];
 
-      // Custom user-published items from Editorial Desk ALWAYS take precedence over default seeds
       fashionItems.sort((a, b) => {
-        const aIsCustom = a.isCustom || (a.id && (a.id.startsWith('curated-') || a.id.includes('-custom-')));
-        const bIsCustom = b.isCustom || (b.id && (b.id.startsWith('curated-') || b.id.includes('-custom-')));
+        const aIsCustom = Boolean(a.isCustom || (a.id && (a.id.startsWith('curated-') || a.id.includes('-custom-'))));
+        const bIsCustom = Boolean(b.isCustom || (b.id && (b.id.startsWith('curated-') || b.id.includes('-custom-'))));
         if (aIsCustom && !bIsCustom) return -1;
         if (!aIsCustom && bIsCustom) return 1;
-
         const timeA = (a.timestamp || 0) || new Date(a.date || 0).getTime() || 0;
         const timeB = (b.timestamp || 0) || new Date(b.date || 0).getTime() || 0;
         return timeB - timeA;
@@ -951,25 +871,11 @@
         if (uniqueFashion.length >= 4) break;
       }
 
-      const defaultFashionSeeds = [
-        { id: "update-events-1", categoryBadge: "💎 Heritage Jewellery", title: "Tantuh Artisanal Handcrafted Jewellery", summary: "Celebrating indigenous craftsmanship, contemporary brass couture, and bridal adornment.", photo: "assets/images/articles/article-1.jpg" },
-        { id: "fashion-spread-1", categoryBadge: "👗 High Fashion Spread", title: "Contemporary Silhouettes & Ethnic Grace", summary: "Exclusive designer wear and high-gloss fashion spreads from our published magazine pages.", photo: "assets/images/magazine-photos/5.1.jpg" },
-        { id: "fashion-jewel-2", categoryBadge: "✨ Royal Adornments", title: "Timeless Jewellery for the Modern Era", summary: "Intricate patterns and festive adornments that highlight the timeless beauty of Indian traditions.", photo: "assets/images/magazine-photos/5.2.jpg" },
-        { id: "fashion-well-3", categoryBadge: "🌿 Wellness & Living", title: "Holistic Wellness & Modern Balance", summary: "Navigating lifestyle, mental well-being, financial independence, and personal growth.", photo: "assets/images/magazine-photos/5.3.jpg" }
-      ];
-      for (const seed of defaultFashionSeeds) {
-        if (uniqueFashion.length >= 4) break;
-        if (!seen.has(seed.id)) {
-          seen.add(seed.id);
-          uniqueFashion.push(seed);
-        }
-      }
-
       fashionGrid.innerHTML = uniqueFashion.slice(0, 4).map(item => {
         const lineDesc = item.title || item.headline || 'Fashion & Lifestyle';
         const safeDesc = escapeHtml(lineDesc);
         return `
-        <div class="curated-showcase-card" onclick="if(window.openUpdateModal) window.openUpdateModal('${item.id}'); else window.location.href='updates.html#${item.id}';" title="${safeDesc}">
+        <div class="curated-showcase-card" onclick="if(window.openCuratedCardModal) window.openCuratedCardModal('${item.id}', 'fashion_lifestyle'); else if(window.openUpdateModal) window.openUpdateModal('${item.id}');" title="${safeDesc}">
           <div class="curated-showcase-img-wrap">
             <img src="${item.photo}" alt="${safeDesc}" class="curated-showcase-img" loading="lazy">
           </div>
@@ -982,7 +888,231 @@
     }
   }
 
+/**
+   * Universal Interactive Modal for Curated Section Cards (Bizz World, Filmy Adda, Women of Inspiration, Fashion & Lifestyle)
+   * Displays the complete, uncropped photo and full information text without redirecting to updates or external pages.
+   */
+  window.openCuratedCardModal = function(id, sectionName) {
+    let item = null;
+
+    // 1. Check live D1 backend updates, news, and photos
+    if (window.backendLiveUpdates) {
+      item = window.backendLiveUpdates.find(u => u && (u.id === id || String(u.id) === String(id)));
+    }
+    if (!item && window.backendLiveNews) {
+      item = window.backendLiveNews.find(u => u && (u.id === id || String(u.id) === String(id)));
+    }
+    if (!item && window.backendLivePhotos) {
+      item = window.backendLivePhotos.find(p => p && (p.id === id || String(p.id) === String(id)));
+    }
+
+    // 2. Look in custom section storage
+    if (!item) {
+      try {
+        const pool = [
+          ...JSON.parse(localStorage.getItem('screenlady_custom_bizz') || '[]'),
+          ...JSON.parse(localStorage.getItem('screenlady_custom_filmy') || '[]'),
+          ...JSON.parse(localStorage.getItem('screenlady_custom_inspiration') || '[]'),
+          ...JSON.parse(localStorage.getItem('screenlady_custom_fashion') || '[]'),
+          ...JSON.parse(localStorage.getItem('screenlady_custom_updates') || '[]'),
+          ...JSON.parse(localStorage.getItem('screenlady_custom_news') || '[]')
+        ];
+        item = pool.find(u => u && (u.id === id || String(u.id) === String(id)));
+      } catch(e) {}
+    }
+
+    // 3. Look in updates or news lists
+    if (!item && typeof window.getAllUpdates === 'function') {
+      item = window.getAllUpdates().find(u => u && u.id === id);
+    }
+    if (!item && typeof getAllNews === 'function') {
+      item = getAllNews().find(u => u && u.id === id);
+    }
+
+    // Fallback if not found
+    if (!item) {
+      item = {
+        title: "Accolade Screenlady Feature",
+        categoryBadge: sectionName ? sectionName.toUpperCase() : "Special Feature",
+        photo: "https://ik.imagekit.io/acooladescreenlady/screenlady/magazine-photos/4.1__HQ0nEUET8.jpg",
+        date: "Special Editorial Edition",
+        fullInfo: "Detailed information for this featured story is curated by the Accolade Screenlady editorial desk. Check back for expanded interviews and photo archives in our print edition."
+      };
+    }
+
+    const title = item.title || item.headline || item.womanName || "Accolade Screenlady Feature";
+    let badge = item.categoryBadge || item.category || "";
+    if (!badge) {
+      if (sectionName === 'bizz_world' || item.curatedSection === 'bizz_world') badge = "💼 Bizz World";
+      else if (sectionName === 'filmy_adda' || item.curatedSection === 'filmy_adda') badge = "🎬 Filmy Adda";
+      else if (sectionName === 'women_inspiration' || item.curatedSection === 'women_inspiration') badge = "👑 Women of Inspiration";
+      else if (sectionName === 'fashion_lifestyle' || item.curatedSection === 'fashion_lifestyle') badge = "✨ Fashion & Lifestyle";
+      else badge = "✦ Special Feature";
+    }
+
+    const dateStr = item.date || item.displayDate || "Editorial Feature";
+    let rawText = item.fullInfo || item.infoSummary || item.summary || item.fullBody || item.content || item.description || "";
+    if (!rawText.includes('<p>') && !rawText.includes('<div>')) {
+      rawText = rawText.split(/\r?\n\s*\r?\n/).map(p => `<p style="margin-bottom: 1.25rem; line-height: 1.85;">${escapeHtml(p.trim()).replace(/\r?\n/g, '<br>')}</p>`).join('');
+    }
+
+    const photoSrc = item.photo || item.image || item.coverSrc || 'https://ik.imagekit.io/acooladescreenlady/screenlady/magazine-photos/4.1__HQ0nEUET8.jpg';
+
+    const contentHtml = `
+      <div class="curated-modal-view" style="display: flex; flex-direction: column; font-family: var(--font-editorial-body, sans-serif); color: #F5F2EB;">
+        <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.75rem; margin-bottom: 1.25rem; border-bottom: 1px solid rgba(212,175,55,0.25); padding-bottom: 0.75rem;">
+          <span class="badge-gold" style="background: rgba(212,175,55,0.15); border: 1px solid var(--accent-gold); color: var(--accent-gold); font-size: 0.8rem; font-weight: 700; text-transform: uppercase; padding: 4px 14px; border-radius: 50px; letter-spacing: 0.05em;">
+            ${escapeHtml(badge)}
+          </span>
+          <span style="font-size: 0.82rem; color: #9E9AA7;">${escapeHtml(dateStr)}</span>
+        </div>
+
+        <div style="width: 100%; max-height: 520px; background: #07070B radial-gradient(circle, #161622 0%, #07070B 100%); border-radius: 8px; border: 1.5px solid rgba(212,175,55,0.4); box-shadow: 0 16px 45px rgba(0,0,0,0.95); overflow: hidden; display: flex; align-items: center; justify-content: center; margin-bottom: 1.5rem; padding: 0.75rem;">
+          <img src="${escapeHtml(photoSrc)}" alt="${escapeHtml(title)}" style="max-height: 490px; max-width: 100%; width: auto; height: auto; object-fit: contain; display: block; margin: 0 auto; border-radius: 4px; box-shadow: 0 8px 30px rgba(0,0,0,0.8);" />
+        </div>
+
+        <h2 style="font-family: var(--font-editorial-heading, serif); font-size: clamp(1.4rem, 2.8vw, 2.1rem); font-weight: 700; color: #FFFFFF; line-height: 1.25; margin: 0 0 1.25rem;">
+          ${escapeHtml(title)}
+        </h2>
+
+        <div style="font-size: 1.02rem; line-height: 1.85; color: #DDD8CE; margin-bottom: 2rem;">
+          ${rawText}
+        </div>
+
+        <div style="display: flex; justify-content: flex-end; gap: 1rem; border-top: 1px solid rgba(212,175,55,0.2); padding-top: 1rem;">
+          <button type="button" class="btn-editorial-gold" onclick="if(window.closeModal) window.closeModal();" style="padding: 0.6rem 1.6rem; font-size: 0.88rem; cursor: pointer;">
+            <span>Close Story</span>
+          </button>
+        </div>
+      </div>
+    `;
+
+    if (typeof window.openModal === 'function') {
+      window.openModal(title, contentHtml);
+    } else {
+      const modalOverlay = document.getElementById('globalModal');
+      const modalBody = document.getElementById('modalBody');
+      const modalTitle = document.getElementById('modalTitle');
+      if (modalTitle) modalTitle.innerHTML = title;
+      if (modalBody) modalBody.innerHTML = contentHtml;
+      if (modalOverlay) {
+        modalOverlay.classList.add('active');
+        document.body.style.overflow = 'hidden';
+      }
+    }
+  };
+
   // Export functions to global scope for Editorial Desk Admin access
+  
+  /**
+   * Dedicated Full-Fidelity Reader Modal for Real-Time News (Screenlady Updates Left Column)
+   * Opens right on the Homepage without navigating to /updates
+   */
+  window.openHomeNewsReader = function(id) {
+    let item = null;
+
+    // 1. Look in getAllNews()
+    const allNews = (typeof getAllNews === 'function') ? getAllNews() : [];
+    item = allNews.find(n => n && (n.id === id || String(n.id) === String(id)));
+
+    // 2. Look in custom news storage
+    if (!item) {
+      try {
+        const raw = localStorage.getItem('screenlady_custom_news');
+        if (raw) {
+          const list = JSON.parse(raw);
+          item = list.find(n => n && (n.id === id || String(n.id) === String(id)));
+        }
+      } catch(e) {}
+    }
+
+    // 3. Look in backend news
+    if (!item && window.backendLiveNews) {
+      item = window.backendLiveNews.find(n => n && (n.id === id || String(n.id) === String(id)));
+    }
+
+    // 4. Look in default news
+    if (!item) {
+      item = DEFAULT_LATEST_NEWS.find(n => n && (n.id === id || String(n.id) === String(id)));
+    }
+
+    // Fallback if not found
+    if (!item) {
+      item = {
+        id: id,
+        title: "Screenlady Live Dispatch",
+        category: "Live News",
+        categoryBadge: "⚡ Live News",
+        date: "Recent Update",
+        photo: "https://ik.imagekit.io/acooladescreenlady/screenlady/news/ramayana_MHoDF4dFm.jpeg",
+        summary: "Latest real-time bulletin from Accolade Screenlady.",
+        fullBody: "Full journalistic details for this breaking dispatch are being processed by the Accolade Screenlady newsroom."
+      };
+    }
+
+    const title = item.title || item.headline || "Screenlady Live Update";
+    const badge = item.categoryBadge || (item.category ? `✦ ${item.category}` : "⚡ Live News");
+    const dateStr = item.date || item.displayDate || "Recent";
+    const photoSrc = item.photo || 'https://ik.imagekit.io/acooladescreenlady/screenlady/news/ramayana_MHoDF4dFm.jpeg';
+
+    let rawBody = item.fullBody || item.fullInfo || item.summary || item.infoSummary || "";
+    if (!rawBody.includes('<p>') && !rawBody.includes('<div>')) {
+      rawBody = rawBody.split(/\r?\n\s*\r?\n/).map(p => 
+        `<p style="margin-bottom: 1.25rem; line-height: 1.85; font-size: 1.05rem; color: #E0DDD5;">${escapeHtml(p.trim()).replace(/\r?\n/g, '<br>')}</p>`
+      ).join('');
+    }
+
+    const modalHtml = `
+      <div class="home-news-reader-view" style="display: flex; flex-direction: column; font-family: var(--font-editorial-body, sans-serif); color: #F5F2EB;">
+        <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.75rem; margin-bottom: 1.25rem; border-bottom: 1px solid rgba(212,175,55,0.25); padding-bottom: 0.75rem;">
+          <span class="badge-gold" style="background: rgba(212,175,55,0.18); border: 1px solid var(--accent-gold); color: var(--accent-gold); font-size: 0.82rem; font-weight: 700; text-transform: uppercase; padding: 4px 14px; border-radius: 50px; letter-spacing: 0.05em;">
+            ${escapeHtml(badge)}
+          </span>
+          <span style="font-size: 0.85rem; color: #9E9AA7; font-weight: 500;">📅 ${escapeHtml(dateStr)}</span>
+        </div>
+
+        <div style="width: 100%; max-height: 520px; background: #07070B radial-gradient(circle, #161622 0%, #07070B 100%); border-radius: 8px; border: 1.5px solid rgba(212,175,55,0.4); box-shadow: 0 16px 45px rgba(0,0,0,0.95); overflow: hidden; display: flex; align-items: center; justify-content: center; margin-bottom: 1.5rem; padding: 0.75rem;">
+          <img src="${escapeHtml(photoSrc)}" alt="${escapeHtml(title)}" style="max-height: 490px; max-width: 100%; width: auto; height: auto; object-fit: contain; display: block; margin: 0 auto; border-radius: 4px; box-shadow: 0 8px 30px rgba(0,0,0,0.8);" />
+        </div>
+
+        <h2 style="font-family: var(--font-editorial-heading, serif); font-size: clamp(1.4rem, 2.8vw, 2.2rem); font-weight: 700; color: #FFFFFF; line-height: 1.25; margin: 0 0 1.25rem;">
+          ${escapeHtml(title)}
+        </h2>
+
+        ${item.summary && item.summary !== title ? `
+          <div style="font-size: 1.1rem; line-height: 1.6; color: var(--gold-light, #F7E7A9); font-weight: 500; font-style: italic; margin-bottom: 1.5rem; padding-left: 1rem; border-left: 3px solid var(--accent-gold, #D4AF37);">
+            ${escapeHtml(item.summary)}
+          </div>
+        ` : ''}
+
+        <div style="font-size: 1.05rem; line-height: 1.85; color: #DDD8CE; margin-bottom: 2rem;">
+          ${rawBody}
+        </div>
+
+        <div style="display: flex; justify-content: flex-end; gap: 1rem; border-top: 1px solid rgba(212,175,55,0.2); padding-top: 1rem;">
+          <button type="button" class="btn-editorial-gold" onclick="if(window.closeModal) window.closeModal();" style="padding: 0.65rem 1.8rem; font-size: 0.9rem; cursor: pointer; border-radius: 4px; background: linear-gradient(135deg, #d4af37, #aa820a); color: #000; font-weight: 700; border: none;">
+            <span>Close Article</span>
+          </button>
+        </div>
+      </div>
+    `;
+
+    if (typeof window.openModal === 'function') {
+      window.openModal(title, modalHtml);
+    } else {
+      const modalOverlay = document.getElementById('globalModal');
+      const modalBody = document.getElementById('modalBody');
+      const modalTitle = document.getElementById('modalTitle');
+      if (modalTitle) modalTitle.innerHTML = escapeHtml(title);
+      if (modalBody) modalBody.innerHTML = modalHtml;
+      if (modalOverlay) {
+        modalOverlay.classList.add('active');
+        document.body.style.overflow = 'hidden';
+      }
+    }
+  };
+
+  window.openHomeNewsReader = window.openHomeNewsReader;
   window.getAllHomeNews = getAllNews;
   window.getAllHomePhotos = getSlideshowPhotos;
   window.renderCuratedSections = renderCuratedSections;

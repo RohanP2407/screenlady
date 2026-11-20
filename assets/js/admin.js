@@ -123,23 +123,23 @@ const SECTION_CATEGORIES = {
   ]
 };
 
-// Ready-to-use photography presets including Screenlady leadership & event archives
+// Ready-to-use photography presets including Screenlady leadership & event archives (ImageKit CDN)
 const ADMIN_PHOTO_PRESETS = [
-  { label: 'Ramayana Movie Release', path: 'assets/images/news/ramayana.jpeg' },
-  { label: 'Sindhutai Sapkal (Mai)', path: 'assets/images/news/sindhutai-sapkal.jpeg' },
-  { label: 'November Box Office Releases', path: 'assets/images/news/films-box-office.jpeg' },
-  { label: 'Amitabh Bachchan (Jalsa)', path: 'assets/images/news/amitabh-bachchan.jpeg' },
-  { label: 'Mr. Prashant Sagvekar (Founder)', path: 'assets/images/team/prashant-sagvekar.jpeg' },
-  { label: 'Mrs. Amruta Rao (Editor-in-Chief)', path: 'assets/images/team/amruta-rao.jpeg' },
-  { label: 'Mrs. Sakshi Sagvekar (Managing Director)', path: 'assets/images/team/sakshi-sagvekar.jpeg' },
-  { label: 'Mr. Vedang Sagvekar (Marketing Director)', path: 'assets/images/team/vedang-sagvekar.jpeg' },
-  { label: 'Mrs. Supriya Vinod (Board Member)', path: 'assets/images/team/supriya-vinod.jpeg' },
-  { label: 'Mrs. Manasi Ingle (Board Member)', path: 'assets/images/team/mansi-ingle.jpeg' },
-  { label: 'Movie Talk & Shoots', path: 'assets/images/magazine-photos/3.1.jpg' },
-  { label: 'Awards & Honors', path: 'assets/images/magazine-photos/4.2.jpg' },
-  { label: 'Meet & Greet Conclave', path: 'assets/images/magazine-photos/4.1.jpg' },
-  { label: 'Brand Event (Tantuh)', path: 'assets/images/articles/article-1.jpg' },
-  { label: 'Body Shaming & Self-Love', path: 'assets/images/articles/article-2.jpg' }
+  { label: 'Ramayana Movie Release', path: 'https://ik.imagekit.io/acooladescreenlady/assets/images/news/ramayana.jpeg' },
+  { label: 'Sindhutai Sapkal (Mai)', path: 'https://ik.imagekit.io/acooladescreenlady/assets/images/news/sindhutai-sapkal.jpeg' },
+  { label: 'November Box Office Releases', path: 'https://ik.imagekit.io/acooladescreenlady/assets/images/news/films-box-office.jpeg' },
+  { label: 'Amitabh Bachchan (Jalsa)', path: 'https://ik.imagekit.io/acooladescreenlady/assets/images/news/amitabh-bachchan.jpeg' },
+  { label: 'Mr. Prashant Sagvekar (Founder)', path: 'https://ik.imagekit.io/acooladescreenlady/assets/images/team/prashant-sagvekar.jpeg' },
+  { label: 'Mrs. Amruta Rao (Editor-in-Chief)', path: 'https://ik.imagekit.io/acooladescreenlady/assets/images/team/amruta-rao.jpeg' },
+  { label: 'Mrs. Sakshi Sagvekar (Managing Director)', path: 'https://ik.imagekit.io/acooladescreenlady/assets/images/team/sakshi-sagvekar.jpeg' },
+  { label: 'Mr. Vedang Sagvekar (Marketing Director)', path: 'https://ik.imagekit.io/acooladescreenlady/assets/images/team/vedang-sagvekar.jpeg' },
+  { label: 'Mrs. Supriya Vinod (Board Member)', path: 'https://ik.imagekit.io/acooladescreenlady/assets/images/team/supriya-vinod.jpeg' },
+  { label: 'Mrs. Manasi Ingle (Board Member)', path: 'https://ik.imagekit.io/acooladescreenlady/assets/images/team/mansi-ingle.jpeg' },
+  { label: 'Movie Talk & Shoots', path: 'https://ik.imagekit.io/acooladescreenlady/assets/images/magazine-photos/3.1.jpg' },
+  { label: 'Awards & Honors', path: 'https://ik.imagekit.io/acooladescreenlady/assets/images/magazine-photos/4.2.jpg' },
+  { label: 'Meet & Greet Conclave', path: 'https://ik.imagekit.io/acooladescreenlady/assets/images/magazine-photos/4.1.jpg' },
+  { label: 'Brand Event (Tantuh)', path: 'https://ik.imagekit.io/acooladescreenlady/assets/images/articles/article-1.jpg' },
+  { label: 'Body Shaming & Self-Love', path: 'https://ik.imagekit.io/acooladescreenlady/assets/images/articles/article-2.jpg' }
 ];
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -670,11 +670,37 @@ function handleFileUpload(e) {
 
       document.querySelectorAll('#adminPresetGrid .photo-preset-choice').forEach(c => c.classList.remove('active'));
 
-      if (statusEl) {
-        const origSizeKb = Math.round(file.size / 1024);
-        const newSizeKb = Math.round(compressedDataUrl.length * 0.75 / 1024);
-        statusEl.textContent = `✓ Photo Ready: ${file.name} (${origSizeKb}KB → ${newSizeKb}KB, optimized for Homepage)`;
-        statusEl.style.color = '#4ade80';
+      if (window.ScreenladyAPI && typeof window.ScreenladyAPI.uploadMedia === 'function') {
+        if (statusEl) {
+          statusEl.textContent = `Uploading ${file.name} to ImageKit CDN...`;
+          statusEl.style.color = 'var(--gold-light)';
+        }
+        window.ScreenladyAPI.uploadMedia(file)
+          .then(res => {
+            if (res && res.url) {
+              if (photoInput) photoInput.value = res.url;
+              updatePhotoPreview(res.url);
+              if (statusEl) {
+                const isLive = res.url.startsWith('http');
+                statusEl.textContent = `✓ ImageKit CDN Ready: ${res.name || file.name} (${isLive ? 'Live CDN URL' : 'Optimized'})`;
+                statusEl.style.color = '#4ade80';
+              }
+            }
+          })
+          .catch(err => {
+            console.warn('[Screenlady Admin] ImageKit upload fallback notice:', err.message);
+            if (statusEl) {
+              statusEl.textContent = `✓ Photo Ready: ${file.name} (Optimized for Web)`;
+              statusEl.style.color = '#4ade80';
+            }
+          });
+      } else {
+        if (statusEl) {
+          const origSizeKb = Math.round(file.size / 1024);
+          const newSizeKb = Math.round(compressedDataUrl.length * 0.75 / 1024);
+          statusEl.textContent = `✓ Photo Ready: ${file.name} (${origSizeKb}KB → ${newSizeKb}KB, optimized for Homepage)`;
+          statusEl.style.color = '#4ade80';
+        }
       }
     };
 
@@ -703,7 +729,7 @@ function handlePostSubmit(e) {
   const section = currentSection;
   const dateStr = document.getElementById('postDate').value || new Date().toISOString().split('T')[0];
   const category = document.getElementById('postCategory').value.trim() || 'General';
-  const photo = document.getElementById('postPhotoInput').value.trim() || 'assets/images/featured-icon-saree.jpg';
+  const photo = document.getElementById('postPhotoInput').value.trim() || 'https://ik.imagekit.io/acooladescreenlady/assets/images/featured-icon-saree.jpg';
   const rawTags = document.getElementById('postTags').value.trim();
   const tags = rawTags ? rawTags.split(',').map(t => t.trim()).filter(Boolean) : [category];
 
@@ -804,6 +830,7 @@ function handlePostSubmit(e) {
     const newNews = {
       id: (editingItem && (editingItem.section === 'news' || editingItem.section === 'updates')) ? editingItem.id : `news-custom-${Date.now()}`,
       type: 'news',
+      curatedSection: 'news',
       isHomepageNews: true,
       category: category,
       categoryBadge: `✦ ${category}`,
@@ -817,7 +844,7 @@ function handlePostSubmit(e) {
       fullInfo: formatParagraphs(fullBody),
       photo: photo,
       tags: tags,
-      link: `updates.html#news-custom-${Date.now()}`,
+      link: 'javascript:void(0)',
       timestamp: Date.now()
     };
 
@@ -911,10 +938,18 @@ function handlePostSubmit(e) {
 
     const targetItemId = (editingItem && editingItem.section === section) ? editingItem.id : `curated-${section}-${Date.now()}`;
 
+    const sectionTargetUrls = {
+      filmy_adda: 'http://localhost:4321/#filmyAddaSection',
+      bizz_world: 'http://localhost:4321/#bizzWorldSection',
+      women_inspiration: 'http://localhost:4321/#womenInspirationSection',
+      fashion_lifestyle: 'http://localhost:4321/#fashionLifestyleSection'
+    };
+
     const newCuratedItem = {
       id: targetItemId,
       curatedSection: section,
       type: 'photo-info',
+      isHomepageNews: false,
       category: category,
       categoryBadge: `✦ ${category || defaultBadges[section]}`,
       date: dateStr,
@@ -928,14 +963,16 @@ function handlePostSubmit(e) {
       fullInfo: formatParagraphs(fullBody),
       photo: photo,
       tags: tags,
-      link: `updates.html#${targetItemId}`,
+      link: sectionTargetUrls[section] || 'http://localhost:4321/',
       timestamp: Date.now()
     };
 
-    saveCustomItem('screenlady_custom_updates', newCuratedItem);
-    if (section === 'fashion_lifestyle') {
-      saveCustomItem('screenlady_custom_fashion', newCuratedItem);
-    }
+    const targetStorageKey = section === 'filmy_adda' ? 'screenlady_custom_filmy' :
+                             section === 'bizz_world' ? 'screenlady_custom_bizz' :
+                             section === 'women_inspiration' ? 'screenlady_custom_inspiration' :
+                             'screenlady_custom_fashion';
+
+    saveCustomItem(targetStorageKey, newCuratedItem, section);
 
     const sectionLabels = {
       filmy_adda: 'Filmy Adda',
@@ -943,7 +980,7 @@ function handlePostSubmit(e) {
       women_inspiration: 'Women of Inspiration',
       fashion_lifestyle: 'Fashion & Lifestyle'
     };
-    showToast(`✦ ${sectionLabels[section]} published! It now leads 1st on the Homepage and is archived in Updates.`);
+    showToast(`✦ ${sectionLabels[section]} published! It now leads 1st on the Homepage under ${sectionLabels[section]}.`);
   }
 
   // -------------------------------------------------------------
@@ -1014,8 +1051,9 @@ function handlePostSubmit(e) {
 
 /**
  * Save an item to the specified localStorage key (handles insert or update)
+ * and dispatches live update to the Cloudflare Worker Backend API
  */
-function saveCustomItem(storageKey, item) {
+function saveCustomItem(storageKey, item, sectionOverride) {
   let list = [];
   try {
     const raw = localStorage.getItem(storageKey);
@@ -1050,6 +1088,30 @@ function saveCustomItem(storageKey, item) {
       } catch (e) {}
     }
   }
+
+  // Live Backend Cloudflare Worker Synchronization
+  if (window.ScreenladyAPI && typeof window.ScreenladyAPI.publishItem === 'function') {
+    let targetSection = sectionOverride || currentSection || 'updates';
+    if (storageKey === 'screenlady_custom_editorials') targetSection = 'editorials';
+    else if (storageKey === 'screenlady_custom_podcasts') targetSection = 'podcast';
+    else if (storageKey === 'screenlady_custom_photos' || storageKey === 'screenlady_custom_home_photos') targetSection = 'photos';
+    else if (storageKey === 'screenlady_custom_filmy') targetSection = 'filmy_adda';
+    else if (storageKey === 'screenlady_custom_bizz') targetSection = 'bizz_world';
+    else if (storageKey === 'screenlady_custom_inspiration') targetSection = 'women_inspiration';
+    else if (storageKey === 'screenlady_custom_fashion') targetSection = 'fashion_lifestyle';
+    else if (storageKey === 'screenlady_custom_news') targetSection = 'news';
+    else if (storageKey === 'screenlady_custom_updates') targetSection = 'updates';
+
+    window.ScreenladyAPI.publishItem(targetSection, item)
+      .then(res => {
+        if (res && res.success) {
+          console.log(`[Screenlady Desk] Synced live to backend (${targetSection}):`, item.id);
+        }
+      })
+      .catch(err => {
+        console.warn(`[Screenlady Desk] Backend sync fallback notice:`, err.message);
+      });
+  }
 }
 
 /* =============================================================
@@ -1057,58 +1119,99 @@ function saveCustomItem(storageKey, item) {
 ============================================================= */
 function isFilmyAddaItem(item) {
   if (!item) return false;
+  if (item.isHomepageNews || item.curatedSection === 'news' || item.type === 'news' || (item.id && item.id.startsWith('news-'))) return false;
   if (item.curatedSection === 'filmy_adda') return true;
   if (item.curatedSection && item.curatedSection !== 'filmy_adda') return false;
-  const cat = (item.category || '').toLowerCase();
-  const title = (item.title || item.headline || '').toLowerCase();
-  const tags = (item.tags || []).join(' ').toLowerCase();
-  return cat.includes('film') || cat.includes('movie') || cat.includes('cinema') || cat.includes('box office') ||
-         tags.includes('film') || tags.includes('movie') || tags.includes('cinema') || tags.includes('bollywood') ||
-         title.includes('ramayana') || title.includes('box office') || title.includes('jalsa');
+  return false;
 }
 
 function isBizzWorldItem(item) {
   if (!item) return false;
+  if (item.isHomepageNews || item.curatedSection === 'news' || item.type === 'news' || (item.id && item.id.startsWith('news-'))) return false;
   if (item.curatedSection === 'bizz_world') return true;
   if (item.curatedSection && item.curatedSection !== 'bizz_world') return false;
-  const cat = (item.category || '').toLowerCase();
-  const title = (item.title || item.headline || '').toLowerCase();
-  const tags = (item.tags || []).join(' ').toLowerCase();
-  return cat.includes('bizz') || cat.includes('business') || cat.includes('meeting') || cat.includes('enterprise') || cat.includes('corporate') ||
-         tags.includes('business') || tags.includes('meeting') || tags.includes('enterprise') || tags.includes('leadership') || tags.includes('entrepreneur') ||
-         title.includes('meeting') || title.includes('entrepreneur') || title.includes('leadership') || title.includes('partner');
+  return false;
 }
 
 function isInspirationItem(item) {
   if (!item) return false;
+  if (item.isHomepageNews || item.curatedSection === 'news' || item.type === 'news' || (item.id && item.id.startsWith('news-'))) return false;
   if (item.curatedSection === 'women_inspiration') return true;
   if (item.curatedSection && item.curatedSection !== 'women_inspiration') return false;
-  const cat = (item.category || '').toLowerCase();
-  const title = (item.title || item.headline || '').toLowerCase();
-  const tags = (item.tags || []).join(' ').toLowerCase();
-  return cat.includes('inspiration') || cat.includes('struggle') || cat.includes('tribute') || cat.includes('award') ||
-         tags.includes('inspiration') || tags.includes('struggle') || tags.includes('sindhutai') || tags.includes('mai') ||
-         title.includes('sindhutai') || title.includes('distinction') || title.includes('tribute');
+  return false;
 }
 
 function isFashionItem(item) {
   if (!item) return false;
+  if (item.isHomepageNews || item.curatedSection === 'news' || item.type === 'news' || (item.id && item.id.startsWith('news-'))) return false;
   if (item.curatedSection === 'fashion_lifestyle') return true;
   if (item.curatedSection && item.curatedSection !== 'fashion_lifestyle') return false;
-  if (item.id && (item.id.startsWith('fashion-') || item.id === 'update-events-1')) return true;
-  const cat = (item.category || '').toLowerCase();
-  const title = (item.title || item.headline || '').toLowerCase();
-  const tags = (item.tags || []).join(' ').toLowerCase();
-  return cat.includes('fashion') || cat.includes('lifestyle') || cat.includes('jewellery') || cat.includes('couture') ||
-         tags.includes('fashion') || tags.includes('lifestyle') || tags.includes('jewellery') || tags.includes('beauty') ||
-         title.includes('fashion') || title.includes('jewellery') || title.includes('tantuh');
+  return false;
 }
 
-function loadAdminDashboard() {
+async function loadAdminDashboard() {
   updateStatCounters();
   renderManageTable();
   if (typeof renderMagazineOrdersTable === 'function') {
     renderMagazineOrdersTable();
+  }
+
+  // Live Backend Synchronization across ALL content feeds
+  if (window.ScreenladyAPI) {
+    try {
+      const [backendUpdates, backendNews, backendEditorials, backendPhotos, backendPodcasts, backendOrders, deletedIds] = await Promise.all([
+        typeof window.ScreenladyAPI.getUpdates === 'function' ? window.ScreenladyAPI.getUpdates() : Promise.resolve([]),
+        typeof window.ScreenladyAPI.getNews === 'function' ? window.ScreenladyAPI.getNews() : Promise.resolve([]),
+        typeof window.ScreenladyAPI.getEditorials === 'function' ? window.ScreenladyAPI.getEditorials() : Promise.resolve([]),
+        typeof window.ScreenladyAPI.getPhotos === 'function' ? window.ScreenladyAPI.getPhotos() : Promise.resolve([]),
+        typeof window.ScreenladyAPI.getPodcasts === 'function' ? window.ScreenladyAPI.getPodcasts() : Promise.resolve([]),
+        typeof window.ScreenladyAPI.getOrders === 'function' ? window.ScreenladyAPI.getOrders() : Promise.resolve([]),
+        typeof window.ScreenladyAPI.getDeletedIds === 'function' ? window.ScreenladyAPI.getDeletedIds() : Promise.resolve([])
+      ]);
+
+      if (deletedIds && Array.isArray(deletedIds)) {
+        window.backendDeletedIds = deletedIds;
+      }
+      if (backendUpdates && Array.isArray(backendUpdates)) {
+        window.backendLiveUpdates = backendUpdates;
+      }
+      if (backendNews && Array.isArray(backendNews) && backendNews.length > 0) {
+        window.backendLiveNews = backendNews;
+      } else if (backendUpdates && Array.isArray(backendUpdates)) {
+        window.backendLiveNews = backendUpdates;
+      }
+      if (backendEditorials && Array.isArray(backendEditorials)) {
+        window.backendLiveEditorials = backendEditorials;
+      }
+      if (backendPhotos && Array.isArray(backendPhotos)) {
+        window.backendLivePhotos = backendPhotos;
+      }
+      if (backendPodcasts && Array.isArray(backendPodcasts)) {
+        window.backendLivePodcasts = backendPodcasts;
+      }
+
+      if (backendOrders && Array.isArray(backendOrders) && backendOrders.length > 0) {
+        const localOrders = (typeof getAllMagazineOrders === 'function') ? getAllMagazineOrders() : [];
+        const orderIds = new Set(localOrders.map(o => o.id || o.orderId));
+        let updated = false;
+        backendOrders.forEach(bo => {
+          const id = bo.id || bo.orderId;
+          if (!orderIds.has(id)) {
+            localOrders.unshift(bo);
+            updated = true;
+          }
+        });
+        if (updated && typeof saveMagazineOrders === 'function') {
+          saveMagazineOrders(localOrders);
+          if (typeof renderMagazineOrdersTable === 'function') renderMagazineOrdersTable();
+        }
+      }
+
+      updateStatCounters();
+      renderManageTable();
+    } catch (err) {
+      console.warn('[Screenlady Admin] Live sync notice:', err.message);
+    }
   }
 }
 
@@ -1177,40 +1280,36 @@ function renderManageTable() {
   const updates = (typeof getAllUpdates === 'function') ? getAllUpdates() : [];
 
   // Tag items with their section and target live URL
-  const taggedNews = newsItems.map(i => ({ ...i, _section: 'news', _targetUrl: 'index.html#homeHeroSplitSection', _storageKey: 'screenlady_custom_news' }));
-  const taggedHomePhotos = homePhotos.map(i => ({ ...i, _section: 'home_photos', _targetUrl: 'index.html#homePhotoSlideshowWrap', _storageKey: 'screenlady_custom_home_photos' }));
-  const taggedEditorials = editorials.map(i => ({ ...i, _section: 'editorials', _targetUrl: `editorials.html#${i.id}`, _storageKey: 'screenlady_custom_editorials' }));
-  const taggedPodcasts = podcasts.map(i => ({ ...i, _section: 'podcast', _targetUrl: `podcast.html#${i.id}`, _storageKey: 'screenlady_custom_podcasts' }));
-  const taggedPhotos = photos.map(i => ({ ...i, _section: 'photos', _targetUrl: `photos.html#${i.id}`, _storageKey: 'screenlady_custom_photos' }));
-  const taggedUpdates = updates.map(i => {
+  const taggedNews = newsItems.map(i => ({ ...i, _section: 'news', _targetUrl: 'http://localhost:4321/#homeHeroSplitSection', _storageKey: 'screenlady_custom_news' }));
+  const taggedHomePhotos = homePhotos.map(i => ({ ...i, _section: 'home_photos', _targetUrl: 'http://localhost:4321/#homePhotoSlideshowWrap', _storageKey: 'screenlady_custom_home_photos' }));
+  const taggedEditorials = editorials.map(i => ({ ...i, _section: 'editorials', _targetUrl: `http://localhost:4321/editorials#${i.id}`, _storageKey: 'screenlady_custom_editorials' }));
+  const taggedPodcasts = podcasts.map(i => ({ ...i, _section: 'podcast', _targetUrl: `http://localhost:4321/podcast#${i.id}`, _storageKey: 'screenlady_custom_podcasts' }));
+  const taggedPhotos = photos.map(i => ({ ...i, _section: 'photos', _targetUrl: `http://localhost:4321/photos#${i.id}`, _storageKey: 'screenlady_custom_photos' }));
+  const taggedUpdates = updates
+    .filter(i => i && !i.isHomepageNews && i.curatedSection !== 'news' && i.type !== 'news' && !(i.id && i.id.startsWith('news-')))
+    .map(i => {
     let sec = 'updates';
-    let target = `updates.html#${i.id}`;
-    if (i.curatedSection === 'filmy_adda') {
+    let target = `http://localhost:4321/updates#${i.id}`;
+    let storeKey = 'screenlady_custom_updates';
+
+    if (i.curatedSection === 'filmy_adda' || isFilmyAddaItem(i)) {
       sec = 'filmy_adda';
-      target = 'index.html#filmyAddaSection';
-    } else if (i.curatedSection === 'bizz_world') {
+      target = 'http://localhost:4321/#filmyAddaSection';
+      storeKey = 'screenlady_custom_filmy';
+    } else if (i.curatedSection === 'bizz_world' || isBizzWorldItem(i)) {
       sec = 'bizz_world';
-      target = 'index.html#bizzWorldSection';
-    } else if (i.curatedSection === 'women_inspiration') {
+      target = 'http://localhost:4321/#bizzWorldSection';
+      storeKey = 'screenlady_custom_bizz';
+    } else if (i.curatedSection === 'women_inspiration' || isInspirationItem(i)) {
       sec = 'women_inspiration';
-      target = 'index.html#womenInspirationSection';
-    } else if (i.curatedSection === 'fashion_lifestyle') {
+      target = 'http://localhost:4321/#womenInspirationSection';
+      storeKey = 'screenlady_custom_inspiration';
+    } else if (i.curatedSection === 'fashion_lifestyle' || isFashionItem(i)) {
       sec = 'fashion_lifestyle';
-      target = 'index.html#fashionLifestyleSection';
-    } else if (isFashionItem(i)) {
-      sec = 'fashion_lifestyle';
-      target = 'index.html#fashionLifestyleSection';
-    } else if (isInspirationItem(i)) {
-      sec = 'women_inspiration';
-      target = 'index.html#womenInspirationSection';
-    } else if (isFilmyAddaItem(i)) {
-      sec = 'filmy_adda';
-      target = 'index.html#filmyAddaSection';
-    } else if (isBizzWorldItem(i)) {
-      sec = 'bizz_world';
-      target = 'index.html#bizzWorldSection';
+      target = 'http://localhost:4321/#fashionLifestyleSection';
+      storeKey = 'screenlady_custom_fashion';
     }
-    return { ...i, _section: sec, _targetUrl: target, _storageKey: 'screenlady_custom_updates' };
+    return { ...i, _section: sec, _targetUrl: target, _storageKey: storeKey };
   });
 
   let allItems = [];
@@ -1223,8 +1322,22 @@ function renderManageTable() {
   else if (activeManageFilter === 'editorials') allItems = taggedEditorials;
   else if (activeManageFilter === 'podcast') allItems = taggedPodcasts;
   else if (activeManageFilter === 'photos') allItems = taggedPhotos;
-  else if (activeManageFilter === 'updates') allItems = taggedUpdates;
-  else allItems = [...taggedNews, ...taggedHomePhotos, ...taggedEditorials, ...taggedPodcasts, ...taggedPhotos, ...taggedUpdates];
+  else if (activeManageFilter === 'updates') allItems = taggedUpdates.filter(i => i._section === 'updates');
+  else {
+    // Combine all sections with deduplication across feeds
+    allItems = [...taggedNews, ...taggedHomePhotos, ...taggedEditorials, ...taggedPodcasts, ...taggedPhotos, ...taggedUpdates];
+  }
+
+  // Deduplicate strictly by ID so no row ever appears twice in the admin desk
+  const seenTableIds = new Set();
+  const dedupedTableItems = [];
+  for (const item of allItems) {
+    if (item && item.id && !seenTableIds.has(item.id)) {
+      seenTableIds.add(item.id);
+      dedupedTableItems.push(item);
+    }
+  }
+  allItems = dedupedTableItems;
 
   // Strictly sort descending by date & timestamp (Latest First)
   allItems.sort((a, b) => {
@@ -1250,7 +1363,7 @@ function renderManageTable() {
     const safeTitle = escapeHtml(item.title || item.womanName || item.headline || 'Untitled');
     const safeDate = escapeHtml(item.displayDate || item.date || 'Recent');
     const safeCat = escapeHtml(item.category || 'General');
-    const imgSrc = item.photo || 'assets/images/featured-icon-saree.jpg';
+    const imgSrc = item.photo || 'https://ik.imagekit.io/acooladescreenlady/assets/images/featured-icon-saree.jpg';
 
     // Section Badge
     let sectionBadgeHtml = '';
@@ -1339,8 +1452,37 @@ window.editItem = function(id, section) {
     item = (typeof getAllPodcasts === 'function' ? getAllPodcasts() : []).find(i => i.id === id);
   } else if (section === 'photos') {
     item = (typeof getAllPhotos === 'function' ? getAllPhotos() : []).find(i => i.id === id);
+  } else if (section === 'filmy_adda') {
+    try {
+      const list = JSON.parse(localStorage.getItem('screenlady_custom_filmy') || '[]');
+      item = list.find(i => i && i.id === id);
+    } catch(e) {}
+    if (!item && typeof getAllUpdates === 'function') item = getAllUpdates().find(i => i.id === id);
+  } else if (section === 'bizz_world') {
+    try {
+      const list = JSON.parse(localStorage.getItem('screenlady_custom_bizz') || '[]');
+      item = list.find(i => i && i.id === id);
+    } catch(e) {}
+    if (!item && typeof getAllUpdates === 'function') item = getAllUpdates().find(i => i.id === id);
+  } else if (section === 'women_inspiration') {
+    try {
+      const list = JSON.parse(localStorage.getItem('screenlady_custom_inspiration') || '[]');
+      item = list.find(i => i && i.id === id);
+    } catch(e) {}
+    if (!item && typeof getAllUpdates === 'function') item = getAllUpdates().find(i => i.id === id);
+  } else if (section === 'fashion_lifestyle') {
+    try {
+      const list = JSON.parse(localStorage.getItem('screenlady_custom_fashion') || '[]');
+      item = list.find(i => i && i.id === id);
+    } catch(e) {}
+    if (!item && typeof getAllUpdates === 'function') item = getAllUpdates().find(i => i.id === id);
   } else {
     item = (typeof getAllUpdates === 'function' ? getAllUpdates() : []).find(i => i.id === id);
+  }
+
+  // Fallback to checking any custom storage or all home news
+  if (!item && typeof getAllHomeNews === 'function') {
+    item = getAllHomeNews().find(i => i.id === id);
   }
 
   if (!item) return;
@@ -1361,7 +1503,7 @@ window.editItem = function(id, section) {
 
   const photoInput = document.getElementById('postPhotoInput');
   if (photoInput) photoInput.value = item.photo || '';
-  updatePhotoPreview(item.photo || 'assets/images/featured-icon-saree.jpg');
+  updatePhotoPreview(item.photo || 'https://ik.imagekit.io/acooladescreenlady/assets/images/featured-icon-saree.jpg');
 
   const tagsInput = document.getElementById('postTags');
   if (tagsInput) tagsInput.value = (item.tags || []).join(', ');
@@ -1457,8 +1599,8 @@ window.resetForm = function() {
   if (dateInput) dateInput.value = new Date().toISOString().split('T')[0];
 
   const photoInput = document.getElementById('postPhotoInput');
-  if (photoInput) photoInput.value = 'assets/images/featured-icon-saree.jpg';
-  updatePhotoPreview('assets/images/featured-icon-saree.jpg');
+  if (photoInput) photoInput.value = 'https://ik.imagekit.io/acooladescreenlady/assets/images/featured-icon-saree.jpg';
+  updatePhotoPreview('https://ik.imagekit.io/acooladescreenlady/assets/images/featured-icon-saree.jpg');
 
   const uploadStatus = document.getElementById('uploadFileStatus');
   if (uploadStatus) {
@@ -1492,32 +1634,47 @@ window.deleteItem = function(id, section) {
   }
 
   // 2. Also remove from custom items list if present
-  let storageKey = 'screenlady_custom_editorials';
-  if (section === 'podcast') storageKey = 'screenlady_custom_podcasts';
-  else if (section === 'photos') storageKey = 'screenlady_custom_photos';
-  else if (section === 'updates' || ['filmy_adda', 'bizz_world', 'women_inspiration', 'fashion_lifestyle'].includes(section)) storageKey = 'screenlady_custom_updates';
-  else if (section === 'news') storageKey = 'screenlady_custom_news';
-  else if (section === 'home_photos') storageKey = 'screenlady_custom_home_photos';
+  const allStorageKeys = [
+    'screenlady_custom_editorials',
+    'screenlady_custom_podcasts',
+    'screenlady_custom_photos',
+    'screenlady_custom_updates',
+    'screenlady_custom_news',
+    'screenlady_custom_home_photos',
+    'screenlady_custom_filmy',
+    'screenlady_custom_bizz',
+    'screenlady_custom_inspiration',
+    'screenlady_custom_fashion'
+  ];
 
-  try {
-    const raw = localStorage.getItem(storageKey);
-    if (raw) {
-      const list = JSON.parse(raw);
-      const updated = list.filter(item => item.id !== id);
-      localStorage.setItem(storageKey, JSON.stringify(updated));
-    }
-    if (section === 'fashion_lifestyle') {
-      const rawF = localStorage.getItem('screenlady_custom_fashion');
-      if (rawF) {
-        const listF = JSON.parse(rawF).filter(item => item.id !== id);
-        localStorage.setItem('screenlady_custom_fashion', JSON.stringify(listF));
+  for (const sKey of allStorageKeys) {
+    try {
+      const raw = localStorage.getItem(sKey);
+      if (raw) {
+        const list = JSON.parse(raw);
+        const filtered = list.filter(item => item && item.id !== id);
+        if (filtered.length !== list.length) {
+          localStorage.setItem(sKey, JSON.stringify(filtered));
+        }
       }
-    }
+    } catch (e) {}
+  }
+  try {
     localStorage.setItem('screenlady_last_updated', Date.now().toString());
   } catch (err) {}
 
   if (editingItem && editingItem.id === id) {
     resetForm();
+  }
+
+  // Live Backend Cloudflare Worker Synchronization
+  if (window.ScreenladyAPI && typeof window.ScreenladyAPI.deleteItem === 'function') {
+    const targetSection = section;
+    window.ScreenladyAPI.deleteItem(targetSection, id)
+      .then(res => {
+        if (res && res.success) console.log(`[Screenlady Desk] Live deleted on backend (${targetSection}):`, id);
+      })
+      .catch(err => console.warn(`[Screenlady Desk] Backend delete notice:`, err.message));
   }
 
   showToast(`✓ Item permanently deleted from ${section}.`);
@@ -1566,6 +1723,10 @@ window.deleteCurrentSectionData = function() {
   if (activeManageFilter === 'all' || activeManageFilter === 'podcast') localStorage.removeItem('screenlady_custom_podcasts');
   if (activeManageFilter === 'all' || activeManageFilter === 'photos') localStorage.removeItem('screenlady_custom_photos');
   if (activeManageFilter === 'all' || activeManageFilter === 'updates') localStorage.removeItem('screenlady_custom_updates');
+  if (activeManageFilter === 'all' || activeManageFilter === 'filmy_adda') localStorage.removeItem('screenlady_custom_filmy');
+  if (activeManageFilter === 'all' || activeManageFilter === 'bizz_world') localStorage.removeItem('screenlady_custom_bizz');
+  if (activeManageFilter === 'all' || activeManageFilter === 'women_inspiration') localStorage.removeItem('screenlady_custom_inspiration');
+  if (activeManageFilter === 'all' || activeManageFilter === 'fashion_lifestyle') localStorage.removeItem('screenlady_custom_fashion');
 
   resetForm();
   showToast(`✓ All entries in ${sectionName} have been deleted.`);
@@ -1600,6 +1761,10 @@ window.deleteAllData = function() {
   localStorage.removeItem('screenlady_custom_podcasts');
   localStorage.removeItem('screenlady_custom_photos');
   localStorage.removeItem('screenlady_custom_updates');
+  localStorage.removeItem('screenlady_custom_filmy');
+  localStorage.removeItem('screenlady_custom_bizz');
+  localStorage.removeItem('screenlady_custom_inspiration');
+  localStorage.removeItem('screenlady_custom_fashion');
 
   resetForm();
   showToast('✓ All data successfully cleared from website and Editorial Desk.');
@@ -1909,6 +2074,9 @@ window.updateOrderPaymentStatus = function(orderId, newStatus) {
   order.paymentStatus = newStatus;
   saveMagazineOrders(orders);
   renderMagazineOrdersTable();
+  if (window.ScreenladyAPI && typeof window.ScreenladyAPI.updateOrderStatus === 'function') {
+    window.ScreenladyAPI.updateOrderStatus(orderId, { paymentStatus: newStatus });
+  }
   showToast(`✓ Order ${orderId} payment status updated to: ${newStatus}`);
 };
 
@@ -1920,6 +2088,9 @@ window.updateOrderShippingStatus = function(orderId, newStatus) {
   order.shippingStatus = newStatus;
   saveMagazineOrders(orders);
   renderMagazineOrdersTable();
+  if (window.ScreenladyAPI && typeof window.ScreenladyAPI.updateOrderStatus === 'function') {
+    window.ScreenladyAPI.updateOrderStatus(orderId, { dispatchStatus: newStatus });
+  }
   showToast(`✓ Order ${orderId} dispatch status updated to: ${newStatus}`);
 };
 
@@ -1931,6 +2102,9 @@ window.deleteMagazineOrder = function(orderId) {
   saveMagazineOrders(orders);
   renderMagazineOrdersTable();
   updateStatCounters();
+  if (window.ScreenladyAPI && typeof window.ScreenladyAPI.deleteOrder === 'function') {
+    window.ScreenladyAPI.deleteOrder(orderId);
+  }
   showToast(`✓ Order #${orderId} has been deleted.`);
 };
 
@@ -2090,9 +2264,9 @@ window.openMagazineIssueConfigModal = function() {
   const settings = (typeof getMagazineSettings === 'function') ? getMagazineSettings() : {
     edition: 'November 2026 — Power, Art & Corporate Leadership Issue',
     monthYear: 'November 2026',
-    price: 499,
-    coverImage: 'assets/images/magazine-cover-latest.jpg',
-    page2Image: 'assets/images/magazine-page2-feature.jpg',
+    price: 220,
+    coverImage: 'https://ik.imagekit.io/acooladescreenlady/assets/images/magazine-cover-latest.jpg',
+    page2Image: 'https://ik.imagekit.io/acooladescreenlady/assets/images/magazine-page2-feature.jpg',
     headline: 'THE ARCHITECTS OF MODERN INFLUENCE',
     subtitle: 'Celebrating Trailblazing Women Behind the Screen & Across Boardrooms',
     popupBadge: 'Screenlady Print Magazine',

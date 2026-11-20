@@ -143,18 +143,11 @@ function initUpdatesManager() {
   renderUpdates('all');
   initUpdatesToolbar();
 
-  // Async sync with Cloudflare Worker Backend:
+  // Async sync with Cloudflare Worker Backend once on load:
   async function syncUpdatesFromBackend() {
     if (!window.ScreenladyAPI) return;
     try {
-      const [liveData, deletedIds] = await Promise.all([
-        typeof window.ScreenladyAPI.getUpdates === 'function' ? window.ScreenladyAPI.getUpdates() : Promise.resolve([]),
-        typeof window.ScreenladyAPI.getDeletedIds === 'function' ? window.ScreenladyAPI.getDeletedIds() : Promise.resolve([])
-      ]);
-
-      if (deletedIds && Array.isArray(deletedIds)) {
-        window.backendDeletedIds = deletedIds;
-      }
+      const liveData = typeof window.ScreenladyAPI.getUpdates === 'function' ? await window.ScreenladyAPI.getUpdates() : [];
       if (Array.isArray(liveData)) {
         window.backendLiveUpdates = liveData;
         renderUpdates(activeUpdatesFilter || 'all');
@@ -165,11 +158,6 @@ function initUpdatesManager() {
   }
 
   syncUpdatesFromBackend();
-  setInterval(syncUpdatesFromBackend, 6000);
-
-  window.addEventListener('focus', () => {
-    syncUpdatesFromBackend();
-  });
 
   // If a hash exists in URL, scroll to it and open the reader modal
   const hash = window.location.hash.replace('#', '');
