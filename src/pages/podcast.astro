@@ -1,0 +1,54 @@
+---
+// podcast.astro
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+const extraScripts = ["/assets/js/podcast.js"];
+---
+
+<BaseLayout
+  title="Podcast"
+  description="Listen to inspiring voices, interviews, and deep conversations with women pioneers."
+  activeNav="podcast"
+  extraScripts={extraScripts}
+>
+<!-- Main Content Layout Section: Podcast Episodes Feed (Latest First with 10s Playback Preview) -->
+  <main class="main-content" style="min-height: 70vh; padding: 3rem 0 5rem;">
+    <div class="container">
+
+      <!-- Podcast Page Header -->
+      <section class="updates-page-header">
+        <div class="updates-header-badge">
+          <span>✦ Screenlady Broadcast Studio & Conversations</span>
+        </div>
+        <h1 class="updates-page-title">
+          The Screenlady Podcast — Voices of Distinction
+        </h1>
+        <p class="updates-page-desc">
+          Official masterclass dialogues and video podcast series celebrating extraordinary women across cinema, entrepreneurship, corporate leadership, and cultural impact. Currently in studio production.
+        </p>
+
+        <!-- Podcast Control Toolbar -->
+        <div class="updates-toolbar">
+          <div class="updates-filter-group" role="tablist" aria-label="Filter Podcasts">
+            <button class="podcast-filter-btn active" data-filter="all">All Broadcasts</button>
+            <button class="podcast-filter-btn" data-filter="Cinema & Arts">🎬 Cinema & Arts</button>
+            <button class="podcast-filter-btn" data-filter="Leadership">💼 Leadership</button>
+            <button class="podcast-filter-btn" data-filter="Dialogue">🎙️ Cultural Dialogue</button>
+          </div>
+
+          <div class="updates-actions-group">
+            <span id="podcastTotalCount" style="font-size: 0.78rem; color: var(--gold-light); font-weight: 600; letter-spacing: 0.04em;">Season 1 • Premiering Soon</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- Chronological Podcast Feed: Audio & Video Broadcast Grid -->
+      <div class="podcast-feed" id="podcastFeedContainer">
+        <!-- Rendered dynamically by podcast.js (Latest always displays first with 10s Preview) -->
+      </div>
+
+    </div>
+  </main>
+
+  <!-- Master Site Footer with Highlighted Screenlady Logo (Lower Section) -->
+</BaseLayout>

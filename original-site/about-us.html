@@ -1,0 +1,964 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>About Us | Accolade Screenlady</title>
+  <meta name="description"
+    content="Discover the story, vision, and mission of Accolade Screenlady. Conceptualized & Produced by Mr. Prashant Chandrakant Sagvekar.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,400;1,600&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/style.css">
+  <link rel="stylesheet" href="assets/css/editorial-homepage.css">
+  <link rel="icon" type="image/png" href="assets/images/logo-2.png">
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
+</head>
+
+<body>
+
+  <!-- Top Announcement Bar (Upper Section) -->
+  <aside class="top-bar">
+    <div class="container top-bar-inner">
+      <div class="top-bar-notice">
+        <span>Accolade Screenlady • Celebrating Women of Distinction & Cultural Icons</span>
+      </div>
+      <div class="top-bar-links">
+        <button type="button" class="print-highlight" onclick="handleAvailableInPrintClick()"
+          title="Order Monthly Print Edition (₹220 Home Delivery) - Available in Print"
+          aria-label="Available in Print - Order Monthly Print Edition">
+          <span>Available in Print</span>
+        </button>
+        <span class="top-bar-sep">•</span>
+
+        <!-- Contact Us Dropdown with WhatsApp & Email -->
+        <div class="top-contact-dropdown" id="contactDropdownWrap">
+          <button class="top-contact-btn" id="contactDropdownTrigger" aria-expanded="false" aria-haspopup="true">
+            <span>Contact Us</span>
+            <svg class="dropdown-chevron" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+              stroke-width="2.5">
+              <polyline points="6 9 12 15 18 9"></polyline>
+            </svg>
+          </button>
+                    <div class="contact-dropdown-menu" id="contactDropdownMenu" role="menu">
+            <div class="contact-dropdown-header">Official Screenlady Contact</div>
+            
+            <a href="https://wa.me/919665035503" target="_blank" rel="noopener" class="contact-dropdown-item" role="menuitem">
+              <span class="contact-item-icon whatsapp-bg">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path>
+                </svg>
+              </span>
+              <div class="contact-item-text">
+                <span class="contact-item-label">WhatsApp / Phone</span>
+                <span class="contact-item-val">+91 96650 35503</span>
+              </div>
+            </a>
+
+            <a href="mailto:editor@accoladescreenlady.com" class="contact-dropdown-item" role="menuitem">
+              <span class="contact-item-icon email-bg">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                  <polyline points="22,6 12,13 2,6"></polyline>
+                </svg>
+              </span>
+              <div class="contact-item-text">
+                <span class="contact-item-label">Editor Email</span>
+                <span class="contact-item-val">editor@accoladescreenlady.com</span>
+              </div>
+            </a>
+
+            <a href="mailto:AccoladeScreenlady@gmail.com" class="contact-dropdown-item" role="menuitem">
+              <span class="contact-item-icon email-bg">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                  <polyline points="22,6 12,13 2,6"></polyline>
+                </svg>
+              </span>
+              <div class="contact-item-text">
+                <span class="contact-item-label">Editorial Desk</span>
+                <span class="contact-item-val">AccoladeScreenlady@gmail.com</span>
+              </div>
+            </a>
+
+            <div class="contact-dropdown-footer">
+              <a href="about-us.html#contact">Open Full Contact Desk →</a>
+            </div>
+          </div>
+        </div>
+
+        <span class="top-bar-sep">•</span>
+        <!-- Google Real Authentication (Sign In / Sign Up) -->
+        <div class="google-auth-wrapper" id="googleAuthWrapper">
+          <button class="btn-google-auth" id="googleAuthBtn" aria-label="Sign in with Google">
+            <svg class="google-icon" width="14" height="14" viewBox="0 0 24 24">
+              <path fill="#4285F4"
+                d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
+              <path fill="#34A853"
+                d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
+              <path fill="#FBBC05"
+                d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z" />
+              <path fill="#EA4335"
+                d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z" />
+            </svg>
+            <span>Sign In / Sign Up</span>
+          </button>
+          <div class="user-profile-badge" id="userProfileBadge" style="display: none;">
+            <img class="user-avatar" id="userAvatar" src="" alt="Google Profile">
+            <span class="user-name" id="userName">User</span>
+            <button class="btn-signout" id="googleSignoutBtn" title="Sign Out">✕</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Site Header with Enlarged Logo, Home Icon, Photos in Nav, Colorful Socials, and Latest Issue (Magazine) -->
+  <header class="site-header">
+    <div class="container header-inner">
+      <a href="index.html" class="brand-logo" aria-label="Accolade Screenlady Home">
+        <img src="assets/images/logo-2.png" alt="Accolade Queen Emblem" class="brand-emblem-icon">
+        <img src="assets/images/logo.png" alt="Accolade Screenlady Logo" class="brand-logo-img">
+      </a>
+
+      <!-- Desktop Navigation Menu (Photos section placed on left of About Us) -->
+      <nav class="nav-menu" aria-label="Main Navigation">
+        <a href="index.html" class="nav-link nav-home-icon" aria-label="Home" title="Home">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+            <polyline points="9 22 9 12 15 12 15 22"></polyline>
+          </svg>
+        </a>
+        <a href="updates.html" class="nav-link">Updates</a>
+        <a href="editorials.html" class="nav-link">Editorials</a>
+        <a href="podcast.html" class="nav-link">Podcast</a>
+        <a href="photos.html" class="nav-link">Photos</a>
+        <a href="about-us.html" class="nav-link active">About Us</a>
+      </nav>
+
+      <!-- Header Action Controls with Colorful Social Media Logos Left of Search -->
+      <div class="header-actions">
+                <!-- Vibrant Colorful Social Media Logos -->
+        <div class="header-social-links" aria-label="Official Social Channels">
+          <a href="https://www.instagram.com/accoladescreenlady_official?obrf=M2plNzAza252NWlu" target="_blank" rel="noopener" class="header-social-icon instagram" aria-label="Instagram (@accoladescreenlady_official)" title="Instagram (@accoladescreenlady_official)">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
+              <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
+              <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
+            </svg>
+          </a>
+          <a href="https://www.youtube.com/@AccoladeScreenlady" target="_blank" rel="noopener" class="header-social-icon youtube" aria-label="YouTube (@AccoladeScreenlady)" title="YouTube (@AccoladeScreenlady)">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M22.54 6.42a2.78 2.78 0 0 0-1.94-2C18.88 4 12 4 12 4s-6.88 0-8.6.46a2.78 2.78 0 0 0-1.94 2A29 29 0 0 0 1 11.75a29 29 0 0 0 .46 5.33A2.78 2.78 0 0 0 3.4 19c1.72.46 8.6.46 8.6.46s6.88 0 8.6-.46a2.78 2.78 0 0 0 1.94-2 29 29 0 0 0 .46-5.25 29 29 0 0 0-.46-5.33z"></path>
+              <polygon points="9.75 15.02 15.5 11.75 9.75 8.48 9.75 15.02" fill="currentColor"></polygon>
+            </svg>
+          </a>
+          <a href="https://www.facebook.com/AccoladeScreenlady" target="_blank" rel="noopener" class="header-social-icon facebook" aria-label="Facebook (Accolade Screenlady)" title="Facebook (Accolade Screenlady)">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path>
+            </svg>
+          </a>
+        </div>
+
+        <button class="btn-icon search-trigger" aria-label="Search content">
+          🔍
+        </button>
+        <button class="btn btn-gold btn-sm" data-modal-trigger data-modal-type="magazine-preview"
+          data-issue="Latest Issue (Magazine)">
+          Latest Issue (Magazine)
+        </button>
+        <button class="hamburger" id="hamburgerBtn" aria-label="Toggle navigation menu">
+          <span></span>
+          <span></span>
+          <span></span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Mobile Sub-Header Quick Navigation Strip (Direct 1-tap access to Home, Photos, About Us, etc.) -->
+  <nav class="mobile-sub-nav" aria-label="Mobile Quick Navigation">
+    <a href="index.html" class="mobile-sub-nav-pill">🏠 Home</a>
+    <a href="photos.html" class="mobile-sub-nav-pill">📷 Photos</a>
+    <a href="about-us.html" class="mobile-sub-nav-pill active">🏛️ About Us</a>
+    <a href="editorials.html" class="mobile-sub-nav-pill">✒️ Editorials</a>
+    <a href="updates.html" class="mobile-sub-nav-pill">📰 Updates</a>
+    <a href="podcast.html" class="mobile-sub-nav-pill">🎙️ Podcast</a>
+  </nav>
+
+  <!-- Mobile Navigation Drawer -->
+  <div class="mobile-nav-backdrop" id="mobileNavBackdrop"></div>
+  <aside class="mobile-nav" id="mobileNav">
+    <div>
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+        <a href="index.html" style="display: flex; align-items: center; gap: 0.5rem;">
+          <img src="assets/images/logo-2.png" alt="Accolade Screenlady Emblem"
+            style="height: 38px; filter: drop-shadow(0 0 12px rgba(212,175,55,0.7));">
+          <img src="assets/images/logo.png" alt="Accolade Screenlady"
+            style="height: 30px; filter: drop-shadow(0 0 10px rgba(212,175,55,0.6));">
+        </a>
+        <button id="mobileNavClose" style="color: var(--gold-primary); font-size: 1.5rem;">✕</button>
+      </div>
+      <nav class="mobile-nav-links">
+        <a href="index.html" class="mobile-nav-link">Home <span>→</span></a>
+        <a href="updates.html" class="mobile-nav-link">Updates <span>→</span></a>
+        <a href="editorials.html" class="mobile-nav-link">Editorials <span>→</span></a>
+        <a href="podcast.html" class="mobile-nav-link">Podcast <span>→</span></a>
+        <a href="photos.html" class="mobile-nav-link">Photos <span>→</span></a>
+        <a href="about-us.html" class="mobile-nav-link active">About Us <span>→</span></a>
+      </nav>
+    </div>
+    <div class="mobile-nav-footer">
+      <button class="btn btn-gold" data-modal-trigger data-modal-type="magazine-preview"
+        data-issue="Latest Issue (Magazine)" style="width: 100%;">
+        Read Latest Issue (Magazine)
+      </button>
+            <div class="mobile-socials">
+        <a href="https://www.instagram.com/accoladescreenlady_official?obrf=M2plNzAza252NWlu" target="_blank" rel="noopener" aria-label="Instagram (@accoladescreenlady_official)">IG</a>
+        <a href="https://www.youtube.com/@AccoladeScreenlady" target="_blank" rel="noopener" aria-label="YouTube (@AccoladeScreenlady)">YT</a>
+        <a href="https://www.facebook.com/AccoladeScreenlady" target="_blank" rel="noopener" aria-label="Facebook (Accolade Screenlady)">FB</a>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Main Content Layout Section -->
+  <main class="about-page-main">
+
+    <!-- Hero Header Banner -->
+    <section class="about-page-hero">
+      <div class="container">
+        <span class="about-page-kicker">✦ The Mirror of the World of Women</span>
+        <h1 class="about-page-title">About Accolade Screenlady</h1>
+        <p class="about-page-sub">
+          A premier Marathi magazine and digital media platform exploring the diverse dimensions of women's
+          personalities, struggles, achievements, and triumphs — from entertainment to entrepreneurship, from glamour to
+          great milestones.
+        </p>
+        <div style="display: flex; justify-content: center; gap: 1rem; flex-wrap: wrap;">
+          <a href="#vision" class="btn-editorial-gold"><span>Our Story & Vision</span><span>↓</span></a>
+          <a href="#team" class="btn-editorial-outline"><span>Meet Our Leadership Team</span><span>↓</span></a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 1: Story & Vision (Light Warm Ivory) -->
+    <section class="editorial-about-section" id="vision">
+      <div class="container">
+        <div class="editorial-about-grid">
+
+          <div class="about-photo-wrapper">
+            <div class="about-magazine-frame" data-lightbox-src="assets/images/magazine-photos/random2.jpg"
+              data-lightbox-title="Accolade Screenlady - Editorial Spread"
+              data-lightbox-theme="About Accolade Screenlady">
+              <img src="assets/images/magazine-photos/random2.jpg" alt="Accolade Screenlady Magazine Spread"
+                class="about-magazine-img">
+            </div>
+          </div>
+
+          <div class="about-editorial-content">
+            <span class="editorial-kicker-light">✦ Women-Centric Marathi Publication</span>
+            <h2 class="editorial-section-title-light">
+              About Accolade Screenlady
+            </h2>
+            <p class="editorial-lead-light">
+              “Today's woman is no longer confined to household boundaries. She is making her mark in entertainment,
+              politics, industry, business, education, medicine, technology, and beyond.”
+            </p>
+            <p class="editorial-paragraph-light">
+              <strong>Accolade Screenlady</strong> is a women-centric Marathi magazine that aims to present the many
+              dimensions of women's personalities and lives to its readers. Going beyond the glamorous public image of
+              actresses, models and artists from the entertainment industry, the magazine seeks to explore their
+              emotions, struggles, experiences, thoughts and the ups and downs of their personal and professional
+              journeys.
+            </p>
+            <p class="editorial-paragraph-light">
+              Through exclusive interviews with renowned actresses from the film industry, readers get insights into
+              their fashion trends, beauty, acting careers and lesser-known aspects of their lives. However, the scope
+              of Accolade Screenlady extends far beyond the entertainment world. The magazine also gives paramount
+              importance to the inspiring journeys of women leaders in politics, successful doctors, engineers, pilots,
+              administrative officers, women entrepreneurs, business professionals and senior executives in the
+              corporate sector.
+            </p>
+
+            <div class="editorial-feature-pills">
+              <div class="feature-pill-light">📖 Premium High-Gloss Print Edition</div>
+              <div class="feature-pill-light">👑 Cinema, Culture & Performing Arts</div>
+              <div class="feature-pill-light">💼 Corporate Leadership & Entrepreneurs</div>
+              <div class="feature-pill-light">🏛️ Administrative & Political Pioneers</div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 2: Visionary Concept Creator & Founder (Dark Luxury) -->
+    <section class="editorial-visionary-section" id="founder">
+      <div class="container">
+        <div class="visionary-grid">
+
+          <div class="visionary-photo-col">
+            <div class="visionary-frame" data-lightbox-src="assets/images/team/prashant-sagvekar.jpeg"
+              data-lightbox-title="Mr. Prashant Chandrakant Sagvekar - Founder & Publisher"
+              data-lightbox-theme="Founder Spotlight">
+              <img src="assets/images/team/prashant-sagvekar.jpeg" alt="Mr. Prashant Chandrakant Sagvekar"
+                class="visionary-img" style="object-position: top center;">
+            </div>
+            <div class="visionary-portrait-inset" title="Mr. Prashant Chandrakant Sagvekar">
+              <img src="assets/images/prashant-sagvekar-main.jpg" alt="Mr. Prashant Chandrakant Sagvekar Portrait">
+            </div>
+          </div>
+
+          <div class="visionary-content-col">
+            <span class="editorial-kicker">✦ Founder, Publisher & Editor</span>
+            <h2 class="visionary-name">A Vision Inspired by Years of Journalistic Experience</h2>
+            <div class="visionary-roles">Mr. Prashant Chandrakant Sagvekar • Senior Broadcast Journalist &
+              Conceptualizer</div>
+
+            <p class="visionary-bio" style="font-size: 1.05rem; color: #EDE8DE; margin-top: 1.25rem;">
+              The conceptualizer, publisher and editor of Accolade Screenlady, <strong>Mr. Prashant Chandrakant
+                Sagvekar</strong>, is a senior journalist with more than 25 years of distinguished experience in the
+              media industry.
+            </p>
+
+            <p class="visionary-bio">
+              His professional experience with reputed media organisations such as <strong>All India Radio, Doordarshan
+                Sahyadri, Sahara Samay</strong> and <strong>Saam Marathi</strong> has played an instrumental role in
+              shaping the vision behind this magazine.
+            </p>
+
+            <p class="visionary-bio">
+              Accolade Screenlady was conceptualised with the objective of creating an independent platform where the
+              achievements of women from different walks of life could receive national recognition and their inspiring
+              stories could reach a wider audience.
+            </p>
+
+            <div style="margin-top: 2rem;">
+              <a href="#team" class="btn-editorial-gold">
+                <span>View Full Editorial Board</span>
+                <span>→</span>
+              </a>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 3: Executive Leadership & Editorial Board (Light Ivory) -->
+    <section class="editorial-about-section" id="team" style="background: #FFFFFF;">
+      <div class="container">
+
+        <div class="editorial-team-header" style="margin-bottom: 3.5rem;">
+          <span class="editorial-kicker-light">✦ The Leadership Behind The Vision</span>
+          <h2 class="editorial-team-heading">Our Executive Leadership & Editorial Board</h2>
+          <p class="editorial-team-sub">
+            Meet the visionary journalists, acclaimed performing artists, and media directors guiding <em>Accolade
+              Screenlady</em>.
+          </p>
+        </div>
+
+        <div class="editorial-team-grid">
+
+          <!-- 1. Mr. Prashant Sagvekar -->
+          <div class="team-member-card">
+            <div class="team-photo-wrap" data-lightbox-src="assets/images/team/prashant-sagvekar.jpeg"
+              data-lightbox-title="Mr. Prashant Sagvekar - Founder & Publisher"
+              data-lightbox-theme="Executive Leadership">
+              <img src="assets/images/team/prashant-sagvekar.jpeg" alt="Mr. Prashant Sagvekar" class="team-photo-img"
+                style="object-position: top center;">
+              <span class="team-role-badge">Founder & Publisher</span>
+            </div>
+            <div class="team-details">
+              <h3 class="team-name">Mr. Prashant Sagvekar</h3>
+              <span class="team-designation">Founder & Publisher</span>
+              <p class="team-bio">
+                Senior journalist with 25+ years of distinguished media leadership with All India Radio, Doordarshan
+                Sahyadri, Sahara Samay, and Saam Marathi. Concept creator and visionary publisher dedicated to
+                spotlighting women's resilience and triumph.
+              </p>
+            </div>
+          </div>
+
+          <!-- 2. Mrs. Amruta Rao -->
+          <div class="team-member-card">
+            <div class="team-photo-wrap" data-lightbox-src="assets/images/team/amruta-rao.jpeg"
+              data-lightbox-title="Mrs. Amruta Rao - Editor In Chief" data-lightbox-theme="Editorial Board">
+              <img src="assets/images/team/amruta-rao.jpeg" alt="Mrs. Amruta Rao" class="team-photo-img"
+                style="object-position: top center;">
+              <span class="team-role-badge">Editor In Chief</span>
+            </div>
+            <div class="team-details">
+              <h3 class="team-name">Mrs. Amruta Rao</h3>
+              <span class="team-designation">Editor In Chief</span>
+              <p class="team-bio">
+                Directs the magazine's editorial curation, investigative depth, and high-fashion aesthetic. She
+                orchestrates cover features, cultural interviews, and thought-provoking discourses on women shaping
+                entertainment, society, and modern enterprise.
+              </p>
+            </div>
+          </div>
+
+          <!-- 3. Mrs. Manasi Ingle -->
+          <div class="team-member-card">
+            <div class="team-photo-wrap" data-lightbox-src="assets/images/team/mansi-ingle.jpeg"
+              data-lightbox-title="Mrs. Manasi Ingle - Board Member" data-lightbox-theme="Board of Directors">
+              <img src="assets/images/team/mansi-ingle.jpeg" alt="Mrs. Manasi Ingle" class="team-photo-img"
+                style="object-position: center 20%;">
+              <span class="team-role-badge">Board Member</span>
+            </div>
+            <div class="team-details">
+              <h3 class="team-name">Mrs. Manasi Ingle</h3>
+              <span class="team-designation">Board Member</span>
+              <p class="team-bio">
+                Provides strategic stewardship and organizational leadership. Passionate about women empowerment,
+                education, and grassroots leadership, she steers initiatives that champion unsung heroines and emerging
+                changemakers across Maharashtra.
+              </p>
+            </div>
+          </div>
+
+          <!-- 4. Mrs. Supriya Vinod -->
+          <div class="team-member-card">
+            <div class="team-photo-wrap" data-lightbox-src="assets/images/team/supriya-vinod.jpeg"
+              data-lightbox-title="Mrs. Supriya Vinod - Board Member" data-lightbox-theme="Board of Directors">
+              <img src="assets/images/team/supriya-vinod.jpeg" alt="Mrs. Supriya Vinod" class="team-photo-img"
+                style="object-position: top center;">
+              <span class="team-role-badge">Board Member</span>
+            </div>
+            <div class="team-details">
+              <h3 class="team-name">Mrs. Supriya Vinod</h3>
+              <span class="team-designation">Board Member</span>
+              <p class="team-bio">
+                Acclaimed veteran actress and distinguished cultural icon. Infuses profound artistic heritage and
+                creative mentorship into the publication, celebrating cinematic excellence and performing arts across
+                Marathi and Indian entertainment.
+              </p>
+            </div>
+          </div>
+
+          <!-- 5. Mrs. Sakshi Sagvekar -->
+          <div class="team-member-card">
+            <div class="team-photo-wrap" data-lightbox-src="assets/images/team/sakshi-sagvekar.jpeg"
+              data-lightbox-title="Mrs. Sakshi Sagvekar - Managing Director" data-lightbox-theme="Executive Leadership">
+              <img src="assets/images/team/sakshi-sagvekar.jpeg" alt="Mrs. Sakshi Sagvekar" class="team-photo-img"
+                style="object-position: center 12%;">
+              <span class="team-role-badge">Managing Director</span>
+            </div>
+            <div class="team-details">
+              <h3 class="team-name">Mrs. Sakshi Sagvekar</h3>
+              <span class="team-designation">Managing Director</span>
+              <p class="team-bio">
+                Directs executive operations, business administration, and print production workflows. Dedicated to
+                operational excellence, brand governance, and strategic growth across digital channels and collector's
+                print publications.
+              </p>
+            </div>
+          </div>
+
+          <!-- 6. Mr. Vedang Sagvekar -->
+          <div class="team-member-card">
+            <div class="team-photo-wrap" data-lightbox-src="assets/images/team/vedang-sagvekar.jpeg"
+              data-lightbox-title="Mr. Vedang Sagvekar - Marketing Director" data-lightbox-theme="Executive Leadership">
+              <img src="assets/images/team/vedang-sagvekar.jpeg" alt="Mr. Vedang Sagvekar" class="team-photo-img"
+                style="object-position: center 15%;">
+              <span class="team-role-badge">Marketing Director</span>
+            </div>
+            <div class="team-details">
+              <h3 class="team-name">Mr. Vedang Sagvekar</h3>
+              <span class="team-designation">Marketing Director</span>
+              <p class="team-bio">
+                Spearheads brand outreach, corporate sponsorships, and multi-channel marketing campaigns. He expands
+                Screenlady's cross-platform readership, strategic partnerships, and contemporary digital engagement
+                nationwide.
+              </p>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </section>
+
+    <!-- Section 4: Philosophy Banner (Dark Gold Foil) -->
+    <section class="editorial-philosophy-banner" id="philosophy">
+      <div class="container philosophy-container">
+
+        <img src="assets/images/logo-2.png" alt="Accolade Queen Crest" class="philosophy-crest">
+
+        <div
+          style="font-family: var(--font-editorial-body); font-size: 0.85rem; font-weight: 800; letter-spacing: 0.2em; text-transform: uppercase; color: var(--gold-light-accent); margin-bottom: 1rem;">
+          ✦ ACCOLADE SCREENLADY – A MIRROR OF THE WORLD OF WOMEN! ✦
+        </div>
+
+        <h2 class="philosophy-tagline-primary" style="font-size: clamp(2rem, 3.8vw, 3.2rem); margin-bottom: 1.5rem;">
+          Celebrating Women's Success, Inspiring the Next Generation!
+        </h2>
+
+        <div
+          style="max-width: 840px; margin: 0 auto 2.5rem; color: #D8D3C8; font-family: var(--font-editorial-body); font-size: 1.02rem; line-height: 1.8;">
+          <p style="margin-bottom: 1rem;">
+            Today, women have more opportunities than ever to demonstrate their abilities and establish themselves in
+            different fields. However, platforms that recognise their achievements and bring their experiences and
+            stories to society are equally important. Accolade Screenlady is committed to contributing to this vision.
+          </p>
+          <p>
+            Driven by the philosophy <strong>“Her Beauty, Her Achievements, Her Story of Struggle!”</strong>, Accolade
+            Screenlady is much more than just a publication. It is an inspiring platform that celebrates women's
+            confidence, dreams, determination and success.
+          </p>
+        </div>
+
+        <div
+          style="padding: 1.5rem 2rem; border-top: 1px solid rgba(212, 175, 55, 0.3); border-bottom: 1px solid rgba(212, 175, 55, 0.3); margin-bottom: 2.5rem; background: rgba(212, 175, 55, 0.05); border-radius: 8px;">
+          <div
+            style="font-family: var(--font-editorial-heading); font-size: clamp(1.4rem, 2.5vw, 2.2rem); font-weight: 800; color: #FFFFFF; margin-bottom: 0.65rem;">
+            “Her Beauty, Her Achievements, Her Story of Struggle!”
+          </div>
+          <div
+            style="font-family: var(--font-editorial-heading); font-size: clamp(1.1rem, 1.8vw, 1.5rem); font-style: italic; color: var(--gold-light-accent);">
+            “Because every woman has a story to tell... and every story deserves to reach the world!”
+          </div>
+        </div>
+
+        <div class="philosophy-actions">
+          <button type="button" class="btn-editorial-gold" onclick="handleAvailableInPrintClick()">
+            <span>Order Collector's Print Edition</span>
+            <span>→</span>
+          </button>
+          <a href="#contact" class="btn-editorial-outline">
+            <span>Contact Editorial Desk</span>
+          </a>
+        </div>
+
+      </div>
+    </section>
+
+        <!-- ==============================================
+         SECTION 5: OFFICIAL MAGAZINE INTRODUCTION & COMPENDIUM
+         (Replaced Official Contact & Editorial Desk)
+    ============================================== -->
+    <section class="magazine-official-info-section" id="contact">
+      <div class="container">
+
+        <!-- Header -->
+        <div class="editorial-header-center" style="margin-bottom: 3.5rem;">
+          <span class="editorial-kicker">✦ OFFICIAL COMPENDIUM & MAGAZINE INTRODUCTION</span>
+          <h2 class="editorial-section-title-dark" style="font-size: clamp(2rem, 3.4vw, 3rem); margin-bottom: 0.65rem;">
+            ACCOLADE SCREENLADY MAGAZINE
+          </h2>
+          <p class="editorial-section-sub-dark" style="font-size: 1.15rem; color: var(--gold-light-accent); font-weight: 600; max-width: 820px; margin: 0 auto;">
+            A Magazine That Celebrates Women's Achievements, Struggles and Success Stories
+          </p>
+          <p class="editorial-section-sub-dark" style="font-size: 0.95rem; opacity: 0.85; max-width: 760px; margin: 0.5rem auto 0;">
+            A premier women-centric publication exploring the diverse world of women — from entertainment to entrepreneurship, from glamour to great milestones.
+          </p>
+        </div>
+
+        <!-- 1. English Introduction Showcase Card -->
+        <div class="magazine-intro-card">
+          <span class="mag-title-badge">✦ EDITORIAL VISION & MISSION</span>
+          <h3 class="mag-main-headline">
+            Celebrating Women's Achievements, Experiences and Inspiring Journeys
+          </h3>
+          <div class="mag-lead-quote">
+            “Accolade Screenlady is dedicated to celebrating the achievements, experiences, and inspiring journeys of women across all walks of life.”
+          </div>
+          <p class="mag-body-paragraph">
+            <strong>Accolade Screenlady</strong> is a women-centric Marathi magazine dedicated to highlighting the achievements, experiences and inspiring journeys of women across various fields, including entertainment, glamour, women empowerment, business, entrepreneurship and social development.
+          </p>
+          <p class="mag-body-paragraph" style="margin-bottom: 0;">
+            The magazine aims not only to feature well-known personalities but also to bring forward the inspiring stories of ordinary women who have achieved extraordinary success through hard work, determination and perseverance.
+          </p>
+        </div>
+
+        <!-- 2. Key Features of the Magazine -->
+        <div style="margin-bottom: 4.5rem;">
+          <div style="text-align: center; margin-bottom: 2.8rem;">
+            <span class="editorial-kicker">✦ DIVERSE EDITORIAL DOMAINS</span>
+            <h3 style="font-family: var(--font-editorial-heading); font-size: clamp(1.6rem, 2.6vw, 2.2rem); color: #FFFFFF; margin-top: 0.5rem;">
+              Key Features of the Magazine
+            </h3>
+          </div>
+
+          <div class="mag-features-grid">
+            
+            <!-- Feature 1: Entertainment World -->
+            <div class="mag-feature-item">
+              <div class="mag-feature-bg" style="background-image: url('assets/images/magazine-photos/3.1.jpg');"></div>
+              <div class="mag-feature-overlay"></div>
+              <div class="mag-feature-content">
+                <div class="mag-feature-top">
+                  <div class="mag-feature-icon">🎬</div>
+                  <span class="mag-feature-tag">Cinema & Arts</span>
+                </div>
+                <h4>Entertainment World</h4>
+                <p>Exclusive insights into the lives and journeys of actresses, models, artists and entertainment personalities from the Marathi and Hindi film industries.</p>
+              </div>
+            </div>
+
+            <!-- Feature 2: Women's Achievements -->
+            <div class="mag-feature-item">
+              <div class="mag-feature-bg" style="background-image: url('assets/images/magazine-photos/4.2.jpg');"></div>
+              <div class="mag-feature-overlay"></div>
+              <div class="mag-feature-content">
+                <div class="mag-feature-top">
+                  <div class="mag-feature-icon">👑</div>
+                  <span class="mag-feature-tag">Leadership</span>
+                </div>
+                <h4>Women's Achievements</h4>
+                <p>Success stories of women making impactful marks in politics, medicine, engineering, aviation, education and public administration.</p>
+              </div>
+            </div>
+
+            <!-- Feature 3: Women Entrepreneurs -->
+            <div class="mag-feature-item">
+              <div class="mag-feature-bg" style="background-image: url('assets/images/magazine-photos/3.4.jpg');"></div>
+              <div class="mag-feature-overlay"></div>
+              <div class="mag-feature-content">
+                <div class="mag-feature-top">
+                  <div class="mag-feature-icon">💼</div>
+                  <span class="mag-feature-tag">Enterprise</span>
+                </div>
+                <h4>Women Entrepreneurs</h4>
+                <p>Inspiring journeys of women establishing their distinct identities in industries, businesses, corporate sectors, real estate and startups.</p>
+              </div>
+            </div>
+
+            <!-- Feature 4: Fashion & Lifestyle -->
+            <div class="mag-feature-item">
+              <div class="mag-feature-bg" style="background-image: url('assets/images/magazine-photos/5.1.jpg');"></div>
+              <div class="mag-feature-overlay"></div>
+              <div class="mag-feature-content">
+                <div class="mag-feature-top">
+                  <div class="mag-feature-icon">✨</div>
+                  <span class="mag-feature-tag">Haute Couture</span>
+                </div>
+                <h4>Fashion & Lifestyle</h4>
+                <p>Beauty, haute fashion, jewellery, personality development, brand introductions and evolving contemporary lifestyle trends.</p>
+              </div>
+            </div>
+
+            <!-- Feature 5: Inspirational Interviews -->
+            <div class="mag-feature-item">
+              <div class="mag-feature-bg" style="background-image: url('assets/images/magazine-photos/4.1.jpg');"></div>
+              <div class="mag-feature-overlay"></div>
+              <div class="mag-feature-content">
+                <div class="mag-feature-top">
+                  <div class="mag-feature-icon">🎙️</div>
+                  <span class="mag-feature-tag">Memoirs</span>
+                </div>
+                <h4>Inspirational Interviews</h4>
+                <p>Exclusive in-depth interviews and personal memoirs of women who have overcome adversity, persevered, and achieved lasting success.</p>
+              </div>
+            </div>
+
+            <!-- Feature 6: Stories & Literature -->
+            <div class="mag-feature-item">
+              <div class="mag-feature-bg" style="background-image: url('assets/images/magazine-photos/4.3.jpg');"></div>
+              <div class="mag-feature-overlay"></div>
+              <div class="mag-feature-content">
+                <div class="mag-feature-top">
+                  <div class="mag-feature-icon">📖</div>
+                  <span class="mag-feature-tag">Literature</span>
+                </div>
+                <h4>Stories & Literature</h4>
+                <p>Romantic stories, suspense and mystery narratives, social issues, and thought-provoking analytical essays on modern womanhood.</p>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- 3. Official Magazine Information & PRGI Registry -->
+        <div class="official-reg-container" id="official-info">
+          <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+            <div>
+              <span class="editorial-kicker">✦ GOVERNMENT OF INDIA PRGI REGISTRY</span>
+              <h3 style="font-family: var(--font-editorial-heading); font-size: clamp(1.5rem, 2.4vw, 2rem); color: #FFFFFF; margin-top: 0.5rem; margin-bottom: 0.25rem;">
+                Official Magazine Information
+              </h3>
+            </div>
+            <div class="official-seal-note">
+              <span>🏛️ PRGI Registered • MHMAR/26/A3113</span>
+            </div>
+          </div>
+
+          <div class="official-table-wrapper">
+            <table class="official-reg-table">
+              <thead>
+                <tr>
+                  <th>Particulars</th>
+                  <th>Details</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Magazine Name</td>
+                  <td><strong>Accolade Screenlady</strong></td>
+                </tr>
+                <tr>
+                  <td>Language</td>
+                  <td>Marathi</td>
+                </tr>
+                <tr>
+                  <td>Publication Format</td>
+                  <td>Monthly Magazine (Print & Digital Editions)</td>
+                </tr>
+                <tr>
+                  <td>Publisher</td>
+                  <td>Mr. Prashant Chandrakant Sagvekar</td>
+                </tr>
+                <tr>
+                  <td>Editor</td>
+                  <td>Mr. Prashant Chandrakant Sagvekar</td>
+                </tr>
+                <tr>
+                  <td>Publishing District</td>
+                  <td>Raigad, Maharashtra, India</td>
+                </tr>
+                <tr>
+                  <td>Registration Number</td>
+                  <td><span style="color: var(--gold-light-accent); font-weight: 800; font-family: monospace; font-size: 1.05rem;">MHMAR/26/A3113</span></td>
+                </tr>
+                <tr>
+                  <td>Registration Date</td>
+                  <td>6 May 2026</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="official-seal-note" style="background: rgba(212, 175, 55, 0.08); border-color: rgba(212, 175, 55, 0.35); color: #EDE8DE;">
+            <span>ℹ️ <strong>Official Certification:</strong> The magazine is officially registered with the <em>Office of the Press Registrar General of India (PRGI)</em>.</span>
+          </div>
+        </div>
+
+        <!-- 4. Target Readers and Advertising Opportunities -->
+        <div class="advertising-opp-container" id="advertising-info">
+          
+          <div>
+            <span class="editorial-kicker">✦ TARGET AUDIENCE</span>
+            <h4 style="font-family: var(--font-editorial-heading); font-size: 1.45rem; color: #FFFFFF; margin-top: 0.6rem; margin-bottom: 0.5rem;">
+              Target Readers & Industry Sectors
+            </h4>
+            <p style="font-family: var(--font-editorial-body); font-size: 0.92rem; color: #BBB6AD; line-height: 1.6;">
+              The magazine aims to connect with ambitious readers and forward-thinking enterprises across key sectors:
+            </p>
+            <div class="adv-sectors-list">
+              <div class="adv-list-item">Banking and Financial Institutions</div>
+              <div class="adv-list-item">Real Estate and Construction Companies</div>
+              <div class="adv-list-item">Stock Market and Investment Firms</div>
+              <div class="adv-list-item">Jewellery and Heritage Luxury Brands</div>
+              <div class="adv-list-item">Clothing and Fashion Apparel Brands</div>
+              <div class="adv-list-item">Beauty Parlours, Salons and Wellness Centers</div>
+              <div class="adv-list-item">Educational and Professional Training Institutions</div>
+              <div class="adv-list-item">Women Entrepreneurs and Senior Corporate Executives</div>
+            </div>
+          </div>
+
+          <div>
+            <span class="editorial-kicker">✦ STRATEGIC MEDIA PARTNERSHIPS</span>
+            <h4 style="font-family: var(--font-editorial-heading); font-size: 1.45rem; color: #FFFFFF; margin-top: 0.6rem; margin-bottom: 0.5rem;">
+              Promotional Solutions Beyond Traditional Ads
+            </h4>
+            <p style="font-family: var(--font-editorial-body); font-size: 0.92rem; color: #BBB6AD; line-height: 1.6;">
+              Accolade Screenlady helps brands build lasting recognition and establish direct rapport with our dedicated readership:
+            </p>
+            <div class="adv-methods-list">
+              <div class="adv-list-item">Exclusive Brand Features and Editorial Articles</div>
+              <div class="adv-list-item">Business and Entrepreneur Executive Interviews</div>
+              <div class="adv-list-item">Targeted Social Media Promotions & Influencer Reach</div>
+              <div class="adv-list-item">Creative High-Gloss Advertisement Designs & Spreads</div>
+              <div class="adv-list-item">Special Brand Stories and Tailored Campaign Launches</div>
+            </div>
+            <div style="margin-top: 2rem; display: flex; gap: 1rem; flex-wrap: wrap; align-items: center;">
+              <a href="https://wa.me/919665035503?text=Hello%20Accolade%20Screenlady%20Team%2C%20I%20am%20interested%20in%20Advertising%20and%20Brand%20Promotions%20with%20your%20magazine." target="_blank" rel="noopener" class="btn-editorial-gold" style="font-size: 0.92rem; padding: 0.9rem 1.8rem; text-decoration: none; display: inline-flex; align-items: center; gap: 0.6rem;">
+                <span>💬 Advertise via WhatsApp (+91 96650 35503)</span>
+                <span>→</span>
+              </a>
+              <a href="mailto:editor@accoladescreenlady.com?cc=AccoladeScreenlady@gmail.com&subject=Brand%20Advertising%20%26%20Promotions%20Inquiry%20-%20Accolade%20Screenlady&body=Hello%20Accolade%20Screenlady%20Advertising%20Team%2C%0A%0AI%20am%20interested%20in%20exploring%20advertising%20and%20brand%20promotion%20opportunities%20with%20your%20magazine.%0A%0ABrand%2FCompany%20Name%3A%20%0AContact%20Person%3A%20%0APhone%20Number%3A%20%0AAdvertising%20Preference%20(Print%20Page%20Spread%20%2F%20Brand%20Story%20%2F%20Social%20Promotion)%3A%20%0A%0ARegards%2C" class="btn-editorial-outline" style="font-size: 0.92rem; padding: 0.9rem 1.8rem; text-decoration: none; display: inline-flex; align-items: center; gap: 0.6rem; border-color: rgba(212, 175, 55, 0.45); color: #FFFFFF;">
+                <span>✉️ Email Brand Desk</span>
+                <span>→</span>
+              </a>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- 5. Stronger Subscription Call-To-Action & Pricing Banner -->
+        <div class="mag-pricing-box" id="subscribe-now">
+          <span class="editorial-kicker" style="background: rgba(212, 175, 55, 0.2); border-color: var(--gold-metallic);">
+            ✦ DOORSTEP SUBSCRIPTION
+          </span>
+          
+          <h3 style="font-family: var(--font-editorial-heading); font-size: clamp(1.9rem, 3.4vw, 2.7rem); color: #FFFFFF; margin-top: 0.85rem; margin-bottom: 0.65rem;">
+            Subscribe to Accolade Screenlady for Direct Home Delivery!
+          </h3>
+          <p style="font-family: var(--font-editorial-body); font-size: 1.05rem; color: #DDD8CE; max-width: 760px; margin: 0 auto;">
+            Receive the latest collectible print edition delivered directly to your doorstep with insured courier service across India.
+          </p>
+
+          <!-- Transparent Pricing Breakdown -->
+          <div class="mag-pricing-cards-row">
+            
+            <div class="pricing-calc-card">
+              <span class="pricing-calc-label">Magazine Price</span>
+              <span class="pricing-calc-value">₹150</span>
+            </div>
+
+            <div style="display: flex; align-items: center; justify-content: center; font-size: 1.6rem; color: var(--gold-metallic); font-weight: 800;">
+              +
+            </div>
+
+            <div class="pricing-calc-card">
+              <span class="pricing-calc-label">Courier Charges</span>
+              <span class="pricing-calc-value">₹70</span>
+            </div>
+
+            <div style="display: flex; align-items: center; justify-content: center; font-size: 1.6rem; color: var(--gold-metallic); font-weight: 800;">
+              =
+            </div>
+
+            <div class="pricing-calc-card total-highlight">
+              <span class="pricing-calc-label">Total Home Delivery Price</span>
+              <span class="pricing-calc-value">₹220</span>
+            </div>
+
+          </div>
+
+          <!-- Strong CTA Action Buttons -->
+          <div class="subscription-cta-actions">
+            <button type="button" class="btn-editorial-gold" onclick="handleAvailableInPrintClick()" style="font-size: 1.05rem; padding: 1.15rem 2.6rem; box-shadow: 0 8px 30px rgba(212, 175, 55, 0.45);">
+              <span>📖 Subscribe / Order Print Edition (₹220)</span>
+              <span>→</span>
+            </button>
+            <a href="https://wa.me/919665035503?text=Hello%2C%20I%20would%20like%20to%20subscribe%20to%20Accolade%20Screenlady%20Magazine%20for%20home%20delivery%20(Rs.%20220)." target="_blank" rel="noopener" class="btn-editorial-outline" style="font-size: 1.02rem; padding: 1.15rem 2.2rem; background: rgba(34, 197, 94, 0.15); border-color: #22c55e; color: #86efac;">
+              <span>💬 Order Instantly via WhatsApp (+91 96650 35503)</span>
+            </a>
+          </div>
+
+          <!-- Subscription & Media Contacts Bar -->
+          <div class="subscription-contacts-bar">
+            <a href="https://wa.me/919665035503" target="_blank" rel="noopener" class="subscription-contact-pill">
+              📱 WhatsApp: +91 96650 35503
+            </a>
+            <a href="mailto:editor@accoladescreenlady.com" class="subscription-contact-pill">
+              ✉️ Editor: editor@accoladescreenlady.com
+            </a>
+            <a href="mailto:AccoladeScreenlady@gmail.com" class="subscription-contact-pill">
+              ✉️ General Desk: AccoladeScreenlady@gmail.com
+            </a>
+          </div>
+
+          <!-- Verified Social Handles Row -->
+          <div style="margin-top: 1.75rem; display: flex; justify-content: center; gap: 1.5rem; flex-wrap: wrap; font-size: 0.88rem;">
+            <a href="https://www.instagram.com/accoladescreenlady_official?obrf=M2plNzAza252NWlu" target="_blank" rel="noopener" style="color: #DDD8CE; text-decoration: none;">
+              📸 Instagram: <span style="color: var(--gold-light-accent);">@accoladescreenlady_official</span>
+            </a>
+            <a href="https://www.youtube.com/@AccoladeScreenlady" target="_blank" rel="noopener" style="color: #DDD8CE; text-decoration: none;">
+              ▶️ YouTube: <span style="color: var(--gold-light-accent);">@AccoladeScreenlady</span>
+            </a>
+            <a href="https://www.facebook.com/AccoladeScreenlady" target="_blank" rel="noopener" style="color: #DDD8CE; text-decoration: none;">
+              👤 Facebook: <span style="color: var(--gold-light-accent);">Accolade Screenlady</span>
+            </a>
+          </div>
+
+        </div>
+
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Master Site Footer with Highlighted Screenlady Logo (Lower Section) -->
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-top">
+
+        <!-- Brand Info -->
+        <div class="footer-brand">
+          <a href="index.html" class="footer-logo">
+            <img src="assets/images/logo-2.png" alt="Accolade Screenlady Emblem" class="footer-emblem">
+            <img src="assets/images/logo.png" alt="Accolade Screenlady Logo" class="footer-logo-img">
+          </a>
+          <p>
+            Accolade Screenlady is an esteemed digital media platform and luxury print publication dedicated to honoring
+            trailblazing women, cinematic icons, and pioneering leaders across all walks of life.
+          </p>
+          <p style="font-size: 0.8rem; color: var(--gold-light);">
+            Producer & Concept Creator <strong>Mr. Prashant Chandrakant Sagvekar</strong>
+          </p>
+        </div>
+
+        <!-- Quick Navigation -->
+        <div>
+          <h4 class="footer-heading">Platform</h4>
+          <ul class="footer-nav-list">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="updates.html">Updates & Events</a></li>
+            <li><a href="editorials.html">Editorial Columns</a></li>
+            <li><a href="podcast.html">Podcast Broadcasts</a></li>
+            <li><a href="photos.html">Photos & Gallery</a></li>
+            <li><a href="about-us.html">About Us & Vision</a></li>
+          </ul>
+        </div>
+
+        <!-- Pillars -->
+        <div>
+          <h4 class="footer-heading">Sections</h4>
+          <ul class="footer-nav-list">
+            <li><a href="editorials.html">Cinema & Arts</a></li>
+            <li><a href="editorials.html">Corporate Leadership</a></li>
+            <li><a href="updates.html">Screenlady Honors</a></li>
+            <li><a href="podcast.html">Video Series</a></li>
+            <li><a href="about-us.html">Founder's Note</a></li>
+          </ul>
+        </div>
+
+        <!-- Connect -->
+        <div>
+          <h4 class="footer-heading">Official Channels</h4>
+          <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1.25rem;">
+            Follow our verified handles for behind-the-scenes footage, premiere alerts, and magazine release
+            announcements.
+          </p>
+                    <div class="social-icon-row">
+            <a href="https://www.instagram.com/accoladescreenlady_official?obrf=M2plNzAza252NWlu" target="_blank" rel="noopener" class="social-icon-btn" aria-label="Instagram (@accoladescreenlady_official)" title="Instagram (@accoladescreenlady_official)">IG</a>
+            <a href="https://www.youtube.com/@AccoladeScreenlady" target="_blank" rel="noopener" class="social-icon-btn" aria-label="YouTube (@AccoladeScreenlady)" title="YouTube (@AccoladeScreenlady)">YT</a>
+            <a href="https://www.facebook.com/AccoladeScreenlady" target="_blank" rel="noopener" class="social-icon-btn" aria-label="Facebook (Accolade Screenlady)" title="Facebook (Accolade Screenlady)">FB</a>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="footer-bottom">
+        <p>© 2026 Accolade Screenlady. All Rights Reserved.</p>
+        <div class="footer-bottom-links">
+          <a href="about-us.html#contact">Contact Us</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Floating Back to Top Button -->
+  <button class="back-to-top" id="backToTopBtn" aria-label="Back to Top">↑</button>
+
+  <!-- Global Modal Component -->
+  <div class="modal-overlay" id="globalModal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <div class="modal-content-wrap">
+      <button class="modal-close-btn" id="modalCloseBtn" aria-label="Close modal">✕</button>
+      <div id="modalBody"></div>
+    </div>
+  </div>
+
+  <script src="assets/js/main.js"></script>
+  <script src="assets/js/magazine-orders.js"></script>
+  <script src="assets/js/editorial-homepage.js"></script>
+</body>
+
+</html>

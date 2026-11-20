@@ -1,0 +1,54 @@
+---
+// photos.astro
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+const extraScripts = ["/assets/js/photos.js"];
+---
+
+<BaseLayout
+  title="Gallery"
+  description="Accolade Screenlady event photographs, exclusive portraits, and award celebrations."
+  activeNav="photos"
+  extraScripts={extraScripts}
+>
+<!-- Main Content Layout Section: Event Photos Feed (Chronological by Date - Latest First) -->
+  <main class="main-content" style="min-height: 70vh; padding: 3rem 0 5rem;">
+    <div class="container">
+
+      <!-- Photos Page Header -->
+      <section class="updates-page-header">
+        <div class="updates-header-badge">
+          <span>✦ Accolade Screenlady Gallery</span>
+        </div>
+        <h1 class="updates-page-title">
+          Accolade Screenlady Gallery
+        </h1>
+        <p class="updates-page-desc">
+          Official photography collection from Accolade Screenlady. Carefully presented with full-frame visual clarity, photo title, and date.
+        </p>
+
+        <!-- Photos Control Toolbar: Category Filter & Count -->
+        <div class="updates-toolbar">
+          <div class="updates-filter-group" role="tablist" aria-label="Filter Photographs">
+            <button class="photos-filter-btn active" data-filter="all">All Photos</button>
+            <button class="photos-filter-btn" data-filter="Heritage">🏛️ Heritage & Craftsmanship</button>
+            <button class="photos-filter-btn" data-filter="Commentary">✒️ Social Commentary</button>
+            <button class="photos-filter-btn" data-filter="Cinema">🎬 Cinema & Studio</button>
+          </div>
+
+          <div class="updates-actions-group">
+            <span id="photosTotalCount" style="font-size: 0.78rem; color: var(--gold-light); font-weight: 600; letter-spacing: 0.04em;"></span>
+          </div>
+        </div>
+      </section>
+
+      <!-- Chronological Event Photos Feed: Luxury Multi-Column Photo Grid -->
+      <div class="photos-feed" id="photosFeedContainer">
+        <!-- Rendered dynamically by photos.js (Latest date always displays first) -->
+      </div>
+
+    </div>
+  </main>
+
+  <!-- Master Site Footer with Highlighted Screenlady Logo (Lower Section) -->
+</BaseLayout>

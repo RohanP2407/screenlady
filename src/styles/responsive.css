@@ -1,0 +1,178 @@
+/* ==========================================================================
+   ACCOLADE SCREENLADY - RESPONSIVE ENHANCEMENTS
+   Mobile-First Refinements, Smooth Transitions & Fluid Typography
+   ========================================================================== */
+
+/* Prevent accidental horizontal overflow while maintaining sticky elements */
+html, body {
+  max-width: 100vw;
+  overflow-x: clip;
+}
+
+/* Ensure images never exceed container width and maintain aspect ratio */
+img, video {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Fluid responsive typography clamps */
+:root {
+  --fluid-h1: clamp(1.85rem, 4vw + 1rem, 3.25rem);
+  --fluid-h2: clamp(1.5rem, 3vw + 0.8rem, 2.5rem);
+  --fluid-h3: clamp(1.25rem, 2vw + 0.6rem, 1.85rem);
+}
+
+/* Touch-friendly interactive targets for mobile (minimum 44px) */
+@media (max-width: 768px) {
+  button, 
+  .btn, 
+  .nav-link, 
+  .mobile-sub-nav-pill,
+  .mobile-nav-link {
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+  }
+
+  /* Responsive adjustments for top bar */
+  .top-bar-inner {
+    flex-direction: column;
+    gap: 0.5rem;
+    padding: 0.5rem 0.75rem;
+    text-align: center;
+  }
+
+  .top-bar-notice {
+    font-size: 0.75rem;
+    line-height: 1.3;
+  }
+
+  .top-bar-links {
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    font-size: 0.75rem;
+  }
+
+  /* Header mobile adjustments */
+  .header-inner {
+    padding: 0.65rem 0.75rem;
+  }
+
+  .brand-logo-img {
+    height: 32px !important;
+  }
+
+  .brand-emblem-icon {
+    height: 38px !important;
+  }
+
+  .nav-menu {
+    display: none !important;
+  }
+
+  .header-social-links {
+    display: none !important;
+  }
+
+  /* Make sure Latest Issue button is compact on small screens */
+  .header-actions .btn-sm {
+    padding: 0.4rem 0.75rem;
+    font-size: 0.75rem;
+  }
+
+  /* Mobile quick navigation horizontal scroll strip */
+  .mobile-sub-nav {
+    display: flex !important;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    padding: 0.5rem 0.75rem;
+    gap: 0.5rem;
+    white-space: nowrap;
+    border-bottom: 1px solid rgba(212, 175, 55, 0.2);
+    background: rgba(15, 15, 19, 0.95);
+  }
+
+  .mobile-sub-nav::-webkit-scrollbar {
+    display: none;
+  }
+
+  .mobile-sub-nav-pill {
+    flex-shrink: 0;
+    padding: 0.35rem 0.75rem;
+    border-radius: 9999px;
+    font-size: 0.78rem;
+    border: 1px solid rgba(212, 175, 55, 0.3);
+    background: rgba(255, 255, 255, 0.04);
+    color: #e5e5e5;
+    text-decoration: none;
+    transition: all 0.2s ease;
+  }
+
+  .mobile-sub-nav-pill.active,
+  .mobile-sub-nav-pill:hover {
+    background: var(--gold-primary, #D4AF37);
+    color: #0A0A0C !important;
+    border-color: var(--gold-bright, #FFE894);
+    font-weight: 600;
+  }
+
+  /* Hero split section breakdown for mobile */
+  .home-split-grid {
+    grid-template-columns: 1fr !important;
+    gap: 2rem !important;
+  }
+
+  .editorial-hero-grid {
+    grid-template-columns: 1fr !important;
+    gap: 2rem !important;
+  }
+
+  .curated-split-grid {
+    grid-template-columns: 1fr !important;
+    gap: 2rem !important;
+  }
+
+  .curated-photos-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 0.75rem !important;
+  }
+
+  .curated-showcase-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 0.75rem !important;
+  }
+
+  /* Footer responsiveness */
+  .footer-top {
+    grid-template-columns: 1fr !important;
+    gap: 2rem !important;
+  }
+
+  .footer-bottom {
+    flex-direction: column;
+    text-align: center;
+    gap: 0.75rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .curated-photos-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  .curated-showcase-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  .editorial-hero-headline {
+    font-size: 1.65rem !important;
+    line-height: 1.25 !important;
+  }
+
+  .bizz-pillars-grid {
+    grid-template-columns: 1fr !important;
+  }
+}
+

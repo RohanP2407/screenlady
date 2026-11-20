@@ -1,0 +1,82 @@
+---
+// BaseLayout.astro - Master Layout for Accolade Screenlady
+import TopBar from '../components/TopBar.astro';
+import Header from '../components/Header.astro';
+import MobileNav from '../components/MobileNav.astro';
+import Footer from '../components/Footer.astro';
+import GlobalModal from '../components/GlobalModal.astro';
+import '../styles/responsive.css';
+
+interface Props {
+  title?: string;
+  description?: string;
+  activeNav?: string;
+  extraScripts?: string[];
+}
+
+const {
+  title = "Accolade Screenlady",
+  description = "Accolade Screenlady - Premium women-centric magazine and digital media platform.",
+  activeNav = "home",
+  extraScripts = []
+} = Astro.props;
+
+const pageTitle = title.includes("Accolade Screenlady") ? title : `${title} | Accolade Screenlady`;
+---
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{pageTitle}</title>
+  <meta name="description" content={description} />
+
+  <!-- Preconnect Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,400;1,600&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap"
+    rel="stylesheet"
+  />
+
+  <!-- Core Theme Stylesheets -->
+  <link rel="stylesheet" href="/assets/css/style.css" />
+  <link rel="stylesheet" href="/assets/css/editorial-homepage.css" />
+  <link rel="icon" type="image/png" href="/assets/images/logo-2.png" />
+
+  <!-- Google Sign-In SDK -->
+  <script src="https://accounts.google.com/gsi/client" async defer is:inline></script>
+</head>
+<body>
+
+  <!-- Top Announcement Bar -->
+  <TopBar />
+
+  <!-- Master Site Header -->
+  <Header activeNav={activeNav} />
+
+  <!-- Mobile Quick Nav & Drawer -->
+  <MobileNav activeNav={activeNav} />
+
+  <!-- Page Content Slot -->
+  <slot />
+
+  <!-- Master Site Footer -->
+  <Footer />
+
+  <!-- Global Modal & Back To Top -->
+  <GlobalModal />
+
+  <!-- Core Scripts -->
+  <script src="/assets/js/api-client.js" is:inline></script>
+  <script src="/assets/js/main.js" is:inline></script>
+  <script src="/assets/js/magazine-orders.js" is:inline></script>
+
+  <!-- Page-Specific Extra Scripts -->
+  {extraScripts.map((src) => (
+    <script src={src} is:inline></script>
+  ))}
+</body>
+</html>
+

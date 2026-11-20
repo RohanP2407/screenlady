@@ -1,0 +1,16 @@
+---
+// GlobalModal.astro - Global Modal Dialog & Floating Controls
+---
+
+<!-- Floating Back to Top Button -->
+<button class="back-to-top" id="backToTopBtn" aria-label="Back to Top">↑</button>
+
+<!-- Global Modal Component -->
+<div class="modal-overlay" id="globalModal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+  <div class="modal-content-wrap">
+    <button class="modal-close-btn" id="modalCloseBtn" aria-label="Close modal">✕</button>
+    <h3 id="modalTitle" style="display: none;"></h3>
+    <div id="modalBody"></div>
+  </div>
+</div>
+

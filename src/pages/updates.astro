@@ -1,0 +1,58 @@
+---
+// updates.astro
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+const extraScripts = ["/assets/js/updates.js"];
+---
+
+<BaseLayout
+  title="Updates"
+  description="Live news, event announcements, and latest updates from Accolade Screenlady."
+  activeNav="updates"
+  extraScripts={extraScripts}
+>
+<!-- Main Content Layout Section: Women Updates Feed (Latest First) -->
+  <main class="main-content" style="min-height: 70vh; padding: 3rem 0 5rem;">
+    <div class="container">
+
+      <!-- Updates Page Header -->
+      <section class="updates-page-header">
+        <div class="updates-header-badge">
+          <span>✦ Screenlady Bulletin & Archive</span>
+        </div>
+        <h1 class="updates-page-title">
+          Updates
+        </h1>
+        <p class="updates-page-desc">
+          Official chronicles, executive board meetings, honors announcements, cinema dialogues, reader meet-and-greets, and brand events conducted by the Accolade Screenlady leadership and editorial team.
+        </p>
+
+        <!-- Updates Control Toolbar: Format & Category Filter -->
+        <div class="updates-toolbar">
+          <div class="updates-filter-group" role="tablist" aria-label="Filter Updates">
+            <button class="update-filter-btn active" data-filter="all">🌐 All Updates</button>
+            <button class="update-filter-btn" data-filter="news">⚡ Real-Time News</button>
+            <button class="update-filter-btn" data-filter="filmy_adda">🎬 Filmy Adda</button>
+            <button class="update-filter-btn" data-filter="bizz_world">💼 Bizz World</button>
+            <button class="update-filter-btn" data-filter="women_inspiration">👑 Women of Inspiration</button>
+            <button class="update-filter-btn" data-filter="fashion_lifestyle">✨ Fashion & Lifestyle</button>
+            <button class="update-filter-btn" data-filter="meetings">🤝 Meetings</button>
+            <button class="update-filter-btn" data-filter="awards">🏆 Awards & Honors</button>
+          </div>
+
+          <div class="updates-actions-group">
+            <span id="updatesTotalCount" style="font-size: 0.78rem; color: var(--gold-light); font-weight: 600; letter-spacing: 0.04em;">Updates Published</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- Chronological Updates Feed: Newspaper & Magazine Multi-Column Editorial Grid -->
+      <div class="updates-feed" id="updatesFeedContainer">
+        <!-- Rendered dynamically by updates.js (Latest always displays first) -->
+      </div>
+
+    </div>
+  </main>
+
+  <!-- Master Site Footer with Highlighted Screenlady Logo (Lower Section) -->
+</BaseLayout>

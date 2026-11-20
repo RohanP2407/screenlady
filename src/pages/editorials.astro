@@ -1,0 +1,88 @@
+---
+// editorials.astro
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+const extraScripts = ["/assets/js/editorials.js"];
+---
+
+<BaseLayout
+  title="Editorials"
+  description="Read insightful columns, deep essays, and perspectives on cinema, culture, and women in leadership."
+  activeNav="editorials"
+  extraScripts={extraScripts}
+>
+<!-- Main Content Layout Section: Editorial Columns & Essays Feed (Latest First) -->
+  <main class="main-content" style="min-height: 70vh; padding: 3rem 0 5rem;">
+    <div class="container">
+
+      <!-- Editorials Page Header -->
+      <section class="updates-page-header">
+        <div class="updates-header-badge">
+          <span>✦ Screenlady Thought Leadership & Columns</span>
+        </div>
+        <h1 class="updates-page-title">
+          Editorials, Critical Essays & Cultural Inquiries
+        </h1>
+        <p class="updates-page-desc">
+          Authoritative writings, philosophical perspectives, and long-form discourses authored by cultural scholars, industry chairs, and the Accolade Screenlady Editorial Council.
+        </p>
+
+        <!-- Editorials Control Toolbar: Category Filter & Count -->
+        <div class="updates-toolbar">
+          <div class="updates-filter-group" role="tablist" aria-label="Filter Editorials">
+            <button class="editorials-filter-btn active" data-filter="all">All Editorials</button>
+            <button class="editorials-filter-btn" data-filter="Heritage">🏛️ Heritage & Craftsmanship</button>
+            <button class="editorials-filter-btn" data-filter="Commentary">✒️ Social Commentary</button>
+          </div>
+
+          <div class="updates-actions-group">
+            <span id="editorialsTotalCount" style="font-size: 0.78rem; color: var(--gold-light); font-weight: 600; letter-spacing: 0.04em;"></span>
+          </div>
+        </div>
+
+        <!-- Quick Open Bar for Immediate Full Screen Reading -->
+        <div class="editorial-quick-jump-bar">
+          <span class="jump-bar-label">✦ Read Full Screen:</span>
+        </div>
+      </section>
+
+      <!-- Chronological Editorials Feed: Magazine Multi-Column Editorial Layout -->
+      <div class="editorials-feed" id="editorialsFeedContainer">
+        <!-- Rendered dynamically by editorials.js (Latest always displays first) -->
+      </div>
+
+    </div>
+  </main>
+
+  <!-- Dedicated Full-Screen Article Reader Modal -->
+  <div class="editorial-fullscreen-reader" id="editorialFullScreenReader" role="dialog" aria-modal="true" style="display: none;">
+    <header class="reader-top-bar">
+      <div class="reader-top-inner">
+        <div class="reader-brand">
+          <img src="/assets/images/logo-2.png" alt="Accolade Screenlady Emblem" class="reader-emblem" />
+          <span class="reader-brand-label">Screenlady Reader Mode</span>
+        </div>
+
+        <div class="reader-progress-track">
+          <div class="reader-progress-fill" id="readerProgressFill"></div>
+        </div>
+
+        <div class="reader-actions">
+          <a href="#" id="readerWhatsappBtn" target="_blank" rel="noopener" class="reader-btn" title="Share on WhatsApp">
+            💬 WhatsApp
+          </a>
+          <button type="button" class="reader-btn" id="readerCopyBtn" title="Copy Article Link">
+            🔗 Copy Link
+          </button>
+          <button type="button" class="reader-btn close-btn" onclick="closeFullScreenReader()" title="Close Reader (Esc)">
+            ✕ Close Reader
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <div class="reader-body-container" id="readerBodyContainer">
+      <!-- Injected dynamically by editorials.js -->
+    </div>
+  </div>
+</BaseLayout>

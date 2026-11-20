@@ -1,0 +1,117 @@
+---
+// social-media.astro
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+const extraScripts = [];
+---
+
+<BaseLayout
+  title="Social Media"
+  description="Follow Accolade Screenlady across our verified social channels."
+  activeNav="social-media"
+  extraScripts={extraScripts}
+>
+<!-- Main Content Layout Section -->
+  <main class="about-page-main">
+    
+    <!-- Hero Header Banner -->
+    <section class="about-page-hero">
+      <div class="container">
+        <span class="about-page-kicker">✦ Official Verified Handles</span>
+        <h1 class="about-page-title">Connect on Social Media</h1>
+        <p class="about-page-sub">
+          Stay connected with <strong>Accolade Screenlady</strong> across Instagram, YouTube, and Facebook for behind-the-scenes reels, celebrity interviews, exclusive cover drops, and cultural conversations.
+        </p>
+      </div>
+    </section>
+
+    <!-- Social Media Channel Grid -->
+    <section class="about-contact-section" style="background: #0C0C10; padding: 5rem 0 6rem;">
+      <div class="container">
+        
+        <div class="about-contact-grid" style="grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));">
+          
+          <!-- Channel 1: Instagram -->
+          <div class="about-contact-card" style="border-top: 3px solid #E1306C; padding: 2.5rem 2rem;">
+            <div class="about-contact-icon" style="background: rgba(225, 48, 108, 0.15); border-color: #E1306C; color: #E1306C; font-size: 1.6rem;">
+              📸
+            </div>
+            <h3 style="font-family: var(--font-editorial-heading); font-size: 1.35rem; color: #FFFFFF; margin-bottom: 0.35rem;">Instagram</h3>
+            <div style="font-family: var(--font-editorial-body); font-size: 0.88rem; font-weight: 700; color: var(--gold-light-accent); margin-bottom: 1rem;">
+              @accoladescreenlady_official
+            </div>
+            <p style="font-family: var(--font-editorial-body); font-size: 0.92rem; color: #A6A29A; line-height: 1.65; margin-bottom: 1.8rem;">
+              Follow for daily photo drops, reels, cover shoots, high-fashion styling, and behind-the-scenes glimpses with Maharashtra's leading women.
+            </p>
+            <a href="https://www.instagram.com/accoladescreenlady_official?obrf=M2plNzAza252NWlu" target="_blank" rel="noopener" class="btn-editorial-gold" style="display: inline-flex; width: 100%; justify-content: center;">
+              <span>Follow on Instagram</span>
+              <span>→</span>
+            </a>
+          </div>
+
+          <!-- Channel 2: YouTube -->
+          <div class="about-contact-card" style="border-top: 3px solid #FF0000; padding: 2.5rem 2rem;">
+            <div class="about-contact-icon" style="background: rgba(255, 0, 0, 0.15); border-color: #FF0000; color: #FF0000; font-size: 1.6rem;">
+              ▶️
+            </div>
+            <h3 style="font-family: var(--font-editorial-heading); font-size: 1.35rem; color: #FFFFFF; margin-bottom: 0.35rem;">YouTube</h3>
+            <div style="font-family: var(--font-editorial-body); font-size: 0.88rem; font-weight: 700; color: var(--gold-light-accent); margin-bottom: 1rem;">
+              @AccoladeScreenlady
+            </div>
+            <p style="font-family: var(--font-editorial-body); font-size: 0.92rem; color: #A6A29A; line-height: 1.65; margin-bottom: 1.8rem;">
+              Subscribe to watch in-depth video interviews, podcast conversations, documentary features, and gala event highlights in full HD.
+            </p>
+            <a href="https://www.youtube.com/@AccoladeScreenlady" target="_blank" rel="noopener" class="btn-editorial-gold" style="display: inline-flex; width: 100%; justify-content: center;">
+              <span>Subscribe on YouTube</span>
+              <span>→</span>
+            </a>
+          </div>
+
+          <!-- Channel 3: Facebook -->
+          <div class="about-contact-card" style="border-top: 3px solid #1877F2; padding: 2.5rem 2rem;">
+            <div class="about-contact-icon" style="background: rgba(24, 119, 242, 0.15); border-color: #1877F2; color: #1877F2; font-size: 1.6rem;">
+              👤
+            </div>
+            <h3 style="font-family: var(--font-editorial-heading); font-size: 1.35rem; color: #FFFFFF; margin-bottom: 0.35rem;">Facebook</h3>
+            <div style="font-family: var(--font-editorial-body); font-size: 0.88rem; font-weight: 700; color: var(--gold-light-accent); margin-bottom: 1rem;">
+              Accolade Screenlady
+            </div>
+            <p style="font-family: var(--font-editorial-body); font-size: 0.92rem; color: #A6A29A; line-height: 1.65; margin-bottom: 1.8rem;">
+              Connect with our official community page for articles, release notices, editorial columns, and discussions on women empowerment.
+            </p>
+            <a href="https://www.facebook.com/AccoladeScreenlady" target="_blank" rel="noopener" class="btn-editorial-gold" style="display: inline-flex; width: 100%; justify-content: center;">
+              <span>Connect on Facebook</span>
+              <span>→</span>
+            </a>
+          </div>
+
+        </div>
+
+        <!-- Quick Help / Editorial Communication Box -->
+        <div style="margin-top: 3.5rem; background: #13131A; border: 1px solid rgba(212, 175, 55, 0.3); border-radius: 12px; padding: 2.5rem 2rem; text-align: center;">
+          <h4 style="font-family: var(--font-editorial-heading); font-size: 1.4rem; color: #FFFFFF; margin-bottom: 0.85rem;">
+            Direct Media & Press Inquiries
+          </h4>
+          <p style="font-family: var(--font-editorial-body); font-size: 0.95rem; color: #DDD8CE; max-width: 680px; margin: 0 auto 1.5rem;">
+            Have a story nomination, press release, or advertising inquiry? Contact our team directly via WhatsApp or email.
+          </p>
+          <div style="display: flex; justify-content: center; gap: 1.5rem; flex-wrap: wrap;">
+            <a href="https://wa.me/919665035503" target="_blank" rel="noopener" class="btn-editorial-outline">
+              <span>💬 WhatsApp: +91 96650 35503</span>
+            </a>
+            <a href="mailto:editor@accoladescreenlady.com" class="btn-editorial-gold">
+              <span>✉️ editor@accoladescreenlady.com</span>
+            </a>
+            <a href="mailto:AccoladeScreenlady@gmail.com" class="btn-editorial-outline">
+              <span>✉️ AccoladeScreenlady@gmail.com</span>
+            </a>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Master Site Footer with Highlighted Screenlady Logo (Lower Section) -->
+</BaseLayout>

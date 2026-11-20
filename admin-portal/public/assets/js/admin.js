@@ -1,0 +1,2403 @@
+/**
+ * ACCOLADE SCREENLADY - MULTI-SECTION EDITORIAL DESK CONTROLLER
+ * Supports direct publishing and management for:
+ * 1. 🖋️ Editorials (Writings, Articles, Deep Analyses & Information)
+ * 2. 🎙️ Podcast (Episodes, Social Media Streaming Links, 10s Playback Preview)
+ * 3. 📷 Event Photos (Screenlady Events Arranged Chronologically by Date)
+ * 4. 🗞️ Updates Feed (Women of Distinction Bulletin & Milestones)
+ *
+ * All published items are timestamped and strictly sorted reverse-chronologically
+ * so the newest entry automatically displays first at the top of the live page.
+ */
+
+const DEFAULT_ADMIN_PIN = 'screenlady2026';
+
+let currentSection = 'editorials'; // 'editorials' | 'podcast' | 'photos' | 'updates'
+let currentUpdateType = 'photo-info'; // for updates section: 'photo-info' | 'article' | 'photo'
+let editingItem = null; // { id, section }
+let activeManageFilter = 'all';
+
+// Preset categories per section
+const SECTION_CATEGORIES = {
+  news: [
+    'Filmy Adda',
+    'Bizz World',
+    'Women of Inspiration',
+    'Fashion & Lifestyle',
+    'Movie Talk',
+    'Tribute',
+    'Box Office',
+    'City Alert',
+    'Entertainment',
+    'National News',
+    'Social Commentary',
+    'Culture & Arts',
+    'Breaking News'
+  ],
+  filmy_adda: [
+    'Filmy Adda',
+    'Movie Talk',
+    'Box Office',
+    'Behind the Screen',
+    'Cinema Exclusive',
+    'Upcoming Releases',
+    'Celebrity Spotlight',
+    'Entertainment'
+  ],
+  bizz_world: [
+    'Bizz World',
+    'Corporate Leadership',
+    'Women Entrepreneurs',
+    'Startup Conclave',
+    'Brand Partnership',
+    'Executive Conclave',
+    'Industry Milestone',
+    'Business & Finance'
+  ],
+  women_inspiration: [
+    'Women of Inspiration',
+    'Struggles to Success',
+    'Mai — Mother of Orphans',
+    'Distinction Honors',
+    'Grassroots Leadership',
+    'Courage & Reform',
+    'Social Impact',
+    'Healthcare Pioneer'
+  ],
+  fashion_lifestyle: [
+    'Fashion & Lifestyle',
+    'Heritage Jewellery',
+    'Haute Couture Spread',
+    'Traditional Elegance',
+    'Holistic Wellness',
+    'Royal Adornments',
+    'Modern Living',
+    'Contemporary Style'
+  ],
+  home_photos: [
+    'Blockbuster News',
+    'Mother of Orphans',
+    'November Clashes',
+    'Mumbai Alert',
+    'Heritage & Craftsmanship',
+    'Cinema & Studio',
+    'Meet & Greet',
+    'Annual Honors',
+    'Executive Leadership',
+    'Special Investigation'
+  ],
+  editorials: [
+    'Heritage & Craftsmanship',
+    'Social Commentary',
+    'Cinema & Arts',
+    'Corporate Leadership',
+    'Literature & Culture',
+    'Founder’s Vision'
+  ],
+  podcast: [
+    'Cinema & Arts',
+    'Corporate Leadership',
+    'Cultural Dialogue',
+    'Industry Spotlight',
+    'Behind the Screen'
+  ],
+  photos: [
+    'Screenlady Assembly',
+    'Team & Board Meetings',
+    'Awards & Honors',
+    'Movie Talk & Shoots',
+    'Meet & Greet',
+    'Brand Events'
+  ],
+  updates: [
+    'Filmy Adda (Cinema & Movies)',
+    'Bizz World (Business & Enterprise)',
+    'Women of Inspiration (Struggles to Success)',
+    'Fashion & Lifestyle',
+    'Meetings',
+    'Awards',
+    'Movie Talk',
+    'Meet & Greet',
+    'Events',
+    'Team Milestones'
+  ]
+};
+
+// Ready-to-use photography presets including Screenlady leadership & event archives (ImageKit CDN)
+const ADMIN_PHOTO_PRESETS = [
+  { label: 'Ramayana Movie Release', path: 'https://ik.imagekit.io/acooladescreenlady/assets/images/news/ramayana.jpeg' },
+  { label: 'Sindhutai Sapkal (Mai)', path: 'https://ik.imagekit.io/acooladescreenlady/assets/images/news/sindhutai-sapkal.jpeg' },
+  { label: 'November Box Office Releases', path: 'https://ik.imagekit.io/acooladescreenlady/assets/images/news/films-box-office.jpeg' },
+  { label: 'Amitabh Bachchan (Jalsa)', path: 'https://ik.imagekit.io/acooladescreenlady/assets/images/news/amitabh-bachchan.jpeg' },
+  { label: 'Mr. Prashant Sagvekar (Founder)', path: 'https://ik.imagekit.io/acooladescreenlady/assets/images/team/prashant-sagvekar.jpeg' },
+  { label: 'Mrs. Amruta Rao (Editor-in-Chief)', path: 'https://ik.imagekit.io/acooladescreenlady/assets/images/team/amruta-rao.jpeg' },
+  { label: 'Mrs. Sakshi Sagvekar (Managing Director)', path: 'https://ik.imagekit.io/acooladescreenlady/assets/images/team/sakshi-sagvekar.jpeg' },
+  { label: 'Mr. Vedang Sagvekar (Marketing Director)', path: 'https://ik.imagekit.io/acooladescreenlady/assets/images/team/vedang-sagvekar.jpeg' },
+  { label: 'Mrs. Supriya Vinod (Board Member)', path: 'https://ik.imagekit.io/acooladescreenlady/assets/images/team/supriya-vinod.jpeg' },
+  { label: 'Mrs. Manasi Ingle (Board Member)', path: 'https://ik.imagekit.io/acooladescreenlady/assets/images/team/mansi-ingle.jpeg' },
+  { label: 'Movie Talk & Shoots', path: 'https://ik.imagekit.io/acooladescreenlady/assets/images/magazine-photos/3.1.jpg' },
+  { label: 'Awards & Honors', path: 'https://ik.imagekit.io/acooladescreenlady/assets/images/magazine-photos/4.2.jpg' },
+  { label: 'Meet & Greet Conclave', path: 'https://ik.imagekit.io/acooladescreenlady/assets/images/magazine-photos/4.1.jpg' },
+  { label: 'Brand Event (Tantuh)', path: 'https://ik.imagekit.io/acooladescreenlady/assets/images/articles/article-1.jpg' },
+  { label: 'Body Shaming & Self-Love', path: 'https://ik.imagekit.io/acooladescreenlady/assets/images/articles/article-2.jpg' }
+];
+
+document.addEventListener('DOMContentLoaded', () => {
+  initAdminAuth();
+  initFormControls();
+});
+
+/* =============================================================
+   1. Admin Authentication & Security
+============================================================= */
+function initAdminAuth() {
+  const isAuth = sessionStorage.getItem('screenlady_admin_auth') === 'true';
+  const overlay = document.getElementById('adminAuthOverlay');
+  const dashboard = document.getElementById('adminDashboard');
+
+  if (isAuth) {
+    if (overlay) overlay.style.display = 'none';
+    if (dashboard) dashboard.style.display = 'block';
+    loadAdminDashboard();
+  } else {
+    if (overlay) overlay.style.display = 'flex';
+    if (dashboard) dashboard.style.display = 'none';
+  }
+
+  const authForm = document.getElementById('adminAuthForm');
+  if (authForm) authForm.addEventListener('submit', handleAdminLogin);
+
+  const logoutBtn = document.getElementById('adminLogoutBtn');
+  if (logoutBtn) logoutBtn.addEventListener('click', handleAdminLogout);
+}
+
+function getSavedPin() {
+  return localStorage.getItem('screenlady_admin_pin') || DEFAULT_ADMIN_PIN;
+}
+
+function handleAdminLogin(e) {
+  if (e && typeof e.preventDefault === 'function') e.preventDefault();
+  const pinInput = document.getElementById('adminPinInput');
+  const errEl = document.getElementById('adminAuthErr');
+  const enteredPin = (pinInput ? pinInput.value : '').trim();
+  const savedPin = (getSavedPin() || '').trim();
+
+  // Allow default pin, saved pin, and case-insensitive matches
+  const isValid = 
+    enteredPin === savedPin ||
+    enteredPin.toLowerCase() === DEFAULT_ADMIN_PIN.toLowerCase() ||
+    enteredPin.toLowerCase() === savedPin.toLowerCase();
+
+  if (isValid) {
+    sessionStorage.setItem('screenlady_admin_auth', 'true');
+    if (errEl) errEl.style.display = 'none';
+    const overlay = document.getElementById('adminAuthOverlay');
+    const dashboard = document.getElementById('adminDashboard');
+    if (overlay) overlay.style.display = 'none';
+    if (dashboard) dashboard.style.display = 'block';
+    loadAdminDashboard();
+    showToast('Admin access granted. Welcome to Screenlady Editorial Desk.');
+  } else {
+    if (errEl) {
+      errEl.textContent = 'Incorrect Admin Passcode. Default is: screenlady2026';
+      errEl.style.display = 'block';
+    }
+    if (pinInput) {
+      pinInput.value = '';
+      pinInput.focus();
+    }
+  }
+}
+window.handleAdminLogin = handleAdminLogin;
+
+function handleAdminLogout() {
+  sessionStorage.removeItem('screenlady_admin_auth');
+  window.location.reload();
+}
+
+window.changeAdminPin = function() {
+  const currentPin = getSavedPin();
+  const inputOld = prompt('Enter Current Passcode:');
+  if (inputOld !== currentPin) {
+    if (inputOld !== null) alert('Incorrect current passcode.');
+    return;
+  }
+
+  const newPin = prompt('Enter New Passcode (min 6 characters):');
+  if (!newPin || newPin.trim().length < 6) {
+    alert('Passcode must be at least 6 characters long.');
+    return;
+  }
+
+  localStorage.setItem('screenlady_admin_pin', newPin.trim());
+  showToast('✓ Admin passcode successfully updated!');
+};
+
+/* =============================================================
+   2. Form Controls & Dynamic Section Switcher
+============================================================= */
+function initFormControls() {
+  const dateInput = document.getElementById('postDate');
+  if (dateInput && !dateInput.value) {
+    dateInput.value = new Date().toISOString().split('T')[0];
+  }
+
+  // Setup photo preset grid
+  renderPresetButtons();
+
+  // File upload input listener
+  const fileInput = document.getElementById('adminFileInput');
+  if (fileInput) fileInput.addEventListener('change', handleFileUpload);
+
+  // Direct photo path listener
+  const photoInput = document.getElementById('postPhotoInput');
+  if (photoInput) {
+    photoInput.addEventListener('input', () => updatePhotoPreview(photoInput.value));
+  }
+
+  // Post form submit
+  const form = document.getElementById('adminPostForm');
+  if (form) form.addEventListener('submit', handlePostSubmit);
+
+  // Set initial section UI
+  const sectionSelect = document.getElementById('postSectionSelect');
+  if (sectionSelect && sectionSelect.value) {
+    currentSection = sectionSelect.value;
+  }
+  handleSectionChange(currentSection);
+}
+
+window.handleSectionChange = function(section) {
+  currentSection = section;
+
+  const badge = document.getElementById('sectionNoticeBadge');
+  const submitBtn = document.getElementById('adminSubmitBtn');
+  const formTitle = document.getElementById('formCardTitle');
+
+  // Fields Containers
+  const fEditorials = document.getElementById('sectionFieldsEditorials');
+  const fPodcast = document.getElementById('sectionFieldsPodcast');
+  const fPhotos = document.getElementById('sectionFieldsPhotos');
+  const fUpdates = document.getElementById('sectionFieldsUpdates');
+  const updatesSubtypes = document.getElementById('updatesTypeSelectorRow');
+  const photoLabel = document.getElementById('photoPickerLabel');
+  const dateLabel = document.getElementById('dateInputLabel');
+
+  const groupCategory = document.getElementById('groupCommonCategory');
+  const groupTags = document.getElementById('groupCommonTags');
+  if (groupCategory) groupCategory.style.display = (section === 'photos') ? 'none' : 'block';
+  if (groupTags) groupTags.style.display = (section === 'photos' || section === 'home_photos') ? 'none' : 'block';
+
+  const isCuratedHomepageSection = ['filmy_adda', 'bizz_world', 'women_inspiration', 'fashion_lifestyle'].includes(section);
+  if (fEditorials) fEditorials.style.display = section === 'editorials' ? 'block' : 'none';
+  if (fPodcast) fPodcast.style.display = section === 'podcast' ? 'block' : 'none';
+  if (fPhotos) fPhotos.style.display = (section === 'photos' || section === 'home_photos') ? 'block' : 'none';
+  if (fUpdates) fUpdates.style.display = (section === 'updates' || section === 'news' || isCuratedHomepageSection) ? 'block' : 'none';
+  if (updatesSubtypes) updatesSubtypes.style.display = (section === 'updates' || section === 'news') ? 'block' : 'none';
+
+  // Populate relevant categories
+  populateCategorySelect(section);
+
+  if (section === 'news') {
+    if (badge) {
+      badge.textContent = 'Publishing to Live News (Homepage Screenlady Updates)';
+      badge.className = 'section-pill-badge badge-updates';
+    }
+    if (submitBtn && !editingItem) submitBtn.textContent = '✦ Publish Live News (Displays 1st on Homepage Screenlady Updates)';
+    if (formTitle && !editingItem) formTitle.textContent = 'Publish Daily Live News (Homepage Screenlady Updates)';
+    if (photoLabel) photoLabel.textContent = 'News Thumbnail / Featured Visual (Displayed on Left of Card)';
+    if (dateLabel) dateLabel.textContent = 'News Release Date';
+    switchUpdateSubtype('news');
+  } else if (section === 'filmy_adda') {
+    if (badge) {
+      badge.textContent = 'Publishing to Filmy Adda (Homepage 4-Photo Showcase + Updates)';
+      badge.className = 'section-pill-badge badge-updates';
+    }
+    if (submitBtn && !editingItem) submitBtn.textContent = '✦ Publish Filmy Adda Feature (Displays 1st on Homepage)';
+    if (formTitle && !editingItem) formTitle.textContent = 'Publish Filmy Adda Feature (Film Photo & Information)';
+    if (photoLabel) photoLabel.textContent = 'Film Still / Cinema Photo / Celebrity Visual (Displays in 4-Photo Grid)';
+    if (dateLabel) dateLabel.textContent = 'Film Release / Event Date';
+
+    const groupWomanName = document.getElementById('groupWomanName');
+    const groupHeadline = document.getElementById('groupHeadline');
+    const groupArticleTitle = document.getElementById('groupArticleTitle');
+    const groupAuthor = document.getElementById('groupAuthor');
+    const groupPhotoTitle = document.getElementById('groupPhotoTitle');
+    const groupCredit = document.getElementById('groupCredit');
+    const groupSummary = document.getElementById('groupSummary');
+    const groupFullBody = document.getElementById('groupFullBody');
+    const summaryLabel = document.getElementById('summaryLabel');
+
+    if (groupWomanName) groupWomanName.style.display = 'none';
+    if (groupHeadline) {
+      groupHeadline.style.display = 'block';
+      const lbl = groupHeadline.querySelector('label');
+      if (lbl) lbl.textContent = 'Film Title / Celebrity Headline';
+    }
+    if (groupArticleTitle) groupArticleTitle.style.display = 'none';
+    if (groupAuthor) groupAuthor.style.display = 'none';
+    if (groupPhotoTitle) groupPhotoTitle.style.display = 'none';
+    if (groupCredit) groupCredit.style.display = 'none';
+    if (groupSummary) {
+      groupSummary.style.display = 'block';
+      if (summaryLabel) summaryLabel.textContent = '1-Line Catchphrase / Key Highlight (Displayed on Photo Hover)';
+    }
+    if (groupFullBody) {
+      groupFullBody.style.display = 'block';
+      const lbl = groupFullBody.querySelector('label');
+      if (lbl) lbl.textContent = 'Full Film Information & Story (Readable in Updates Section)';
+    }
+  } else if (section === 'bizz_world') {
+    if (badge) {
+      badge.textContent = 'Publishing to Bizz World (Homepage 4-Photo Showcase + Updates)';
+      badge.className = 'section-pill-badge badge-updates';
+    }
+    if (submitBtn && !editingItem) submitBtn.textContent = '✦ Publish Bizz World Feature (Displays 1st on Homepage)';
+    if (formTitle && !editingItem) formTitle.textContent = 'Publish Bizz World Feature (Business Photo & Information)';
+    if (photoLabel) photoLabel.textContent = 'Business / Entrepreneur Visual (Displays in 4-Photo Grid)';
+    if (dateLabel) dateLabel.textContent = 'Business / Conclave Date';
+
+    const groupWomanName = document.getElementById('groupWomanName');
+    const groupHeadline = document.getElementById('groupHeadline');
+    const groupArticleTitle = document.getElementById('groupArticleTitle');
+    const groupAuthor = document.getElementById('groupAuthor');
+    const groupPhotoTitle = document.getElementById('groupPhotoTitle');
+    const groupCredit = document.getElementById('groupCredit');
+    const groupSummary = document.getElementById('groupSummary');
+    const groupFullBody = document.getElementById('groupFullBody');
+    const summaryLabel = document.getElementById('summaryLabel');
+
+    if (groupWomanName) groupWomanName.style.display = 'none';
+    if (groupHeadline) {
+      groupHeadline.style.display = 'block';
+      const lbl = groupHeadline.querySelector('label');
+      if (lbl) lbl.textContent = 'Business Headline / Company / Venture Title';
+    }
+    if (groupArticleTitle) groupArticleTitle.style.display = 'none';
+    if (groupAuthor) groupAuthor.style.display = 'none';
+    if (groupPhotoTitle) groupPhotoTitle.style.display = 'none';
+    if (groupCredit) groupCredit.style.display = 'none';
+    if (groupSummary) {
+      groupSummary.style.display = 'block';
+      if (summaryLabel) summaryLabel.textContent = '1-Line Business Highlight / Milestone (Displayed on Photo Hover)';
+    }
+    if (groupFullBody) {
+      groupFullBody.style.display = 'block';
+      const lbl = groupFullBody.querySelector('label');
+      if (lbl) lbl.textContent = 'Full Business Journey & Enterprise Story (Readable in Updates Section)';
+    }
+  } else if (section === 'women_inspiration') {
+    if (badge) {
+      badge.textContent = 'Publishing to Women of Inspiration (Homepage Showcase + Updates)';
+      badge.className = 'section-pill-badge badge-updates';
+    }
+    if (submitBtn && !editingItem) submitBtn.textContent = '✦ Publish Honoree Profile (Displays 1st on Homepage)';
+    if (formTitle && !editingItem) formTitle.textContent = 'Publish Women of Inspiration (Honoree Photo, Name & Struggle Story)';
+    if (photoLabel) photoLabel.textContent = 'Honoree Photograph (Displays in Homepage Showcase Frame)';
+    if (dateLabel) dateLabel.textContent = 'Honors / Milestone Date';
+
+    const groupWomanName = document.getElementById('groupWomanName');
+    const groupHeadline = document.getElementById('groupHeadline');
+    const groupArticleTitle = document.getElementById('groupArticleTitle');
+    const groupAuthor = document.getElementById('groupAuthor');
+    const groupPhotoTitle = document.getElementById('groupPhotoTitle');
+    const groupCredit = document.getElementById('groupCredit');
+    const groupSummary = document.getElementById('groupSummary');
+    const groupFullBody = document.getElementById('groupFullBody');
+    const summaryLabel = document.getElementById('summaryLabel');
+
+    if (groupWomanName) {
+      groupWomanName.style.display = 'block';
+      const lbl = groupWomanName.querySelector('label');
+      if (lbl) lbl.textContent = 'Honoree Name (Displayed Directly Under Photo on Homepage)';
+    }
+    if (groupHeadline) {
+      groupHeadline.style.display = 'block';
+      const lbl = groupHeadline.querySelector('label');
+      if (lbl) lbl.textContent = 'Achievement Title / Honors Kicker';
+    }
+    if (groupArticleTitle) groupArticleTitle.style.display = 'none';
+    if (groupAuthor) groupAuthor.style.display = 'none';
+    if (groupPhotoTitle) groupPhotoTitle.style.display = 'none';
+    if (groupCredit) groupCredit.style.display = 'none';
+    if (groupSummary) {
+      groupSummary.style.display = 'block';
+      if (summaryLabel) summaryLabel.textContent = '1-Line Struggle to Success Highlight';
+    }
+    if (groupFullBody) {
+      groupFullBody.style.display = 'block';
+      const lbl = groupFullBody.querySelector('label');
+      if (lbl) lbl.textContent = 'Full Struggle-to-Success Biography & Story (Readable in Updates Section)';
+    }
+  } else if (section === 'fashion_lifestyle') {
+    if (badge) {
+      badge.textContent = 'Publishing to Fashion and Lifestyle (Homepage Showcase + Updates)';
+      badge.className = 'section-pill-badge badge-updates';
+    }
+    if (submitBtn && !editingItem) submitBtn.textContent = '✦ Publish Fashion & Lifestyle Feature (Displays 1st on Homepage)';
+    if (formTitle && !editingItem) formTitle.textContent = 'Publish Fashion & Lifestyle (Photo & 1-Line Description)';
+    if (photoLabel) photoLabel.textContent = 'Fashion / Jewellery / Lifestyle Photo (Displays in Homepage Frame)';
+    if (dateLabel) dateLabel.textContent = 'Feature Date';
+
+    const groupWomanName = document.getElementById('groupWomanName');
+    const groupHeadline = document.getElementById('groupHeadline');
+    const groupArticleTitle = document.getElementById('groupArticleTitle');
+    const groupAuthor = document.getElementById('groupAuthor');
+    const groupPhotoTitle = document.getElementById('groupPhotoTitle');
+    const groupCredit = document.getElementById('groupCredit');
+    const groupSummary = document.getElementById('groupSummary');
+    const groupFullBody = document.getElementById('groupFullBody');
+    const summaryLabel = document.getElementById('summaryLabel');
+
+    if (groupWomanName) groupWomanName.style.display = 'none';
+    if (groupHeadline) {
+      groupHeadline.style.display = 'block';
+      const lbl = groupHeadline.querySelector('label');
+      if (lbl) lbl.textContent = '1-Line Description (Displayed Directly Under Photo on Homepage)';
+      const input = document.getElementById('postHeadline');
+      if (input) input.placeholder = 'e.g. Contemporary Silhouettes & Ethnic Grace (or any 1-line style title)';
+    }
+    if (groupArticleTitle) groupArticleTitle.style.display = 'none';
+    if (groupAuthor) groupAuthor.style.display = 'none';
+    if (groupPhotoTitle) groupPhotoTitle.style.display = 'none';
+    if (groupCredit) groupCredit.style.display = 'none';
+    if (groupSummary) {
+      groupSummary.style.display = 'block';
+      if (summaryLabel) summaryLabel.textContent = 'Trend Summary / Style Highlight';
+      const summaryInput = document.getElementById('postSummary');
+      if (summaryInput) summaryInput.placeholder = 'Brief summary of the fashion collection, designer background, or style trends...';
+    }
+    if (groupFullBody) {
+      groupFullBody.style.display = 'block';
+      const lbl = groupFullBody.querySelector('label');
+      if (lbl) lbl.textContent = 'Full Fashion & Lifestyle Story (Readable in Updates Section)';
+      const fullInput = document.getElementById('postFullBody');
+      if (fullInput) fullInput.placeholder = 'Write full feature story, artisanal details, and extended fashion chronicle...';
+    }
+  } else if (section === 'home_photos') {
+    if (badge) {
+      badge.textContent = 'Publishing to Homepage Photo Slideshow (Independent from Photos Gallery)';
+      badge.className = 'section-pill-badge badge-photos';
+    }
+    if (submitBtn && !editingItem) submitBtn.textContent = '✦ Publish Homepage Photo (Displays in Homepage Slideshow)';
+    if (formTitle && !editingItem) formTitle.textContent = 'Upload / Publish Homepage Slideshow Photograph';
+    if (photoLabel) photoLabel.textContent = 'Select / Upload Photo for Homepage Slideshow';
+    if (dateLabel) dateLabel.textContent = 'Photograph Date';
+  } else if (section === 'editorials') {
+    if (badge) {
+      badge.textContent = 'Publishing to Editorials Page (editorials.html)';
+      badge.className = 'section-pill-badge badge-editorials';
+    }
+    if (submitBtn && !editingItem) submitBtn.textContent = '✦ Publish Editorial (Displays 1st on Editorials Page)';
+    if (formTitle && !editingItem) formTitle.textContent = 'Write New Editorial Article & Column';
+    if (photoLabel) photoLabel.textContent = 'Article Header / Cover Image';
+    if (dateLabel) dateLabel.textContent = 'Article Publication Date';
+  } else if (section === 'podcast') {
+    if (badge) {
+      badge.textContent = 'Publishing to Podcast Page (podcast.html)';
+      badge.className = 'section-pill-badge badge-podcast';
+    }
+    if (submitBtn && !editingItem) submitBtn.textContent = '✦ Publish Podcast Episode (Displays 1st with 10s Preview)';
+    if (formTitle && !editingItem) formTitle.textContent = 'Broadcast New Podcast Episode';
+    if (photoLabel) photoLabel.textContent = 'Podcast Episode Cover Image';
+    if (dateLabel) dateLabel.textContent = 'Episode Broadcast Date';
+  } else if (section === 'photos') {
+    if (badge) {
+      badge.textContent = 'Publishing to Accolade Screenlady Gallery (photos.html)';
+      badge.className = 'section-pill-badge badge-photos';
+    }
+    if (submitBtn && !editingItem) submitBtn.textContent = '✦ Publish Photo (Displays 1st in Accolade Screenlady Gallery)';
+    if (formTitle && !editingItem) formTitle.textContent = 'Upload / Publish Gallery Photograph';
+    if (photoLabel) photoLabel.textContent = 'Upload Photo / Select Image';
+    if (dateLabel) dateLabel.textContent = 'Photograph Date';
+  } else {
+    // updates
+    if (badge) {
+      badge.textContent = 'Publishing to Screenlady Updates (updates.html)';
+      badge.className = 'section-pill-badge badge-updates';
+    }
+    if (submitBtn && !editingItem) submitBtn.textContent = '✦ Publish Update (Displays 1st on Screenlady Updates)';
+    if (formTitle && !editingItem) formTitle.textContent = 'Publish Screenlady Update';
+    if (photoLabel) photoLabel.textContent = 'Update Photo / Visual';
+    if (dateLabel) dateLabel.textContent = 'Event / Update Date';
+    switchUpdateSubtype(currentUpdateType === 'news' ? 'photo-info' : currentUpdateType);
+  }
+};
+
+function populateCategorySelect(section) {
+  const select = document.getElementById('postCategory');
+  if (!select) return;
+  const categories = SECTION_CATEGORIES[section] || SECTION_CATEGORIES.editorials;
+  select.innerHTML = categories.map(cat => `<option value="${cat}">${cat}</option>`).join('');
+}
+
+window.switchUpdateSubtype = function(type) {
+  currentUpdateType = type;
+  document.querySelectorAll('#updatesTypeSelectorRow .admin-type-tab-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.getAttribute('data-type') === type);
+  });
+
+  const groupWomanName = document.getElementById('groupWomanName');
+  const groupHeadline = document.getElementById('groupHeadline');
+  const groupArticleTitle = document.getElementById('groupArticleTitle');
+  const groupAuthor = document.getElementById('groupAuthor');
+  const groupPhotoTitle = document.getElementById('groupPhotoTitle');
+  const groupCredit = document.getElementById('groupCredit');
+  const groupSummary = document.getElementById('groupSummary');
+  const groupFullBody = document.getElementById('groupFullBody');
+  const summaryLabel = document.getElementById('summaryLabel');
+
+  if (type === 'news') {
+    if (groupWomanName) groupWomanName.style.display = 'none';
+    if (groupHeadline) {
+      groupHeadline.style.display = 'block';
+      const lbl = groupHeadline.querySelector('label');
+      if (lbl) lbl.textContent = 'Live News Headline / Title';
+    }
+    if (groupArticleTitle) groupArticleTitle.style.display = 'none';
+    if (groupAuthor) groupAuthor.style.display = 'none';
+    if (groupPhotoTitle) groupPhotoTitle.style.display = 'none';
+    if (groupCredit) groupCredit.style.display = 'none';
+    if (groupSummary) {
+      groupSummary.style.display = 'block';
+      if (summaryLabel) summaryLabel.textContent = 'News Summary / 1-Line Key Highlights (Displayed on Homepage)';
+    }
+    if (groupFullBody) groupFullBody.style.display = 'block';
+  } else if (type === 'article') {
+    if (groupWomanName) groupWomanName.style.display = 'none';
+    if (groupHeadline) groupHeadline.style.display = 'none';
+    if (groupArticleTitle) groupArticleTitle.style.display = 'block';
+    if (groupAuthor) groupAuthor.style.display = 'block';
+    if (groupPhotoTitle) groupPhotoTitle.style.display = 'none';
+    if (groupCredit) groupCredit.style.display = 'none';
+    if (groupSummary) groupSummary.style.display = 'block';
+    if (groupFullBody) groupFullBody.style.display = 'block';
+    if (summaryLabel) summaryLabel.textContent = 'Story Abstract / 1-Line Highlight';
+  } else if (type === 'photo') {
+    if (groupWomanName) groupWomanName.style.display = 'none';
+    if (groupHeadline) groupHeadline.style.display = 'none';
+    if (groupArticleTitle) groupArticleTitle.style.display = 'none';
+    if (groupAuthor) groupAuthor.style.display = 'none';
+    if (groupPhotoTitle) groupPhotoTitle.style.display = 'block';
+    if (groupCredit) groupCredit.style.display = 'block';
+    if (groupSummary) groupSummary.style.display = 'block';
+    if (groupFullBody) groupFullBody.style.display = 'none';
+    if (summaryLabel) summaryLabel.textContent = 'Photo Caption / 1-Line Description';
+  } else {
+    // photo-info
+    if (groupWomanName) groupWomanName.style.display = 'block';
+    if (groupHeadline) groupHeadline.style.display = 'block';
+    if (groupArticleTitle) groupArticleTitle.style.display = 'none';
+    if (groupAuthor) groupAuthor.style.display = 'none';
+    if (groupPhotoTitle) groupPhotoTitle.style.display = 'none';
+    if (groupCredit) groupCredit.style.display = 'none';
+    if (groupSummary) groupSummary.style.display = 'block';
+    if (groupFullBody) groupFullBody.style.display = 'block';
+    if (summaryLabel) summaryLabel.textContent = 'Milestone Summary / 1-Line Highlight';
+  }
+};
+
+/* =============================================================
+   3. Image Picker, Local File Uploader & Preview
+============================================================= */
+function renderPresetButtons() {
+  const container = document.getElementById('adminPresetGrid');
+  if (!container) return;
+
+  container.innerHTML = ADMIN_PHOTO_PRESETS.map((p, idx) => `
+    <div class="photo-preset-choice ${idx === 0 ? 'active' : ''}" onclick="selectAdminPreset('${p.path}', this)" title="${p.label}">
+      <img src="${p.path}" alt="${p.label}">
+    </div>
+  `).join('');
+}
+
+window.selectAdminPreset = function(path, el) {
+  document.querySelectorAll('#adminPresetGrid .photo-preset-choice').forEach(c => c.classList.remove('active'));
+  if (el) el.classList.add('active');
+  const input = document.getElementById('postPhotoInput');
+  if (input) input.value = path;
+  updatePhotoPreview(path);
+};
+
+function updatePhotoPreview(src) {
+  const preview = document.getElementById('adminPhotoPreview');
+  if (preview) preview.src = src;
+}
+
+function handleFileUpload(e) {
+  const file = e.target.files && e.target.files[0];
+  if (!file) return;
+
+  const statusEl = document.getElementById('uploadFileStatus');
+  if (statusEl) {
+    statusEl.textContent = `Optimizing ${file.name} for web display...`;
+    statusEl.style.color = 'var(--gold-light)';
+  }
+
+  const reader = new FileReader();
+  reader.onload = function(evt) {
+    const rawDataUrl = evt.target.result;
+
+    // Use HTML5 Canvas to resize and compress photos, ensuring they fit within storage quotas
+    const img = new Image();
+    img.onload = function() {
+      const maxDim = 1200;
+      let width = img.width;
+      let height = img.height;
+
+      if (width > maxDim || height > maxDim) {
+        if (width > height) {
+          height = Math.round((height * maxDim) / width);
+          width = maxDim;
+        } else {
+          width = Math.round((width * maxDim) / height);
+          height = maxDim;
+        }
+      }
+
+      const canvas = document.createElement('canvas');
+      canvas.width = width;
+      canvas.height = height;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(img, 0, 0, width, height);
+
+      // Compress to high-efficiency web JPEG
+      const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.82);
+
+      const photoInput = document.getElementById('postPhotoInput');
+      if (photoInput) photoInput.value = compressedDataUrl;
+      updatePhotoPreview(compressedDataUrl);
+
+      document.querySelectorAll('#adminPresetGrid .photo-preset-choice').forEach(c => c.classList.remove('active'));
+
+      if (window.ScreenladyAPI && typeof window.ScreenladyAPI.uploadMedia === 'function') {
+        if (statusEl) {
+          statusEl.textContent = `Uploading ${file.name} to ImageKit CDN...`;
+          statusEl.style.color = 'var(--gold-light)';
+        }
+        window.ScreenladyAPI.uploadMedia(file)
+          .then(res => {
+            if (res && res.url) {
+              if (photoInput) photoInput.value = res.url;
+              updatePhotoPreview(res.url);
+              if (statusEl) {
+                const isLive = res.url.startsWith('http');
+                statusEl.textContent = `✓ ImageKit CDN Ready: ${res.name || file.name} (${isLive ? 'Live CDN URL' : 'Optimized'})`;
+                statusEl.style.color = '#4ade80';
+              }
+            }
+          })
+          .catch(err => {
+            console.warn('[Screenlady Admin] ImageKit upload fallback notice:', err.message);
+            if (statusEl) {
+              statusEl.textContent = `✓ Photo Ready: ${file.name} (Optimized for Web)`;
+              statusEl.style.color = '#4ade80';
+            }
+          });
+      } else {
+        if (statusEl) {
+          const origSizeKb = Math.round(file.size / 1024);
+          const newSizeKb = Math.round(compressedDataUrl.length * 0.75 / 1024);
+          statusEl.textContent = `✓ Photo Ready: ${file.name} (${origSizeKb}KB → ${newSizeKb}KB, optimized for Homepage)`;
+          statusEl.style.color = '#4ade80';
+        }
+      }
+    };
+
+    img.onerror = function() {
+      // Direct fallback if canvas fails
+      const photoInput = document.getElementById('postPhotoInput');
+      if (photoInput) photoInput.value = rawDataUrl;
+      updatePhotoPreview(rawDataUrl);
+      if (statusEl) {
+        statusEl.textContent = `✓ Uploaded: ${file.name} (Ready to publish)`;
+        statusEl.style.color = '#4ade80';
+      }
+    };
+
+    img.src = rawDataUrl;
+  };
+  reader.readAsDataURL(file);
+}
+
+/* =============================================================
+   4. Save, Edit & Publish Handler (Per Selected Section)
+============================================================= */
+function handlePostSubmit(e) {
+  e.preventDefault();
+
+  const section = currentSection;
+  const dateStr = document.getElementById('postDate').value || new Date().toISOString().split('T')[0];
+  const category = document.getElementById('postCategory').value.trim() || 'General';
+  const photo = document.getElementById('postPhotoInput').value.trim() || 'https://ik.imagekit.io/acooladescreenlady/assets/images/featured-icon-saree.jpg';
+  const rawTags = document.getElementById('postTags').value.trim();
+  const tags = rawTags ? rawTags.split(',').map(t => t.trim()).filter(Boolean) : [category];
+
+  const dateObj = new Date(dateStr);
+  const displayDate = dateObj.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+
+  // -------------------------------------------------------------
+  // SECTION: EDITORIALS
+  // -------------------------------------------------------------
+  if (section === 'editorials') {
+    const title = (document.getElementById('postEditorialTitle')?.value || '').trim() || 'Accolade Screenlady Feature Editorial';
+    const author = (document.getElementById('postEditorialAuthor')?.value || '').trim() || 'Accolade Screenlady Desk';
+    const designation = (document.getElementById('postEditorialDesignation')?.value || '').trim() || 'Guest Columnist';
+    const readTime = (document.getElementById('postEditorialReadTime')?.value || '').trim() || '5 Min Read';
+    const pullQuote = (document.getElementById('postEditorialQuote')?.value || '').trim();
+    const rawBody = (document.getElementById('postEditorialBody')?.value || '').trim();
+
+    const formattedContent = formatParagraphs(rawBody);
+    const firstLineBody = rawBody ? (rawBody.split(/\n+/).filter(Boolean)[0] || '') : '';
+    const editorialSummary = pullQuote || (firstLineBody.length > 160 ? firstLineBody.substring(0, 157) + '...' : firstLineBody) || title;
+    const finalFullContent = formattedContent || `<p>${escapeHtml(editorialSummary)}</p>`;
+
+    const newEditorial = {
+      id: (editingItem && editingItem.section === 'editorials') ? editingItem.id : `editorial-custom-${Date.now()}`,
+      title: title,
+      headline: title,
+      author: author,
+      authorRole: designation,
+      authorDesignation: designation,
+      readTime: readTime,
+      pullQuote: pullQuote || editorialSummary,
+      summary: editorialSummary,
+      fullBody: finalFullContent,
+      content: finalFullContent,
+      fullContent: finalFullContent,
+      previewExcerptHtml: `<div class="editorial-lead-box" style="margin-bottom: 0.95rem; padding: 0.85rem 1.1rem; font-size: 0.92rem;"><strong>(Accolade Screenlady Editorial)</strong> ${escapeHtml(editorialSummary)}</div>${finalFullContent.split(/<\/p>/i).slice(0, 3).map(p => p.trim() ? p + '</p>' : '').join('\n')}`,
+      date: dateStr,
+      displayDate: displayDate,
+      category: category,
+      categoryBadge: `✦ ${category}`,
+      photo: photo,
+      photoCaption: title,
+      tags: tags,
+      timestamp: Date.now()
+    };
+
+    saveCustomItem('screenlady_custom_editorials', newEditorial);
+    showToast('✦ Editorial saved successfully! It is live on the Editorials page.');
+  }
+
+  // -------------------------------------------------------------
+  // SECTION: PODCAST
+  // -------------------------------------------------------------
+  else if (section === 'podcast') {
+    const title = (document.getElementById('postPodcastTitle')?.value || '').trim() || 'Accolade Screenlady Podcast Episode';
+    const host = (document.getElementById('postPodcastHost')?.value || '').trim() || 'Accolade Screenlady Desk';
+    const guest = (document.getElementById('postPodcastGuest')?.value || '').trim() || 'Distinguished Guest';
+    const duration = (document.getElementById('postPodcastDuration')?.value || '').trim() || '38 Mins';
+    const socialLink = (document.getElementById('postPodcastSocialLink')?.value || '').trim() || 'https://youtube.com';
+    const audioUrl = (document.getElementById('postPodcastAudioUrl')?.value || '').trim();
+    const showNotes = (document.getElementById('postPodcastShowNotes')?.value || '').trim();
+
+    const cleanNotes = showNotes ? showNotes.split(/\n+/).filter(Boolean) : [];
+    const firstLineNotes = cleanNotes.length > 0 ? cleanNotes[0] : '';
+    const podcastSummary = firstLineNotes.length > 160 ? firstLineNotes.substring(0, 157) + '...' : (firstLineNotes || title);
+    const fullShowNotes = showNotes || title;
+
+    const newPodcast = {
+      id: (editingItem && editingItem.section === 'podcast') ? editingItem.id : `podcast-custom-${Date.now()}`,
+      title: title,
+      host: host,
+      guest: guest,
+      duration: duration,
+      socialLink: socialLink,
+      audioUrl: audioUrl || '',
+      summary: podcastSummary,
+      showNotes: formatParagraphs(fullShowNotes),
+      date: dateStr,
+      displayDate: displayDate,
+      category: category,
+      photo: photo,
+      tags: tags,
+      timestamp: Date.now()
+    };
+
+    saveCustomItem('screenlady_custom_podcasts', newPodcast);
+    showToast('✦ Podcast episode published! It now appears 1st with a 10s preview on the Podcast page.');
+  }
+
+  // -------------------------------------------------------------
+  // SECTION: LIVE NEWS (HOMEPAGE SCREENLADY UPDATES)
+  // -------------------------------------------------------------
+  else if (section === 'news' || (section === 'updates' && currentUpdateType === 'news')) {
+    const headline = (document.getElementById('postHeadline')?.value || '').trim() || 'Screenlady Live News Update';
+    const summary = (document.getElementById('postSummary')?.value || '').trim() || headline;
+    const fullBody = (document.getElementById('postFullBody')?.value || '').trim() || summary;
+
+    const newNews = {
+      id: (editingItem && (editingItem.section === 'news' || editingItem.section === 'updates')) ? editingItem.id : `news-custom-${Date.now()}`,
+      type: 'news',
+      curatedSection: 'news',
+      isHomepageNews: true,
+      category: category,
+      categoryBadge: `✦ ${category}`,
+      date: dateStr,
+      displayDate: displayDate,
+      title: headline,
+      headline: headline,
+      summary: summary,
+      infoSummary: summary,
+      fullBody: formatParagraphs(fullBody),
+      fullInfo: formatParagraphs(fullBody),
+      photo: photo,
+      tags: tags,
+      link: 'javascript:void(0)',
+      timestamp: Date.now()
+    };
+
+    saveCustomItem('screenlady_custom_news', newNews);
+    showToast('✦ Live News published! It now appears 1st on the Homepage under Screenlady Updates.');
+  }
+
+  // -------------------------------------------------------------
+  // SECTION: HOMEPAGE PHOTOS (SLIDESHOW SHOWCASE)
+  // -------------------------------------------------------------
+  else if (section === 'home_photos') {
+    const venue = (document.getElementById('postPhotoVenue')?.value || '').trim() || 'Screenlady Studios, Mumbai';
+    const caption = (document.getElementById('postPhotoCaption')?.value || '').trim() || 'Accolade Screenlady Visual Showcase';
+
+    const newHomePhoto = {
+      id: (editingItem && editingItem.section === 'home_photos') ? editingItem.id : `homephoto-custom-${Date.now()}`,
+      category: category,
+      badge: `✦ ${category}`,
+      title: caption,
+      venue: venue,
+      location: venue,
+      caption: caption,
+      description: caption,
+      summary: caption,
+      date: dateStr,
+      displayDate: displayDate,
+      photo: photo,
+      link: 'photos.html',
+      timestamp: Date.now()
+    };
+
+    saveCustomItem('screenlady_custom_home_photos', newHomePhoto);
+    showToast('✦ Homepage photo published! It now displays in the Homepage photo showcase slideshow.');
+  }
+
+  // -------------------------------------------------------------
+  // SECTION: PHOTOS (ACCOLADE SCREENLADY GALLERY)
+  // -------------------------------------------------------------
+  else if (section === 'photos') {
+    const photoTitle = (document.getElementById('postPhotoTitle')?.value || '').trim() ||
+                       (document.getElementById('postPhotoCaption')?.value || '').trim() ||
+                       'Accolade Screenlady Gallery Photograph';
+    const venue = (document.getElementById('postPhotoVenue')?.value || '').trim() || 'Screenlady Studios, Mumbai';
+    const caption = (document.getElementById('postPhotoCaption')?.value || '').trim() || photoTitle;
+
+    const newPhoto = {
+      id: (editingItem && editingItem.section === 'photos') ? editingItem.id : `photo-custom-${Date.now()}`,
+      title: photoTitle,
+      venue: venue,
+      location: venue,
+      caption: caption,
+      description: caption,
+      summary: caption,
+      date: dateStr,
+      displayDate: displayDate,
+      category: category || 'Gallery',
+      photo: photo,
+      credit: 'Official Screenlady Photography Archive',
+      tags: tags || ['Gallery'],
+      timestamp: Date.now()
+    };
+
+    saveCustomItem('screenlady_custom_photos', newPhoto);
+    showToast('✦ Photo published! It now displays 1st in Accolade Screenlady Gallery.');
+  }
+
+  // -------------------------------------------------------------
+  // SECTIONS: FILMY ADDA, BIZZ WORLD, WOMEN OF INSPIRATION, FASHION & LIFESTYLE
+  // -------------------------------------------------------------
+  else if (['filmy_adda', 'bizz_world', 'women_inspiration', 'fashion_lifestyle'].includes(section)) {
+    const womanName = (document.getElementById('postWomanName')?.value || '').trim();
+    const headline = (document.getElementById('postHeadline')?.value || '').trim();
+    const summary = (document.getElementById('postSummary')?.value || '').trim();
+    const fullBody = (document.getElementById('postFullBody')?.value || '').trim() || summary || headline;
+
+    let displayTitle = headline;
+    if (section === 'women_inspiration') {
+      displayTitle = womanName || headline || 'Inspirational Honoree';
+    } else if (!displayTitle) {
+      displayTitle = (section === 'filmy_adda' ? 'Filmy Adda Cinema Feature' :
+                     section === 'bizz_world' ? 'Bizz World Enterprise Feature' :
+                     'Fashion & Lifestyle Collection');
+    }
+
+    const defaultBadges = {
+      filmy_adda: '🎬 Cinema',
+      bizz_world: '💼 Business',
+      women_inspiration: '👑 Inspiration',
+      fashion_lifestyle: '✨ Fashion & Style'
+    };
+
+    const targetItemId = (editingItem && editingItem.section === section) ? editingItem.id : `curated-${section}-${Date.now()}`;
+
+    const sectionTargetUrls = {
+      filmy_adda: 'http://localhost:4321/#filmyAddaSection',
+      bizz_world: 'http://localhost:4321/#bizzWorldSection',
+      women_inspiration: 'http://localhost:4321/#womenInspirationSection',
+      fashion_lifestyle: 'http://localhost:4321/#fashionLifestyleSection'
+    };
+
+    const newCuratedItem = {
+      id: targetItemId,
+      curatedSection: section,
+      type: 'photo-info',
+      isHomepageNews: false,
+      category: category,
+      categoryBadge: `✦ ${category || defaultBadges[section]}`,
+      date: dateStr,
+      displayDate: displayDate,
+      title: displayTitle,
+      headline: headline || displayTitle,
+      womanName: womanName || displayTitle,
+      summary: summary || displayTitle,
+      infoSummary: summary || displayTitle,
+      fullBody: formatParagraphs(fullBody),
+      fullInfo: formatParagraphs(fullBody),
+      photo: photo,
+      tags: tags,
+      link: sectionTargetUrls[section] || 'http://localhost:4321/',
+      timestamp: Date.now()
+    };
+
+    const targetStorageKey = section === 'filmy_adda' ? 'screenlady_custom_filmy' :
+                             section === 'bizz_world' ? 'screenlady_custom_bizz' :
+                             section === 'women_inspiration' ? 'screenlady_custom_inspiration' :
+                             'screenlady_custom_fashion';
+
+    saveCustomItem(targetStorageKey, newCuratedItem, section);
+
+    const sectionLabels = {
+      filmy_adda: 'Filmy Adda',
+      bizz_world: 'Bizz World',
+      women_inspiration: 'Women of Inspiration',
+      fashion_lifestyle: 'Fashion & Lifestyle'
+    };
+    showToast(`✦ ${sectionLabels[section]} published! It now leads 1st on the Homepage under ${sectionLabels[section]}.`);
+  }
+
+  // -------------------------------------------------------------
+  // SECTION: SCREENLADY UPDATES
+  // -------------------------------------------------------------
+  else {
+    const type = currentUpdateType;
+    const venue = (document.getElementById('postUpdateVenue')?.value || '').trim() || 'Screenlady Headquarters, Mumbai';
+    const womanName = (document.getElementById('postWomanName')?.value || '').trim() || 'Accolade Screenlady Team';
+    const headline = (document.getElementById('postHeadline')?.value || '').trim() || womanName || 'Screenlady Milestone Update';
+    const summary = (document.getElementById('postSummary')?.value || '').trim() || headline;
+    const fullBody = (document.getElementById('postFullBody')?.value || '').trim() || summary;
+
+    let newUpdate = {
+      id: (editingItem && editingItem.section === 'updates') ? editingItem.id : `update-custom-${Date.now()}`,
+      type: type,
+      date: dateStr,
+      displayDate: displayDate,
+      category: category,
+      photo: photo,
+      venue: venue,
+      location: venue,
+      womanName: womanName,
+      teamMembers: womanName,
+      tags: tags,
+      timestamp: Date.now()
+    };
+
+    if (type === 'article') {
+      const articleTitle = (document.getElementById('postArticleTitle')?.value || '').trim() || headline;
+      const author = (document.getElementById('postAuthor')?.value || '').trim() || 'Accolade Screenlady Desk';
+
+      newUpdate.title = articleTitle;
+      newUpdate.headline = articleTitle;
+      newUpdate.author = author;
+      newUpdate.infoSummary = summary;
+      newUpdate.summary = summary;
+      newUpdate.fullInfo = formatParagraphs(fullBody);
+      newUpdate.readTime = '4 Min Read';
+    } else if (type === 'photo') {
+      const photoTitle = (document.getElementById('postPhotoTitle')?.value || '').trim() || headline;
+      const credit = (document.getElementById('postCredit')?.value || '').trim() || 'Screenlady Official Archives';
+      const caption = summary;
+
+      newUpdate.title = photoTitle;
+      newUpdate.headline = photoTitle;
+      newUpdate.photoCaption = caption;
+      newUpdate.infoSummary = caption;
+      newUpdate.summary = caption;
+      newUpdate.credit = credit;
+      newUpdate.fullInfo = `<p>${caption}</p>`;
+    } else {
+      // photo-info (Meetings, Awards, Movie Talk, Meet & Greet, Events)
+      newUpdate.title = headline || womanName;
+      newUpdate.headline = headline || womanName;
+      newUpdate.infoSummary = summary;
+      newUpdate.summary = summary;
+      newUpdate.fullInfo = formatParagraphs(fullBody);
+    }
+
+    saveCustomItem('screenlady_custom_updates', newUpdate);
+    showToast('✦ Update published! It now displays 1st on Screenlady Updates.');
+  }
+
+  resetForm();
+  loadAdminDashboard();
+}
+
+/**
+ * Save an item to the specified localStorage key (handles insert or update)
+ * and dispatches live update to the Cloudflare Worker Backend API
+ */
+function saveCustomItem(storageKey, item, sectionOverride) {
+  let list = [];
+  try {
+    const raw = localStorage.getItem(storageKey);
+    list = raw ? JSON.parse(raw) : [];
+  } catch (err) {
+    list = [];
+  }
+
+  // Ensure item has custom tag and valid timestamp
+  item.isCustom = true;
+  if (!item.timestamp) item.timestamp = Date.now();
+
+  const existingIndex = list.findIndex(i => i.id === item.id);
+  if (existingIndex >= 0) {
+    list[existingIndex] = item;
+  } else {
+    // Insert new item at the top (Latest first)
+    list.unshift(item);
+  }
+
+  try {
+    localStorage.setItem(storageKey, JSON.stringify(list));
+    localStorage.setItem('screenlady_last_updated', Date.now().toString());
+  } catch (err) {
+    console.warn('LocalStorage quota limit reached, trimming older entries:', err);
+    // Prune oldest custom items if storage is near quota
+    while (list.length > 8) {
+      list.pop();
+      try {
+        localStorage.setItem(storageKey, JSON.stringify(list));
+        break;
+      } catch (e) {}
+    }
+  }
+
+  // Live Backend Cloudflare Worker Synchronization
+  if (window.ScreenladyAPI && typeof window.ScreenladyAPI.publishItem === 'function') {
+    let targetSection = sectionOverride || currentSection || 'updates';
+    if (storageKey === 'screenlady_custom_editorials') targetSection = 'editorials';
+    else if (storageKey === 'screenlady_custom_podcasts') targetSection = 'podcast';
+    else if (storageKey === 'screenlady_custom_photos' || storageKey === 'screenlady_custom_home_photos') targetSection = 'photos';
+    else if (storageKey === 'screenlady_custom_filmy') targetSection = 'filmy_adda';
+    else if (storageKey === 'screenlady_custom_bizz') targetSection = 'bizz_world';
+    else if (storageKey === 'screenlady_custom_inspiration') targetSection = 'women_inspiration';
+    else if (storageKey === 'screenlady_custom_fashion') targetSection = 'fashion_lifestyle';
+    else if (storageKey === 'screenlady_custom_news') targetSection = 'news';
+    else if (storageKey === 'screenlady_custom_updates') targetSection = 'updates';
+
+    window.ScreenladyAPI.publishItem(targetSection, item)
+      .then(res => {
+        if (res && res.success) {
+          console.log(`[Screenlady Desk] Synced live to backend (${targetSection}):`, item.id);
+        }
+      })
+      .catch(err => {
+        console.warn(`[Screenlady Desk] Backend sync fallback notice:`, err.message);
+      });
+  }
+}
+
+/* =============================================================
+   5. Dashboard Statistics & Table Management
+============================================================= */
+function isFilmyAddaItem(item) {
+  if (!item) return false;
+  if (item.isHomepageNews || item.curatedSection === 'news' || item.type === 'news' || (item.id && item.id.startsWith('news-'))) return false;
+  if (item.curatedSection === 'filmy_adda') return true;
+  if (item.curatedSection && item.curatedSection !== 'filmy_adda') return false;
+  return false;
+}
+
+function isBizzWorldItem(item) {
+  if (!item) return false;
+  if (item.isHomepageNews || item.curatedSection === 'news' || item.type === 'news' || (item.id && item.id.startsWith('news-'))) return false;
+  if (item.curatedSection === 'bizz_world') return true;
+  if (item.curatedSection && item.curatedSection !== 'bizz_world') return false;
+  return false;
+}
+
+function isInspirationItem(item) {
+  if (!item) return false;
+  if (item.isHomepageNews || item.curatedSection === 'news' || item.type === 'news' || (item.id && item.id.startsWith('news-'))) return false;
+  if (item.curatedSection === 'women_inspiration') return true;
+  if (item.curatedSection && item.curatedSection !== 'women_inspiration') return false;
+  return false;
+}
+
+function isFashionItem(item) {
+  if (!item) return false;
+  if (item.isHomepageNews || item.curatedSection === 'news' || item.type === 'news' || (item.id && item.id.startsWith('news-'))) return false;
+  if (item.curatedSection === 'fashion_lifestyle') return true;
+  if (item.curatedSection && item.curatedSection !== 'fashion_lifestyle') return false;
+  return false;
+}
+
+async function loadAdminDashboard() {
+  updateStatCounters();
+  renderManageTable();
+  if (typeof renderMagazineOrdersTable === 'function') {
+    renderMagazineOrdersTable();
+  }
+
+  // Live Backend Synchronization across ALL content feeds
+  if (window.ScreenladyAPI) {
+    try {
+      const [backendUpdates, backendNews, backendEditorials, backendPhotos, backendPodcasts, backendOrders, deletedIds] = await Promise.all([
+        typeof window.ScreenladyAPI.getUpdates === 'function' ? window.ScreenladyAPI.getUpdates() : Promise.resolve([]),
+        typeof window.ScreenladyAPI.getNews === 'function' ? window.ScreenladyAPI.getNews() : Promise.resolve([]),
+        typeof window.ScreenladyAPI.getEditorials === 'function' ? window.ScreenladyAPI.getEditorials() : Promise.resolve([]),
+        typeof window.ScreenladyAPI.getPhotos === 'function' ? window.ScreenladyAPI.getPhotos() : Promise.resolve([]),
+        typeof window.ScreenladyAPI.getPodcasts === 'function' ? window.ScreenladyAPI.getPodcasts() : Promise.resolve([]),
+        typeof window.ScreenladyAPI.getOrders === 'function' ? window.ScreenladyAPI.getOrders() : Promise.resolve([]),
+        typeof window.ScreenladyAPI.getDeletedIds === 'function' ? window.ScreenladyAPI.getDeletedIds() : Promise.resolve([])
+      ]);
+
+      if (deletedIds && Array.isArray(deletedIds)) {
+        window.backendDeletedIds = deletedIds;
+      }
+      if (backendUpdates && Array.isArray(backendUpdates)) {
+        window.backendLiveUpdates = backendUpdates;
+      }
+      if (backendNews && Array.isArray(backendNews) && backendNews.length > 0) {
+        window.backendLiveNews = backendNews;
+      } else if (backendUpdates && Array.isArray(backendUpdates)) {
+        window.backendLiveNews = backendUpdates;
+      }
+      if (backendEditorials && Array.isArray(backendEditorials)) {
+        window.backendLiveEditorials = backendEditorials;
+      }
+      if (backendPhotos && Array.isArray(backendPhotos)) {
+        window.backendLivePhotos = backendPhotos;
+      }
+      if (backendPodcasts && Array.isArray(backendPodcasts)) {
+        window.backendLivePodcasts = backendPodcasts;
+      }
+
+      if (backendOrders && Array.isArray(backendOrders) && backendOrders.length > 0) {
+        const localOrders = (typeof getAllMagazineOrders === 'function') ? getAllMagazineOrders() : [];
+        const orderIds = new Set(localOrders.map(o => o.id || o.orderId));
+        let updated = false;
+        backendOrders.forEach(bo => {
+          const id = bo.id || bo.orderId;
+          if (!orderIds.has(id)) {
+            localOrders.unshift(bo);
+            updated = true;
+          }
+        });
+        if (updated && typeof saveMagazineOrders === 'function') {
+          saveMagazineOrders(localOrders);
+          if (typeof renderMagazineOrdersTable === 'function') renderMagazineOrdersTable();
+        }
+      }
+
+      updateStatCounters();
+      renderManageTable();
+    } catch (err) {
+      console.warn('[Screenlady Admin] Live sync notice:', err.message);
+    }
+  }
+}
+
+function updateStatCounters() {
+  const elNews = document.getElementById('statTotalNews');
+  const elFilmy = document.getElementById('statTotalFilmyAdda');
+  const elBizz = document.getElementById('statTotalBizzWorld');
+  const elInspiration = document.getElementById('statTotalInspiration');
+  const elFashion = document.getElementById('statTotalFashion');
+  const elHomePhotos = document.getElementById('statTotalHomePhotos');
+  const elEditorials = document.getElementById('statTotalEditorials');
+  const elPodcasts = document.getElementById('statTotalPodcasts');
+  const elPhotos = document.getElementById('statTotalPhotos');
+  const elUpdates = document.getElementById('statTotalUpdates');
+  const elMagazineOrders = document.getElementById('statTotalMagazineOrders');
+
+  const newsItems = (typeof getAllHomeNews === 'function') ? getAllHomeNews() : [];
+  const homePhotos = (typeof getAllHomePhotos === 'function') ? getAllHomePhotos() : [];
+  const editorials = (typeof getAllEditorials === 'function') ? getAllEditorials() : [];
+  const podcasts = (typeof getAllPodcasts === 'function') ? getAllPodcasts() : [];
+  const photos = (typeof getAllPhotos === 'function') ? getAllPhotos() : [];
+  const updates = (typeof getAllUpdates === 'function') ? getAllUpdates() : [];
+  const magazineOrders = (typeof getAllMagazineOrders === 'function') ? getAllMagazineOrders() : [];
+
+  const filmyItems = updates.filter(isFilmyAddaItem);
+  const bizzItems = updates.filter(isBizzWorldItem);
+  const inspirationItems = updates.filter(isInspirationItem);
+  const fashionItems = updates.filter(isFashionItem);
+
+  if (elNews) elNews.textContent = newsItems.length;
+  if (elFilmy) elFilmy.textContent = filmyItems.length;
+  if (elBizz) elBizz.textContent = bizzItems.length;
+  if (elInspiration) elInspiration.textContent = inspirationItems.length;
+  if (elFashion) elFashion.textContent = fashionItems.length;
+  if (elHomePhotos) elHomePhotos.textContent = homePhotos.length;
+  if (elEditorials) elEditorials.textContent = editorials.length;
+  if (elPodcasts) elPodcasts.textContent = podcasts.length;
+  if (elPhotos) elPhotos.textContent = photos.length;
+  if (elUpdates) elUpdates.textContent = updates.length;
+  if (elMagazineOrders) elMagazineOrders.textContent = magazineOrders.length;
+}
+
+window.setManageFilter = function(filter) {
+  activeManageFilter = filter;
+  document.querySelectorAll('[data-manage-filter]').forEach(btn => {
+    btn.classList.toggle('active', btn.getAttribute('data-manage-filter') === filter);
+  });
+  renderManageTable();
+};
+
+window.filterManageSection = function(section) {
+  setManageFilter(section);
+  const target = document.getElementById('adminManageSection');
+  if (target) target.scrollIntoView({ behavior: 'smooth' });
+};
+
+function renderManageTable() {
+  const tbody = document.getElementById('adminUpdatesTableBody');
+  if (!tbody) return;
+
+  const newsItems = (typeof getAllHomeNews === 'function') ? getAllHomeNews() : [];
+  const homePhotos = (typeof getAllHomePhotos === 'function') ? getAllHomePhotos() : [];
+  const editorials = (typeof getAllEditorials === 'function') ? getAllEditorials() : [];
+  const podcasts = (typeof getAllPodcasts === 'function') ? getAllPodcasts() : [];
+  const photos = (typeof getAllPhotos === 'function') ? getAllPhotos() : [];
+  const updates = (typeof getAllUpdates === 'function') ? getAllUpdates() : [];
+
+  // Tag items with their section and target live URL
+  const taggedNews = newsItems.map(i => ({ ...i, _section: 'news', _targetUrl: 'http://localhost:4321/#homeHeroSplitSection', _storageKey: 'screenlady_custom_news' }));
+  const taggedHomePhotos = homePhotos.map(i => ({ ...i, _section: 'home_photos', _targetUrl: 'http://localhost:4321/#homePhotoSlideshowWrap', _storageKey: 'screenlady_custom_home_photos' }));
+  const taggedEditorials = editorials.map(i => ({ ...i, _section: 'editorials', _targetUrl: `http://localhost:4321/editorials#${i.id}`, _storageKey: 'screenlady_custom_editorials' }));
+  const taggedPodcasts = podcasts.map(i => ({ ...i, _section: 'podcast', _targetUrl: `http://localhost:4321/podcast#${i.id}`, _storageKey: 'screenlady_custom_podcasts' }));
+  const taggedPhotos = photos.map(i => ({ ...i, _section: 'photos', _targetUrl: `http://localhost:4321/photos#${i.id}`, _storageKey: 'screenlady_custom_photos' }));
+  const taggedUpdates = updates
+    .filter(i => i && !i.isHomepageNews && i.curatedSection !== 'news' && i.type !== 'news' && !(i.id && i.id.startsWith('news-')))
+    .map(i => {
+    let sec = 'updates';
+    let target = `http://localhost:4321/updates#${i.id}`;
+    let storeKey = 'screenlady_custom_updates';
+
+    if (i.curatedSection === 'filmy_adda' || isFilmyAddaItem(i)) {
+      sec = 'filmy_adda';
+      target = 'http://localhost:4321/#filmyAddaSection';
+      storeKey = 'screenlady_custom_filmy';
+    } else if (i.curatedSection === 'bizz_world' || isBizzWorldItem(i)) {
+      sec = 'bizz_world';
+      target = 'http://localhost:4321/#bizzWorldSection';
+      storeKey = 'screenlady_custom_bizz';
+    } else if (i.curatedSection === 'women_inspiration' || isInspirationItem(i)) {
+      sec = 'women_inspiration';
+      target = 'http://localhost:4321/#womenInspirationSection';
+      storeKey = 'screenlady_custom_inspiration';
+    } else if (i.curatedSection === 'fashion_lifestyle' || isFashionItem(i)) {
+      sec = 'fashion_lifestyle';
+      target = 'http://localhost:4321/#fashionLifestyleSection';
+      storeKey = 'screenlady_custom_fashion';
+    }
+    return { ...i, _section: sec, _targetUrl: target, _storageKey: storeKey };
+  });
+
+  let allItems = [];
+  if (activeManageFilter === 'news') allItems = taggedNews;
+  else if (activeManageFilter === 'filmy_adda') allItems = taggedUpdates.filter(i => i._section === 'filmy_adda');
+  else if (activeManageFilter === 'bizz_world') allItems = taggedUpdates.filter(i => i._section === 'bizz_world');
+  else if (activeManageFilter === 'women_inspiration') allItems = taggedUpdates.filter(i => i._section === 'women_inspiration');
+  else if (activeManageFilter === 'fashion_lifestyle') allItems = taggedUpdates.filter(i => i._section === 'fashion_lifestyle');
+  else if (activeManageFilter === 'home_photos') allItems = taggedHomePhotos;
+  else if (activeManageFilter === 'editorials') allItems = taggedEditorials;
+  else if (activeManageFilter === 'podcast') allItems = taggedPodcasts;
+  else if (activeManageFilter === 'photos') allItems = taggedPhotos;
+  else if (activeManageFilter === 'updates') allItems = taggedUpdates.filter(i => i._section === 'updates');
+  else {
+    // Combine all sections with deduplication across feeds
+    allItems = [...taggedNews, ...taggedHomePhotos, ...taggedEditorials, ...taggedPodcasts, ...taggedPhotos, ...taggedUpdates];
+  }
+
+  // Deduplicate strictly by ID so no row ever appears twice in the admin desk
+  const seenTableIds = new Set();
+  const dedupedTableItems = [];
+  for (const item of allItems) {
+    if (item && item.id && !seenTableIds.has(item.id)) {
+      seenTableIds.add(item.id);
+      dedupedTableItems.push(item);
+    }
+  }
+  allItems = dedupedTableItems;
+
+  // Strictly sort descending by date & timestamp (Latest First)
+  allItems.sort((a, b) => {
+    const dateA = new Date(a.date || a.displayDate || 0).getTime();
+    const dateB = new Date(b.date || b.displayDate || 0).getTime();
+    if (dateB !== dateA) return dateB - dateA;
+    return (b.timestamp || 0) - (a.timestamp || 0);
+  });
+
+  if (allItems.length === 0) {
+    tbody.innerHTML = `
+      <tr>
+        <td colspan="6" style="text-align: center; padding: 3rem; color: var(--text-muted);">
+          No items found in this section. Use the Composer above to publish your first post!
+        </td>
+      </tr>
+    `;
+    return;
+  }
+
+  tbody.innerHTML = allItems.map((item, idx) => {
+    const isTop = idx === 0 && (activeManageFilter === item._section || activeManageFilter === 'all');
+    const safeTitle = escapeHtml(item.title || item.womanName || item.headline || 'Untitled');
+    const safeDate = escapeHtml(item.displayDate || item.date || 'Recent');
+    const safeCat = escapeHtml(item.category || 'General');
+    const imgSrc = item.photo || 'https://ik.imagekit.io/acooladescreenlady/assets/images/featured-icon-saree.jpg';
+
+    // Section Badge
+    let sectionBadgeHtml = '';
+    if (item._section === 'news') {
+      sectionBadgeHtml = `<span class="section-pill-badge" style="background: rgba(239, 68, 68, 0.2); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.45); font-weight: 700;">⚡ Live News</span>`;
+    } else if (item._section === 'filmy_adda') {
+      sectionBadgeHtml = `<span class="section-pill-badge" style="background: rgba(239, 68, 68, 0.25); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.5); font-weight: 700;">🎬 Filmy Adda</span>`;
+    } else if (item._section === 'bizz_world') {
+      sectionBadgeHtml = `<span class="section-pill-badge" style="background: rgba(212, 175, 55, 0.25); color: var(--gold-light); border: 1px solid rgba(212, 175, 55, 0.5); font-weight: 700;">💼 Bizz World</span>`;
+    } else if (item._section === 'women_inspiration') {
+      sectionBadgeHtml = `<span class="section-pill-badge" style="background: rgba(245, 158, 11, 0.25); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.5); font-weight: 700;">👑 Inspiration</span>`;
+    } else if (item._section === 'fashion_lifestyle') {
+      sectionBadgeHtml = `<span class="section-pill-badge" style="background: rgba(236, 72, 153, 0.25); color: #f472b6; border: 1px solid rgba(236, 72, 153, 0.5); font-weight: 700;">✨ Fashion & Life</span>`;
+    } else if (item._section === 'home_photos') {
+      sectionBadgeHtml = `<span class="section-pill-badge" style="background: rgba(168, 85, 247, 0.2); color: #c084fc; border: 1px solid rgba(168, 85, 247, 0.45); font-weight: 700;">🖼️ Home Photo</span>`;
+    } else if (item._section === 'editorials') {
+      sectionBadgeHtml = `<span class="section-pill-badge badge-editorials">🖋️ Editorial</span>`;
+    } else if (item._section === 'podcast') {
+      sectionBadgeHtml = `<span class="section-pill-badge badge-podcast">🎙️ Podcast</span>`;
+    } else if (item._section === 'photos') {
+      sectionBadgeHtml = `<span class="section-pill-badge badge-photos">📷 Gallery</span>`;
+    } else {
+      sectionBadgeHtml = `<span class="section-pill-badge badge-updates">🗞️ Updates</span>`;
+    }
+
+    // Extract description text (strictly 2-line clamped in editorial desk)
+    const rawDesc = item.caption || item.infoSummary || item.summary || item.photoCaption || (item.pullQuote || '') || (item.content ? item.content.replace(/<[^>]+>/g, '').trim() : '') || (item.showNotes ? item.showNotes.replace(/<[^>]+>/g, '').trim() : '');
+    const safeDesc = escapeHtml(rawDesc);
+
+    return `
+      <tr class="${isTop ? 'highlight-top-row' : ''}">
+        <td>
+          <span class="admin-order-badge ${isTop ? 'first-order' : ''}">
+            #${idx + 1}
+          </span>
+        </td>
+        <td>
+          <img src="${imgSrc}" alt="${safeTitle}" class="admin-table-thumb">
+        </td>
+        <td>
+          ${sectionBadgeHtml}
+        </td>
+        <td>
+          <strong style="color: #FFFFFF; font-size: 0.94rem; display: block; font-weight: 700; margin-bottom: 0.25rem;">${safeTitle}</strong>
+          <div style="display: flex; gap: 0.65rem; flex-wrap: wrap; align-items: center; margin-bottom: 0.25rem;">
+            ${item.author ? `<span style="font-size: 0.76rem; color: var(--gold-light); font-weight: 600;">By: ${escapeHtml(item.author)}</span>` : ''}
+            ${item.guest ? `<span style="font-size: 0.76rem; color: var(--gold-light); font-weight: 600;">Guest: ${escapeHtml(item.guest)} • ${item.duration || ''}</span>` : ''}
+            ${item.venue ? `<span style="font-size: 0.76rem; color: var(--gold-light); font-weight: 600;">📍 ${escapeHtml(item.venue)}</span>` : ''}
+          </div>
+          ${safeDesc ? `<p class="admin-table-desc-clamp">${safeDesc}</p>` : ''}
+        </td>
+        <td>
+          <div style="font-size: 0.86rem; color: #E5E7EB; font-weight: 500;">${safeDate}</div>
+          <span class="badge-gold" style="font-size: 0.65rem; margin-top: 0.35rem; display: inline-block;">${safeCat}</span>
+        </td>
+        <td style="text-align: right;">
+          <div style="display: inline-flex; gap: 0.4rem;">
+            <a href="${item._targetUrl}" target="_blank" class="admin-action-btn btn-view" title="View live on website">
+              <span>👁️ View</span>
+            </a>
+            <button class="admin-action-btn btn-edit" onclick="editItem('${item.id}', '${item._section}')" title="Edit this entry">
+              <span>✏️ Edit</span>
+            </button>
+            <button class="admin-action-btn btn-delete" onclick="promptDeleteItem('${item.id}', '${item._section}', '${escapeHtml(safeTitle).replace(/'/g, "\\'")}')" title="Permanently delete this entry">
+              <span>🗑️ Delete</span>
+            </button>
+          </div>
+        </td>
+      </tr>
+    `;
+  }).join('');
+}
+
+/* =============================================================
+   6. Edit, Delete & Form Reset Handlers
+============================================================= */
+window.editItem = function(id, section) {
+  let item = null;
+  if (section === 'news') {
+    item = (typeof getAllHomeNews === 'function' ? getAllHomeNews() : []).find(i => i.id === id);
+  } else if (section === 'home_photos') {
+    item = (typeof getAllHomePhotos === 'function' ? getAllHomePhotos() : []).find(i => i.id === id);
+  } else if (section === 'editorials') {
+    item = (typeof getAllEditorials === 'function' ? getAllEditorials() : []).find(i => i.id === id);
+  } else if (section === 'podcast') {
+    item = (typeof getAllPodcasts === 'function' ? getAllPodcasts() : []).find(i => i.id === id);
+  } else if (section === 'photos') {
+    item = (typeof getAllPhotos === 'function' ? getAllPhotos() : []).find(i => i.id === id);
+  } else if (section === 'filmy_adda') {
+    try {
+      const list = JSON.parse(localStorage.getItem('screenlady_custom_filmy') || '[]');
+      item = list.find(i => i && i.id === id);
+    } catch(e) {}
+    if (!item && typeof getAllUpdates === 'function') item = getAllUpdates().find(i => i.id === id);
+  } else if (section === 'bizz_world') {
+    try {
+      const list = JSON.parse(localStorage.getItem('screenlady_custom_bizz') || '[]');
+      item = list.find(i => i && i.id === id);
+    } catch(e) {}
+    if (!item && typeof getAllUpdates === 'function') item = getAllUpdates().find(i => i.id === id);
+  } else if (section === 'women_inspiration') {
+    try {
+      const list = JSON.parse(localStorage.getItem('screenlady_custom_inspiration') || '[]');
+      item = list.find(i => i && i.id === id);
+    } catch(e) {}
+    if (!item && typeof getAllUpdates === 'function') item = getAllUpdates().find(i => i.id === id);
+  } else if (section === 'fashion_lifestyle') {
+    try {
+      const list = JSON.parse(localStorage.getItem('screenlady_custom_fashion') || '[]');
+      item = list.find(i => i && i.id === id);
+    } catch(e) {}
+    if (!item && typeof getAllUpdates === 'function') item = getAllUpdates().find(i => i.id === id);
+  } else {
+    item = (typeof getAllUpdates === 'function' ? getAllUpdates() : []).find(i => i.id === id);
+  }
+
+  // Fallback to checking any custom storage or all home news
+  if (!item && typeof getAllHomeNews === 'function') {
+    item = getAllHomeNews().find(i => i.id === id);
+  }
+
+  if (!item) return;
+
+  editingItem = { id: id, section: section };
+
+  // Select section in dropdown
+  const sectionSelect = document.getElementById('postSectionSelect');
+  if (sectionSelect) sectionSelect.value = section;
+  handleSectionChange(section);
+
+  // Populate common values
+  const dateInput = document.getElementById('postDate');
+  if (dateInput) dateInput.value = item.date || '';
+
+  const catSelect = document.getElementById('postCategory');
+  if (catSelect && item.category) catSelect.value = item.category;
+
+  const photoInput = document.getElementById('postPhotoInput');
+  if (photoInput) photoInput.value = item.photo || '';
+  updatePhotoPreview(item.photo || 'https://ik.imagekit.io/acooladescreenlady/assets/images/featured-icon-saree.jpg');
+
+  const tagsInput = document.getElementById('postTags');
+  if (tagsInput) tagsInput.value = (item.tags || []).join(', ');
+
+  // Populate section-specific fields
+  if (section === 'news') {
+    switchUpdateSubtype('news');
+    if (document.getElementById('postHeadline')) document.getElementById('postHeadline').value = item.headline || item.title || '';
+    if (document.getElementById('postSummary')) document.getElementById('postSummary').value = item.summary || item.infoSummary || '';
+    if (document.getElementById('postFullBody')) document.getElementById('postFullBody').value = stripParagraphTags(item.fullBody || item.fullInfo || '');
+  } else if (section === 'filmy_adda') {
+    if (document.getElementById('postHeadline')) document.getElementById('postHeadline').value = item.headline || item.title || '';
+    if (document.getElementById('postSummary')) document.getElementById('postSummary').value = item.summary || item.infoSummary || '';
+    if (document.getElementById('postFullBody')) document.getElementById('postFullBody').value = stripParagraphTags(item.fullBody || item.fullInfo || '');
+  } else if (section === 'bizz_world') {
+    if (document.getElementById('postHeadline')) document.getElementById('postHeadline').value = item.headline || item.title || '';
+    if (document.getElementById('postSummary')) document.getElementById('postSummary').value = item.summary || item.infoSummary || '';
+    if (document.getElementById('postFullBody')) document.getElementById('postFullBody').value = stripParagraphTags(item.fullBody || item.fullInfo || '');
+  } else if (section === 'women_inspiration') {
+    if (document.getElementById('postWomanName')) document.getElementById('postWomanName').value = item.womanName || item.title || '';
+    if (document.getElementById('postHeadline')) document.getElementById('postHeadline').value = item.headline || item.title || '';
+    if (document.getElementById('postSummary')) document.getElementById('postSummary').value = item.summary || item.infoSummary || '';
+    if (document.getElementById('postFullBody')) document.getElementById('postFullBody').value = stripParagraphTags(item.fullBody || item.fullInfo || '');
+  } else if (section === 'fashion_lifestyle') {
+    if (document.getElementById('postHeadline')) document.getElementById('postHeadline').value = item.headline || item.title || '';
+    if (document.getElementById('postSummary')) document.getElementById('postSummary').value = item.summary || item.infoSummary || '';
+    if (document.getElementById('postFullBody')) document.getElementById('postFullBody').value = stripParagraphTags(item.fullBody || item.fullInfo || '');
+  } else if (section === 'home_photos') {
+    if (document.getElementById('postPhotoVenue')) document.getElementById('postPhotoVenue').value = item.venue || item.location || '';
+    if (document.getElementById('postPhotoCaption')) document.getElementById('postPhotoCaption').value = item.caption || item.description || item.title || '';
+  } else if (section === 'editorials') {
+    document.getElementById('postEditorialTitle').value = item.title || item.headline || '';
+    document.getElementById('postEditorialAuthor').value = item.author || '';
+    document.getElementById('postEditorialDesignation').value = item.authorDesignation || item.authorRole || '';
+    document.getElementById('postEditorialReadTime').value = item.readTime || '5 Min Read';
+    document.getElementById('postEditorialQuote').value = item.pullQuote || item.summary || '';
+    document.getElementById('postEditorialBody').value = stripParagraphTags(item.fullContent || item.fullBody || item.content || item.summary || '');
+  } else if (section === 'podcast') {
+    document.getElementById('postPodcastTitle').value = item.title || '';
+    document.getElementById('postPodcastHost').value = item.host || '';
+    document.getElementById('postPodcastGuest').value = item.guest || '';
+    document.getElementById('postPodcastDuration').value = item.duration || '38 Mins';
+    document.getElementById('postPodcastSocialLink').value = item.socialLink || '';
+    document.getElementById('postPodcastAudioUrl').value = item.audioUrl || '';
+    document.getElementById('postPodcastShowNotes').value = stripParagraphTags(item.showNotes || item.summary || '');
+  } else if (section === 'photos') {
+    if (document.getElementById('postPhotoTitle')) document.getElementById('postPhotoTitle').value = item.title || item.caption || '';
+    if (document.getElementById('postPhotoVenue')) document.getElementById('postPhotoVenue').value = item.venue || item.location || '';
+    if (document.getElementById('postPhotoCaption')) document.getElementById('postPhotoCaption').value = item.caption || item.description || item.title || '';
+  } else {
+    // updates
+    switchUpdateSubtype(item.type || 'photo-info');
+    if (document.getElementById('postWomanName')) document.getElementById('postWomanName').value = item.womanName || item.teamMembers || item.title || '';
+    if (document.getElementById('postHeadline')) document.getElementById('postHeadline').value = item.headline || item.title || '';
+    if (document.getElementById('postUpdateVenue')) document.getElementById('postUpdateVenue').value = item.venue || item.location || '';
+    if (document.getElementById('postArticleTitle')) document.getElementById('postArticleTitle').value = item.title || '';
+    if (document.getElementById('postAuthor')) document.getElementById('postAuthor').value = item.author || '';
+    if (document.getElementById('postPhotoTitle')) document.getElementById('postPhotoTitle').value = item.title || '';
+    if (document.getElementById('postCredit')) document.getElementById('postCredit').value = item.credit || '';
+    if (document.getElementById('postSummary')) document.getElementById('postSummary').value = item.infoSummary || item.photoCaption || item.summary || '';
+    if (document.getElementById('postFullBody')) document.getElementById('postFullBody').value = stripParagraphTags(item.fullInfo || item.fullBody || '');
+  }
+
+  // Update UI mode
+  const cancelBtn = document.getElementById('adminCancelEditBtn');
+  if (cancelBtn) cancelBtn.style.display = 'inline-block';
+
+  const formCardTitle = document.getElementById('formCardTitle');
+  if (formCardTitle) formCardTitle.textContent = `Editing: ${item.title || item.womanName || 'Selected Item'}`;
+
+  const submitBtn = document.getElementById('adminSubmitBtn');
+  if (submitBtn) submitBtn.textContent = '✓ Save Changes to Entry';
+
+  // Smooth scroll up to composer
+  const postCard = document.getElementById('adminPostCard');
+  if (postCard) postCard.scrollIntoView({ behavior: 'smooth' });
+};
+
+window.cancelEdit = function() {
+  editingItem = null;
+  resetForm();
+};
+
+window.resetForm = function() {
+  editingItem = null;
+  const form = document.getElementById('adminPostForm');
+  if (form) form.reset();
+
+  const cancelBtn = document.getElementById('adminCancelEditBtn');
+  if (cancelBtn) cancelBtn.style.display = 'none';
+
+  const dateInput = document.getElementById('postDate');
+  if (dateInput) dateInput.value = new Date().toISOString().split('T')[0];
+
+  const photoInput = document.getElementById('postPhotoInput');
+  if (photoInput) photoInput.value = 'https://ik.imagekit.io/acooladescreenlady/assets/images/featured-icon-saree.jpg';
+  updatePhotoPreview('https://ik.imagekit.io/acooladescreenlady/assets/images/featured-icon-saree.jpg');
+
+  const uploadStatus = document.getElementById('uploadFileStatus');
+  if (uploadStatus) {
+    uploadStatus.textContent = 'Upload any JPG/PNG/WEBP photo, or select a preset below:';
+    uploadStatus.style.color = 'var(--text-muted)';
+  }
+
+  handleSectionChange(currentSection);
+};
+
+window.promptDeleteItem = function(id, section, title) {
+  const displayTitle = title ? `"${title}"` : 'this entry';
+  if (confirm(`Are you sure you want to permanently delete ${displayTitle} from ${section}?\n\nThis will remove it from the website and Editorial Desk.`)) {
+    deleteItem(id, section);
+  }
+};
+
+window.deleteItem = function(id, section) {
+  // 1. Record ID into global deleted IDs registry so both custom and default items are removed
+  if (typeof window.addScreenladyDeletedId === 'function') {
+    window.addScreenladyDeletedId(id);
+  } else {
+    try {
+      const raw = localStorage.getItem('screenlady_deleted_ids');
+      const list = raw ? JSON.parse(raw) : [];
+      if (!list.includes(id)) {
+        list.push(id);
+        localStorage.setItem('screenlady_deleted_ids', JSON.stringify(list));
+      }
+    } catch (e) {}
+  }
+
+  // 2. Also remove from custom items list if present
+  const allStorageKeys = [
+    'screenlady_custom_editorials',
+    'screenlady_custom_podcasts',
+    'screenlady_custom_photos',
+    'screenlady_custom_updates',
+    'screenlady_custom_news',
+    'screenlady_custom_home_photos',
+    'screenlady_custom_filmy',
+    'screenlady_custom_bizz',
+    'screenlady_custom_inspiration',
+    'screenlady_custom_fashion'
+  ];
+
+  for (const sKey of allStorageKeys) {
+    try {
+      const raw = localStorage.getItem(sKey);
+      if (raw) {
+        const list = JSON.parse(raw);
+        const filtered = list.filter(item => item && item.id !== id);
+        if (filtered.length !== list.length) {
+          localStorage.setItem(sKey, JSON.stringify(filtered));
+        }
+      }
+    } catch (e) {}
+  }
+  try {
+    localStorage.setItem('screenlady_last_updated', Date.now().toString());
+  } catch (err) {}
+
+  if (editingItem && editingItem.id === id) {
+    resetForm();
+  }
+
+  // Live Backend Cloudflare Worker Synchronization
+  if (window.ScreenladyAPI && typeof window.ScreenladyAPI.deleteItem === 'function') {
+    const targetSection = section;
+    window.ScreenladyAPI.deleteItem(targetSection, id)
+      .then(res => {
+        if (res && res.success) console.log(`[Screenlady Desk] Live deleted on backend (${targetSection}):`, id);
+      })
+      .catch(err => console.warn(`[Screenlady Desk] Backend delete notice:`, err.message));
+  }
+
+  showToast(`✓ Item permanently deleted from ${section}.`);
+  loadAdminDashboard();
+};
+
+window.deleteCurrentSectionData = function() {
+  const sectionName = activeManageFilter === 'all' ? 'all sections' : activeManageFilter;
+  if (!confirm(`Are you sure you want to delete all published items in ${sectionName}?\n\nThis will clear all entries in this section from the website.`)) {
+    return;
+  }
+
+  let itemsToDelete = [];
+  if (activeManageFilter === 'news') itemsToDelete = typeof getAllHomeNews === 'function' ? getAllHomeNews() : [];
+  else if (activeManageFilter === 'filmy_adda') itemsToDelete = (typeof getAllUpdates === 'function' ? getAllUpdates() : []).filter(isFilmyAddaItem);
+  else if (activeManageFilter === 'bizz_world') itemsToDelete = (typeof getAllUpdates === 'function' ? getAllUpdates() : []).filter(isBizzWorldItem);
+  else if (activeManageFilter === 'women_inspiration') itemsToDelete = (typeof getAllUpdates === 'function' ? getAllUpdates() : []).filter(isInspirationItem);
+  else if (activeManageFilter === 'fashion_lifestyle') itemsToDelete = (typeof getAllUpdates === 'function' ? getAllUpdates() : []).filter(isFashionItem);
+  else if (activeManageFilter === 'home_photos') itemsToDelete = typeof getAllHomePhotos === 'function' ? getAllHomePhotos() : [];
+  else if (activeManageFilter === 'editorials') itemsToDelete = typeof getAllEditorials === 'function' ? getAllEditorials() : [];
+  else if (activeManageFilter === 'podcast') itemsToDelete = typeof getAllPodcasts === 'function' ? getAllPodcasts() : [];
+  else if (activeManageFilter === 'photos') itemsToDelete = typeof getAllPhotos === 'function' ? getAllPhotos() : [];
+  else if (activeManageFilter === 'updates') itemsToDelete = typeof getAllUpdates === 'function' ? getAllUpdates() : [];
+  else {
+    itemsToDelete = [
+      ...(typeof getAllHomeNews === 'function' ? getAllHomeNews() : []),
+      ...(typeof getAllHomePhotos === 'function' ? getAllHomePhotos() : []),
+      ...(typeof getAllEditorials === 'function' ? getAllEditorials() : []),
+      ...(typeof getAllPodcasts === 'function' ? getAllPodcasts() : []),
+      ...(typeof getAllPhotos === 'function' ? getAllPhotos() : []),
+      ...(typeof getAllUpdates === 'function' ? getAllUpdates() : [])
+    ];
+  }
+
+  itemsToDelete.forEach(item => {
+    if (item && item.id) {
+      if (typeof window.addScreenladyDeletedId === 'function') {
+        window.addScreenladyDeletedId(item.id);
+      }
+    }
+  });
+
+  if (activeManageFilter === 'all' || activeManageFilter === 'news') localStorage.removeItem('screenlady_custom_news');
+  if (activeManageFilter === 'all' || activeManageFilter === 'home_photos') localStorage.removeItem('screenlady_custom_home_photos');
+  if (activeManageFilter === 'all' || activeManageFilter === 'editorials') localStorage.removeItem('screenlady_custom_editorials');
+  if (activeManageFilter === 'all' || activeManageFilter === 'podcast') localStorage.removeItem('screenlady_custom_podcasts');
+  if (activeManageFilter === 'all' || activeManageFilter === 'photos') localStorage.removeItem('screenlady_custom_photos');
+  if (activeManageFilter === 'all' || activeManageFilter === 'updates') localStorage.removeItem('screenlady_custom_updates');
+  if (activeManageFilter === 'all' || activeManageFilter === 'filmy_adda') localStorage.removeItem('screenlady_custom_filmy');
+  if (activeManageFilter === 'all' || activeManageFilter === 'bizz_world') localStorage.removeItem('screenlady_custom_bizz');
+  if (activeManageFilter === 'all' || activeManageFilter === 'women_inspiration') localStorage.removeItem('screenlady_custom_inspiration');
+  if (activeManageFilter === 'all' || activeManageFilter === 'fashion_lifestyle') localStorage.removeItem('screenlady_custom_fashion');
+
+  resetForm();
+  showToast(`✓ All entries in ${sectionName} have been deleted.`);
+  loadAdminDashboard();
+};
+
+window.deleteAllData = function() {
+  if (!confirm('⚠️ WARNING: Are you sure you want to PERMANENTLY DELETE ALL DATA across all sections?\n\nThis will completely clear Live News, Homepage Photos, Editorials, Podcasts, Photos, and Updates from both the website and Editorial Desk.')) {
+    return;
+  }
+
+  const all = [
+    ...(typeof getAllHomeNews === 'function' ? getAllHomeNews() : []),
+    ...(typeof getAllHomePhotos === 'function' ? getAllHomePhotos() : []),
+    ...(typeof getAllEditorials === 'function' ? getAllEditorials() : []),
+    ...(typeof getAllPodcasts === 'function' ? getAllPodcasts() : []),
+    ...(typeof getAllPhotos === 'function' ? getAllPhotos() : []),
+    ...(typeof getAllUpdates === 'function' ? getAllUpdates() : [])
+  ];
+
+  all.forEach(item => {
+    if (item && item.id) {
+      if (typeof window.addScreenladyDeletedId === 'function') {
+        window.addScreenladyDeletedId(item.id);
+      }
+    }
+  });
+
+  localStorage.removeItem('screenlady_custom_news');
+  localStorage.removeItem('screenlady_custom_home_photos');
+  localStorage.removeItem('screenlady_custom_editorials');
+  localStorage.removeItem('screenlady_custom_podcasts');
+  localStorage.removeItem('screenlady_custom_photos');
+  localStorage.removeItem('screenlady_custom_updates');
+  localStorage.removeItem('screenlady_custom_filmy');
+  localStorage.removeItem('screenlady_custom_bizz');
+  localStorage.removeItem('screenlady_custom_inspiration');
+  localStorage.removeItem('screenlady_custom_fashion');
+
+  resetForm();
+  showToast('✓ All data successfully cleared from website and Editorial Desk.');
+  loadAdminDashboard();
+};
+
+/* =============================================================
+   7. Backup & Reset Utilities
+============================================================= */
+window.exportDataJson = function() {
+  const exportData = {
+    news: (typeof getAllHomeNews === 'function' ? getAllHomeNews() : []),
+    homePhotos: (typeof getAllHomePhotos === 'function' ? getAllHomePhotos() : []),
+    editorials: (typeof getAllEditorials === 'function' ? getAllEditorials() : []),
+    podcasts: (typeof getAllPodcasts === 'function' ? getAllPodcasts() : []),
+    photos: (typeof getAllPhotos === 'function' ? getAllPhotos() : []),
+    updates: (typeof getAllUpdates === 'function' ? getAllUpdates() : []),
+    exportedAt: new Date().toISOString()
+  };
+
+  const dataStr = 'data:text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(exportData, null, 2));
+  const dlAnchor = document.createElement('a');
+  dlAnchor.setAttribute('href', dataStr);
+  dlAnchor.setAttribute('download', `screenlady-all-data-backup-${Date.now()}.json`);
+  dlAnchor.click();
+};
+
+window.resetAllDefaults = function() {
+  if (!confirm('Restore factory default archives? This will restore original sample stories and un-hide default items.')) {
+    return;
+  }
+  if (typeof window.clearAllScreenladyDeletedIds === 'function') {
+    window.clearAllScreenladyDeletedIds();
+  } else {
+    localStorage.removeItem('screenlady_deleted_ids');
+  }
+  localStorage.removeItem('screenlady_custom_news');
+  localStorage.removeItem('screenlady_custom_home_photos');
+  localStorage.removeItem('screenlady_custom_editorials');
+  localStorage.removeItem('screenlady_custom_podcasts');
+  localStorage.removeItem('screenlady_custom_photos');
+  localStorage.removeItem('screenlady_custom_updates');
+  showToast('✓ Original default archives restored.');
+  loadAdminDashboard();
+};
+
+/* =============================================================
+   8. Formatting & Toast Utilities
+============================================================= */
+function formatParagraphs(text) {
+  if (!text) return '';
+  const clean = text.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
+  const blocks = clean
+    .split(/\n\s*\n/)
+    .map(p => p.trim())
+    .filter(Boolean);
+
+  if (blocks.length === 0) return '';
+
+  return blocks
+    .map(block => {
+      const lines = block.split(/\n/).map(line => escapeHtml(line.trim())).filter(Boolean);
+      return `<p>${lines.join('<br>\n')}</p>`;
+    })
+    .join('\n\n');
+}
+
+function stripParagraphTags(html) {
+  if (!html) return '';
+  let text = String(html);
+  text = text.replace(/<h[1-6][^>]*>(.*?)<\/h[1-6]>/gi, '\n\n$1\n\n');
+  text = text.replace(/<blockquote[^>]*>(.*?)<\/blockquote>/gis, '\n\n"$1"\n\n');
+  text = text.replace(/<div[^>]*class="[^"]*editorial-lead-box[^"]*"[^>]*>(.*?)<\/div>/gis, '$1\n\n');
+  text = text.replace(/<div[^>]*class="[^"]*editorial-quote-card[^"]*"[^>]*>(.*?)<\/div>/gis, '\n\n$1\n\n');
+  text = text.replace(/<br\s*\/?>/gi, '\n');
+  text = text.replace(/<\/p>\s*<p[^>]*>/gi, '\n\n');
+  text = text.replace(/<[^>]+>/g, '');
+  text = text.replace(/&amp;/g, '&')
+             .replace(/&lt;/g, '<')
+             .replace(/&gt;/g, '>')
+             .replace(/&quot;/g, '"')
+             .replace(/&#39;/g, "'")
+             .replace(/&nbsp;/g, ' ');
+  text = text.replace(/\n{3,}/g, '\n\n');
+  return text.trim();
+}
+
+/* =============================================================
+   8. DEDICATED SECTION: MAGAZINE PURCHASE DETAILS (ORDERS ENGINE)
+============================================================= */
+let activeMagazineOrderFilter = 'all';
+let activeMagazineOrderSearch = '';
+
+window.scrollToMagazineOrders = function() {
+  const target = document.getElementById('adminMagazineOrdersSection');
+  if (target) target.scrollIntoView({ behavior: 'smooth' });
+};
+
+window.setMagazineOrderFilter = function(filter) {
+  activeMagazineOrderFilter = filter;
+  document.querySelectorAll('[data-order-filter]').forEach(btn => {
+    btn.classList.toggle('active', btn.getAttribute('data-order-filter') === filter);
+  });
+  renderMagazineOrdersTable();
+};
+
+window.handleMagazineOrderSearch = function(query) {
+  activeMagazineOrderSearch = (query || '').toLowerCase().trim();
+  renderMagazineOrdersTable();
+};
+
+window.renderMagazineOrdersTable = function() {
+  const tbody = document.getElementById('adminMagazineOrdersTableBody');
+  if (!tbody) return;
+
+  const orders = (typeof getAllMagazineOrders === 'function') ? getAllMagazineOrders() : [];
+
+  // Calculate Metrics
+  const totalOrders = orders.length;
+  const totalRevenue = orders.reduce((sum, o) => sum + (Number(o.amount) || 0), 0);
+  const paidCount = orders.filter(o => (o.paymentStatus || '').toLowerCase().includes('paid')).length;
+  const pendingCount = orders.filter(o => (o.shippingStatus || '').toLowerCase().includes('pending')).length;
+  const shippedCount = orders.filter(o => (o.shippingStatus || '').toLowerCase().includes('shipped') || (o.shippingStatus || '').toLowerCase().includes('transit')).length;
+  const deliveredCount = orders.filter(o => (o.shippingStatus || '').toLowerCase().includes('delivered')).length;
+  const fulfilledCount = shippedCount + deliveredCount;
+
+  // Update KPI counters
+  const elTotal = document.getElementById('kpiOrdersTotal');
+  const elRevenue = document.getElementById('kpiOrdersRevenue');
+  const elPaid = document.getElementById('kpiOrdersPaid');
+  const elPending = document.getElementById('kpiOrdersPending');
+  const elFulfilled = document.getElementById('kpiOrdersFulfilled');
+  const topBadge = document.getElementById('adminOrdersCounterBadge');
+  const statCard = document.getElementById('statTotalMagazineOrders');
+
+  if (elTotal) elTotal.textContent = totalOrders;
+  if (elRevenue) elRevenue.textContent = `₹${totalRevenue.toLocaleString('en-IN')}`;
+  if (elPaid) elPaid.textContent = paidCount;
+  if (elPending) elPending.textContent = pendingCount;
+  if (elFulfilled) elFulfilled.textContent = fulfilledCount;
+  if (topBadge) topBadge.textContent = totalOrders;
+  if (statCard) statCard.textContent = totalOrders;
+
+  // Update Filter Tab counters
+  const cAll = document.getElementById('countOrderAll');
+  const cPaid = document.getElementById('countOrderPaid');
+  const cPending = document.getElementById('countOrderPending');
+  const cShipped = document.getElementById('countOrderShipped');
+  const cDelivered = document.getElementById('countOrderDelivered');
+  if (cAll) cAll.textContent = totalOrders;
+  if (cPaid) cPaid.textContent = paidCount;
+  if (cPending) cPending.textContent = pendingCount;
+  if (cShipped) cShipped.textContent = shippedCount;
+  if (cDelivered) cDelivered.textContent = deliveredCount;
+
+  // Apply Filter
+  let filtered = [...orders];
+  if (activeMagazineOrderFilter === 'paid') {
+    filtered = filtered.filter(o => (o.paymentStatus || '').toLowerCase().includes('paid'));
+  } else if (activeMagazineOrderFilter === 'pending') {
+    filtered = filtered.filter(o => (o.shippingStatus || '').toLowerCase().includes('pending'));
+  } else if (activeMagazineOrderFilter === 'shipped') {
+    filtered = filtered.filter(o => (o.shippingStatus || '').toLowerCase().includes('shipped') || (o.shippingStatus || '').toLowerCase().includes('transit'));
+  } else if (activeMagazineOrderFilter === 'delivered') {
+    filtered = filtered.filter(o => (o.shippingStatus || '').toLowerCase().includes('delivered'));
+  }
+
+  // Apply Search
+  if (activeMagazineOrderSearch) {
+    const q = activeMagazineOrderSearch;
+    filtered = filtered.filter(o => 
+      (o.id || '').toLowerCase().includes(q) ||
+      (o.fullName || '').toLowerCase().includes(q) ||
+      (o.phone || '').toLowerCase().includes(q) ||
+      (o.email || '').toLowerCase().includes(q) ||
+      (o.city || '').toLowerCase().includes(q) ||
+      (o.state || '').toLowerCase().includes(q) ||
+      (o.pincode || '').toLowerCase().includes(q) ||
+      (o.address || '').toLowerCase().includes(q) ||
+      (o.paymentMethod || '').toLowerCase().includes(q)
+    );
+  }
+
+  if (filtered.length === 0) {
+    tbody.innerHTML = `
+      <tr>
+        <td colspan="8" style="text-align: center; padding: 3rem 1.5rem; color: var(--text-muted);">
+          <div style="font-size: 2rem; margin-bottom: 0.5rem;">🛍️</div>
+          <div style="font-size: 1rem; color: var(--gold-light); font-weight: 700;">No Magazine Purchase Records Found</div>
+          <div style="font-size: 0.82rem; margin-top: 0.35rem;">
+            ${activeMagazineOrderSearch ? 'No customer orders match your search keyword.' : 'Customer orders will automatically appear here in real-time as users order through the website.'}
+          </div>
+        </td>
+      </tr>
+    `;
+    return;
+  }
+
+  tbody.innerHTML = filtered.map((order, idx) => {
+    const cleanPhone = (order.phone || '').replace(/[^0-9]/g, '');
+    const isFirst = idx === 0;
+
+    return `
+      <tr class="${isFirst ? 'highlight-top-row' : ''}">
+        <!-- Order ID & Date -->
+        <td>
+          <div style="font-family: monospace; font-size: 0.85rem; font-weight: 800; color: var(--gold-light);">
+            ${order.id}
+          </div>
+          <div style="font-size: 0.74rem; color: var(--text-muted); margin-top: 0.2rem;">
+            ${order.displayDate || order.date}
+          </div>
+        </td>
+
+        <!-- Customer Information -->
+        <td>
+          <div class="admin-order-user-card">
+            <span class="admin-order-user-name">${escapeHtml(order.fullName)}</span>
+            <div class="admin-order-user-meta">
+              <a href="https://wa.me/${cleanPhone}" target="_blank" rel="noopener" style="color: #4ade80; text-decoration: none; display: inline-flex; align-items: center; gap: 0.2rem;" title="Chat directly with customer on WhatsApp">
+                <span>💬</span> ${escapeHtml(order.phone)}
+              </a>
+            </div>
+            <div class="admin-order-user-meta">
+              <a href="mailto:${order.email}" style="color: #93c5fd; text-decoration: none; display: inline-flex; align-items: center; gap: 0.2rem;" title="Send email to customer">
+                <span>✉️</span> ${escapeHtml(order.email)}
+              </a>
+            </div>
+          </div>
+        </td>
+
+        <!-- Complete Home Address -->
+        <td>
+          <div class="admin-order-address-box">
+            <div>${escapeHtml(order.address)}</div>
+            <div style="margin-top: 0.25rem; font-weight: 600; color: #FFFFFF;">
+              ${escapeHtml(order.city)}, ${escapeHtml(order.state)} — <span style="color: var(--gold-light);">${order.pincode}</span>
+            </div>
+          </div>
+        </td>
+
+        <!-- Edition & Qty -->
+        <td>
+          <div style="font-size: 0.82rem; font-weight: 700; color: #FFFFFF; line-height: 1.3;">
+            ${escapeHtml(order.edition || 'November 2026 Print Edition')}
+          </div>
+          <div style="font-size: 0.74rem; color: var(--gold-light); margin-top: 0.2rem;">
+            ${order.quantity || 1} Copy • <strong>₹${order.amount || 499}</strong>
+          </div>
+        </td>
+
+        <!-- Payment Method -->
+        <td>
+          <div style="font-size: 0.8rem; font-weight: 600; color: #E5E7EB;">
+            ${escapeHtml(order.paymentMethod || 'Online (UPI)')}
+          </div>
+          <div style="font-size: 0.7rem; color: #4ade80;">
+            🔒 Online Gateway
+          </div>
+        </td>
+
+        <!-- Payment Status (Online Only) -->
+        <td>
+          <select class="order-status-select" onchange="updateOrderPaymentStatus('${order.id}', this.value)" style="border-color: ${order.paymentStatus === 'Paid (Online)' ? 'rgba(34, 197, 94, 0.5)' : 'rgba(234, 179, 8, 0.5)'};">
+            <option value="Paid (Online)" ${order.paymentStatus === 'Paid (Online)' ? 'selected' : ''}>✓ Paid (Online)</option>
+            <option value="Pending Payment" ${order.paymentStatus === 'Pending Payment' ? 'selected' : ''}>⏳ Pending Payment</option>
+            <option value="Refunded" ${order.paymentStatus === 'Refunded' ? 'selected' : ''}>↩ Refunded</option>
+            <option value="Failed" ${order.paymentStatus === 'Failed' ? 'selected' : ''}>✕ Failed</option>
+          </select>
+        </td>
+
+        <!-- Fulfillment / Shipping Status -->
+        <td>
+          <select class="order-status-select" onchange="updateOrderShippingStatus('${order.id}', this.value)">
+            <option value="Pending Dispatch" ${order.shippingStatus === 'Pending Dispatch' ? 'selected' : ''}>⏳ Pending Dispatch</option>
+            <option value="Processing Packaging" ${order.shippingStatus === 'Processing Packaging' ? 'selected' : ''}>📦 Packaging</option>
+            <option value="Shipped / In Transit" ${order.shippingStatus === 'Shipped / In Transit' ? 'selected' : ''}>🚚 Shipped / In Transit</option>
+            <option value="Delivered" ${order.shippingStatus === 'Delivered' ? 'selected' : ''}>✨ Delivered</option>
+            <option value="Cancelled" ${order.shippingStatus === 'Cancelled' ? 'selected' : ''}>✕ Cancelled</option>
+          </select>
+        </td>
+
+        <!-- Action Buttons -->
+        <td>
+          <div style="display: flex; gap: 0.35rem; justify-content: flex-end; flex-wrap: wrap;">
+            <button type="button" class="admin-action-btn btn-view" onclick="openOrderSlipModal('${order.id}')" title="Generate printable packing slip and courier label">
+              📄 Slip
+            </button>
+            <button type="button" class="admin-action-btn" onclick="openCustomerWhatsApp('${order.id}')" style="background: rgba(34, 197, 94, 0.15); color: #4ade80; border: 1px solid rgba(34, 197, 94, 0.4);" title="Send order confirmation message to customer on WhatsApp">
+              💬 WA
+            </button>
+            <button type="button" class="admin-action-btn btn-delete" onclick="deleteMagazineOrder('${order.id}')" title="Delete this order record">
+              🗑️
+            </button>
+          </div>
+        </td>
+      </tr>
+    `;
+  }).join('');
+};
+
+window.updateOrderPaymentStatus = function(orderId, newStatus) {
+  const orders = getAllMagazineOrders();
+  const order = orders.find(o => o.id === orderId);
+  if (!order) return;
+
+  order.paymentStatus = newStatus;
+  saveMagazineOrders(orders);
+  renderMagazineOrdersTable();
+  if (window.ScreenladyAPI && typeof window.ScreenladyAPI.updateOrderStatus === 'function') {
+    window.ScreenladyAPI.updateOrderStatus(orderId, { paymentStatus: newStatus });
+  }
+  showToast(`✓ Order ${orderId} payment status updated to: ${newStatus}`);
+};
+
+window.updateOrderShippingStatus = function(orderId, newStatus) {
+  const orders = getAllMagazineOrders();
+  const order = orders.find(o => o.id === orderId);
+  if (!order) return;
+
+  order.shippingStatus = newStatus;
+  saveMagazineOrders(orders);
+  renderMagazineOrdersTable();
+  if (window.ScreenladyAPI && typeof window.ScreenladyAPI.updateOrderStatus === 'function') {
+    window.ScreenladyAPI.updateOrderStatus(orderId, { dispatchStatus: newStatus });
+  }
+  showToast(`✓ Order ${orderId} dispatch status updated to: ${newStatus}`);
+};
+
+window.deleteMagazineOrder = function(orderId) {
+  if (!confirm(`Are you sure you want to permanently delete Order #${orderId}?`)) return;
+
+  let orders = getAllMagazineOrders();
+  orders = orders.filter(o => o.id !== orderId);
+  saveMagazineOrders(orders);
+  renderMagazineOrdersTable();
+  updateStatCounters();
+  if (window.ScreenladyAPI && typeof window.ScreenladyAPI.deleteOrder === 'function') {
+    window.ScreenladyAPI.deleteOrder(orderId);
+  }
+  showToast(`✓ Order #${orderId} has been deleted.`);
+};
+
+window.openOrderSlipModal = function(orderId) {
+  const orders = getAllMagazineOrders();
+  const order = orders.find(o => o.id === orderId);
+  if (!order) {
+    alert('Order details not found.');
+    return;
+  }
+
+  const content = `
+    <div style="padding: 1.5rem; max-width: 650px; margin: 0 auto; background: #FFFFFF; color: #111827; border-radius: 8px; font-family: sans-serif;" id="printableOrderSlip">
+      <!-- Slip Header -->
+      <div style="display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 2px solid #D4AF37; padding-bottom: 1rem; margin-bottom: 1.25rem;">
+        <div>
+          <div style="font-size: 1.35rem; font-weight: 800; color: #0A0A0D; letter-spacing: 0.05em;">ACCOLADE SCREENLADY</div>
+          <div style="font-size: 0.78rem; color: #64748B;">Official Monthly Print Publication • Dispatch Unit</div>
+          <div style="font-size: 0.74rem; color: #64748B; margin-top: 0.2rem;">WhatsApp: +91 96650 35503 | editor@accoladescreenlady.com | AccoladeScreenlady@gmail.com</div>
+        </div>
+        <div style="text-align: right;">
+          <div style="font-size: 1.1rem; font-weight: 800; color: #D4AF37;">COURIER DISPATCH SLIP</div>
+          <div style="font-size: 0.82rem; font-weight: 700; color: #0A0A0D; font-family: monospace;">${order.id}</div>
+          <div style="font-size: 0.72rem; color: #64748B;">${order.displayDate || order.date}</div>
+        </div>
+      </div>
+
+      <!-- Shipping Address Box -->
+      <div style="background: #F8FAFC; border: 1.5px solid #CBD5E1; border-radius: 6px; padding: 1.2rem; margin-bottom: 1.25rem;">
+        <div style="font-size: 0.72rem; font-weight: 800; text-transform: uppercase; color: #D4AF37; letter-spacing: 0.08em; margin-bottom: 0.4rem;">
+          SHIP TO RECIPIENT:
+        </div>
+        <div style="font-size: 1.15rem; font-weight: 800; color: #0F172A; margin-bottom: 0.35rem;">
+          ${escapeHtml(order.fullName)}
+        </div>
+        <div style="font-size: 0.92rem; color: #334155; line-height: 1.5; margin-bottom: 0.5rem;">
+          ${escapeHtml(order.address)}<br>
+          ${escapeHtml(order.city)}, ${escapeHtml(order.state)} — <strong style="font-size: 1.05rem; color: #0F172A;">${order.pincode}</strong>
+        </div>
+        <div style="font-size: 0.85rem; color: #475569; font-weight: 600;">
+          📞 Contact Phone: ${escapeHtml(order.phone)} | ✉️ ${escapeHtml(order.email)}
+        </div>
+      </div>
+
+      <!-- Items Table -->
+      <table style="width: 100%; border-collapse: collapse; margin-bottom: 1.25rem; font-size: 0.85rem;">
+        <thead>
+          <tr style="background: #0F172A; color: #FFFFFF;">
+            <th style="padding: 0.65rem; text-align: left;">Item Description</th>
+            <th style="padding: 0.65rem; text-align: center; width: 60px;">Qty</th>
+            <th style="padding: 0.65rem; text-align: right; width: 100px;">Price</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr style="border-bottom: 1px solid #E2E8F0;">
+            <td style="padding: 0.75rem 0.65rem;">
+              <strong>${escapeHtml(order.edition || 'Screenlady Monthly Print Edition')}</strong><br>
+              <span style="font-size: 0.74rem; color: #64748B;">Luxury High-Gloss 120 GSM Collector's Edition</span>
+            </td>
+            <td style="padding: 0.75rem 0.65rem; text-align: center; font-weight: 700;">${order.quantity || 1}</td>
+            <td style="padding: 0.75rem 0.65rem; text-align: right; font-weight: 700;">₹${order.amount}</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <!-- Status Summary -->
+      <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1.5px solid #0F172A; padding-top: 0.85rem; margin-bottom: 1.5rem;">
+        <div style="font-size: 0.78rem; color: #475569;">
+          <div><strong>Payment Status:</strong> ${order.paymentStatus} (${order.paymentMethod || 'Online'})</div>
+          <div><strong>Dispatch Status:</strong> ${order.shippingStatus}</div>
+        </div>
+        <div style="text-align: right;">
+          <div style="font-size: 0.75rem; color: #64748B;">Total Amount Paid</div>
+          <div style="font-size: 1.4rem; font-weight: 800; color: #0F172A;">₹${order.amount}</div>
+        </div>
+      </div>
+
+      <!-- Action buttons -->
+      <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #E2E8F0; padding-top: 1rem;">
+        <button type="button" class="btn btn-outline-gold btn-sm" onclick="window.print()" style="background: #0F172A; color: #FFFFFF; border: none; padding: 0.5rem 1.25rem; border-radius: 4px; cursor: pointer;">
+          🖨️ Print Packing Slip
+        </button>
+        <button type="button" class="btn btn-gold btn-sm" onclick="closeOrderModal()" style="background: #D4AF37; color: #0A0A0D; font-weight: 700; border: none; padding: 0.5rem 1.25rem; border-radius: 4px; cursor: pointer;">
+          Close Window
+        </button>
+      </div>
+    </div>
+  `;
+
+  if (typeof openModal === 'function') {
+    openModal(`Order Slip: ${order.id}`, content);
+  } else {
+    const modal = document.getElementById('globalModal');
+    const modalBody = document.getElementById('modalBody');
+    if (modal && modalBody) {
+      modalBody.innerHTML = content;
+      modal.classList.add('active');
+    }
+  }
+};
+
+window.openCustomerWhatsApp = function(orderId) {
+  const orders = getAllMagazineOrders();
+  const order = orders.find(o => o.id === orderId);
+  if (!order) return;
+
+  const cleanPhone = (order.phone || '').replace(/[^0-9]/g, '');
+  const message = `Namaste ${order.fullName}! 🙏 Greetings from Accolade Screenlady Editorial Desk.\n\nRegarding your Magazine Order *${order.id}* (${order.edition}):\nYour order is currently marked as *${order.shippingStatus}*.\nDelivery Address: ${order.address}, ${order.city}, ${order.state} - ${order.pincode}.\n\nThank you for choosing Accolade Screenlady!`;
+  
+  const url = `https://wa.me/${cleanPhone}?text=${encodeURIComponent(message)}`;
+  window.open(url, '_blank');
+};
+
+window.exportMagazineOrdersCsv = function() {
+  const orders = getAllMagazineOrders();
+  if (orders.length === 0) {
+    alert('No magazine orders available to export.');
+    return;
+  }
+
+  const headers = ['Order ID', 'Order Date', 'Customer Name', 'Phone', 'Email', 'Address', 'City', 'State', 'Pincode', 'Edition', 'Quantity', 'Amount', 'Payment Method', 'Payment Status', 'Shipping Status'];
+  
+  const csvRows = [headers.join(',')];
+  orders.forEach(o => {
+    const row = [
+      `"${o.id || ''}"`,
+      `"${(o.displayDate || o.date || '').replace(/"/g, '""')}"`,
+      `"${(o.fullName || '').replace(/"/g, '""')}"`,
+      `"${(o.phone || '').replace(/"/g, '""')}"`,
+      `"${(o.email || '').replace(/"/g, '""')}"`,
+      `"${(o.address || '').replace(/"/g, '""')}"`,
+      `"${(o.city || '').replace(/"/g, '""')}"`,
+      `"${(o.state || '').replace(/"/g, '""')}"`,
+      `"${(o.pincode || '').replace(/"/g, '""')}"`,
+      `"${(o.edition || '').replace(/"/g, '""')}"`,
+      o.quantity || 1,
+      o.amount || 499,
+      `"${(o.paymentMethod || '').replace(/"/g, '""')}"`,
+      `"${(o.paymentStatus || '').replace(/"/g, '""')}"`,
+      `"${(o.shippingStatus || '').replace(/"/g, '""')}"`
+    ];
+    csvRows.push(row.join(','));
+  });
+
+  const blob = new Blob([csvRows.join('\n')], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `Screenlady_Magazine_Orders_${new Date().toISOString().split('T')[0]}.csv`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  showToast('✓ Orders CSV export generated and downloaded.');
+};
+
+window.openMagazineIssueConfigModal = function() {
+  const settings = (typeof getMagazineSettings === 'function') ? getMagazineSettings() : {
+    edition: 'November 2026 — Power, Art & Corporate Leadership Issue',
+    monthYear: 'November 2026',
+    price: 220,
+    coverImage: 'https://ik.imagekit.io/acooladescreenlady/assets/images/magazine-cover-latest.jpg',
+    page2Image: 'https://ik.imagekit.io/acooladescreenlady/assets/images/magazine-page2-feature.jpg',
+    headline: 'THE ARCHITECTS OF MODERN INFLUENCE',
+    subtitle: 'Celebrating Trailblazing Women Behind the Screen & Across Boardrooms',
+    popupBadge: 'Screenlady Print Magazine',
+    popupMessage: "Collector's Print Edition Now Available • Insured Doorstep Courier Across India"
+  };
+
+  const content = `
+    <div style="max-width: 620px; padding: 0.5rem;">
+      <h3 style="font-family: var(--font-serif-display); font-size: 1.4rem; color: var(--gold-light); margin: 0 0 0.5rem 0;">
+        ⚙️ Monthly Magazine Showcase & Pop-up Configuration
+      </h3>
+      <p style="color: var(--text-muted); font-size: 0.82rem; margin-bottom: 1.25rem;">
+        Update the monthly magazine issue details, retail price, cover images, headline, subtitle, and live 5-second selling pop-up message.
+      </p>
+
+      <form onsubmit="handleSaveMagazineConfig(event)">
+        <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 1rem; margin-bottom: 1rem;">
+          <div>
+            <label class="post-input-label">Issue Edition Name *</label>
+            <input type="text" id="cfgMagEdition" class="post-input-field" value="${escapeHtml(settings.edition)}" required>
+          </div>
+          <div>
+            <label class="post-input-label">Price (₹) *</label>
+            <input type="number" id="cfgMagPrice" class="post-input-field" value="${settings.price || 499}" required>
+          </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
+          <div>
+            <label class="post-input-label">Pop-up Tag / Badge Text</label>
+            <input type="text" id="cfgMagPopupBadge" class="post-input-field" value="${escapeHtml(settings.popupBadge || 'Screenlady Print Magazine')}" placeholder="e.g. Screenlady Print Magazine">
+          </div>
+          <div>
+            <label class="post-input-label">Pop-up Sell Announcement Message</label>
+            <input type="text" id="cfgMagPopupMsg" class="post-input-field" value="${escapeHtml(settings.popupMessage || "Collector's Print Edition Now Available • Insured Doorstep Courier Across India")}" placeholder="Custom announcement for pop-up">
+          </div>
+        </div>
+
+        <div style="margin-bottom: 1rem;">
+          <label class="post-input-label">Page 1: Cover Page Image URL / Path *</label>
+          <input type="text" id="cfgMagCover" class="post-input-field" value="${escapeHtml(settings.coverImage)}" required>
+        </div>
+
+        <div style="margin-bottom: 1rem;">
+          <label class="post-input-label">Page 2: Inside Feature Spread Image URL / Path *</label>
+          <input type="text" id="cfgMagPage2" class="post-input-field" value="${escapeHtml(settings.page2Image)}" required>
+        </div>
+
+        <div style="margin-bottom: 1rem;">
+          <label class="post-input-label">Cover Headline</label>
+          <input type="text" id="cfgMagHeadline" class="post-input-field" value="${escapeHtml(settings.headline || '')}">
+        </div>
+
+        <div style="margin-bottom: 1.5rem;">
+          <label class="post-input-label">Cover Subtitle</label>
+          <input type="text" id="cfgMagSubtitle" class="post-input-field" value="${escapeHtml(settings.subtitle || '')}">
+        </div>
+
+        <div style="display: flex; justify-content: flex-end; gap: 0.75rem;">
+          <button type="button" class="btn btn-outline-gold btn-sm" onclick="closeOrderModal()">Cancel</button>
+          <button type="submit" class="btn btn-gold btn-sm" style="font-weight: 700;">Save Magazine Settings</button>
+        </div>
+      </form>
+    </div>
+  `;
+
+  if (typeof openModal === 'function') {
+    openModal('Magazine Showcase Settings', content);
+  } else {
+    const modal = document.getElementById('globalModal');
+    const modalBody = document.getElementById('modalBody');
+    if (modal && modalBody) {
+      modalBody.innerHTML = content;
+      modal.classList.add('active');
+    }
+  }
+};
+
+window.handleSaveMagazineConfig = function(e) {
+  e.preventDefault();
+  const newSettings = {
+    edition: (document.getElementById('cfgMagEdition').value || '').trim(),
+    price: parseInt(document.getElementById('cfgMagPrice').value || '499', 10),
+    coverImage: (document.getElementById('cfgMagCover').value || '').trim(),
+    page2Image: (document.getElementById('cfgMagPage2').value || '').trim(),
+    headline: (document.getElementById('cfgMagHeadline').value || '').trim(),
+    subtitle: (document.getElementById('cfgMagSubtitle').value || '').trim(),
+    popupBadge: (document.getElementById('cfgMagPopupBadge').value || '').trim(),
+    popupMessage: (document.getElementById('cfgMagPopupMsg').value || '').trim(),
+    curator: 'Conceived & Curated under the Editorial Vision of Mr. Prashant Chandrakant Sagvekar'
+  };
+
+  if (typeof saveMagazineSettings === 'function') {
+    saveMagazineSettings(newSettings);
+  } else {
+    localStorage.setItem('screenlady_magazine_settings', JSON.stringify(newSettings));
+    try {
+      window.dispatchEvent(new CustomEvent('screenlady_magazine_settings_changed', { detail: newSettings }));
+    } catch (err) {}
+  }
+
+  if (typeof initAvailableInPrint === 'function') initAvailableInPrint();
+  if (typeof updateMagazinePopupFromSettings === 'function') {
+    updateMagazinePopupFromSettings();
+  } else if (typeof showNextMagazinePopup === 'function') {
+    showNextMagazinePopup(true);
+  }
+
+  closeOrderModal();
+  showToast('✓ Monthly Magazine settings successfully saved! Pop-up messages and store updated.');
+};
+
+function showToast(message) {
+  const toast = document.createElement('div');
+  toast.className = 'admin-toast';
+  toast.innerHTML = `<span>${message}</span>`;
+  document.body.appendChild(toast);
+
+  setTimeout(() => toast.classList.add('visible'), 50);
+  setTimeout(() => {
+    toast.classList.remove('visible');
+    setTimeout(() => toast.remove(), 400);
+  }, 3500);
+}
+
+function escapeHtml(str) {
+  if (!str) return '';
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}

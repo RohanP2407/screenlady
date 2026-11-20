@@ -1,0 +1,1023 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+
+  <title>Home | Accolade Screenlady</title>
+  <meta name="description" content="Accolade Screenlady - Premium women-centric magazine and digital media platform.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,400;1,600&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/style.css">
+  <link rel="stylesheet" href="assets/css/editorial-homepage.css">
+  <link rel="icon" type="image/png" href="assets/images/logo-2.png">
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
+</head>
+
+<body>
+
+  <!-- Top Announcement Bar (Upper Section) -->
+  <aside class="top-bar">
+    <div class="container top-bar-inner">
+      <div class="top-bar-notice">
+        <span>Accolade Screenlady • Celebrating Women of Distinction & Cultural Icons</span>
+      </div>
+      <div class="top-bar-links">
+        <button type="button" class="print-highlight" onclick="handleAvailableInPrintClick()"
+          title="Order Monthly Print Edition (₹220 Home Delivery) - Available in Print"
+          aria-label="Available in Print - Order Monthly Print Edition">
+          <span>Available in Print</span>
+        </button>
+        <span class="top-bar-sep">•</span>
+
+        <!-- Contact Us Dropdown with WhatsApp & Email -->
+        <div class="top-contact-dropdown" id="contactDropdownWrap">
+          <button class="top-contact-btn" id="contactDropdownTrigger" aria-expanded="false" aria-haspopup="true">
+            <span>Contact Us</span>
+            <svg class="dropdown-chevron" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+              stroke-width="2.5">
+              <polyline points="6 9 12 15 18 9"></polyline>
+            </svg>
+          </button>
+          <div class="contact-dropdown-menu" id="contactDropdownMenu" role="menu">
+            <div class="contact-dropdown-header">Official Screenlady Contact</div>
+
+            <a href="https://wa.me/919665035503" target="_blank" rel="noopener" class="contact-dropdown-item"
+              role="menuitem">
+              <span class="contact-item-icon whatsapp-bg">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                  stroke-linecap="round" stroke-linejoin="round">
+                  <path
+                    d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z">
+                  </path>
+                </svg>
+              </span>
+              <div class="contact-item-text">
+                <span class="contact-item-label">WhatsApp / Phone</span>
+                <span class="contact-item-val">+91 96650 35503</span>
+              </div>
+            </a>
+
+            <a href="mailto:editor@accoladescreenlady.com" class="contact-dropdown-item" role="menuitem">
+              <span class="contact-item-icon email-bg">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                  stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                  <polyline points="22,6 12,13 2,6"></polyline>
+                </svg>
+              </span>
+              <div class="contact-item-text">
+                <span class="contact-item-label">Editor Email</span>
+                <span class="contact-item-val">editor@accoladescreenlady.com</span>
+              </div>
+            </a>
+
+            <a href="mailto:AccoladeScreenlady@gmail.com" class="contact-dropdown-item" role="menuitem">
+              <span class="contact-item-icon email-bg">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                  stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                  <polyline points="22,6 12,13 2,6"></polyline>
+                </svg>
+              </span>
+              <div class="contact-item-text">
+                <span class="contact-item-label">Editorial Desk</span>
+                <span class="contact-item-val">AccoladeScreenlady@gmail.com</span>
+              </div>
+            </a>
+
+            <div class="contact-dropdown-footer">
+              <a href="about-us.html#contact">Open Full Contact Desk →</a>
+            </div>
+          </div>
+        </div>
+
+        <span class="top-bar-sep">•</span>
+        <!-- Google Real Authentication (Sign In / Sign Up) -->
+        <div class="google-auth-wrapper" id="googleAuthWrapper">
+          <button class="btn-google-auth" id="googleAuthBtn" aria-label="Sign in with Google">
+            <svg class="google-icon" width="14" height="14" viewBox="0 0 24 24">
+              <path fill="#4285F4"
+                d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
+              <path fill="#34A853"
+                d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
+              <path fill="#FBBC05"
+                d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z" />
+              <path fill="#EA4335"
+                d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z" />
+            </svg>
+            <span>Sign In / Sign Up</span>
+          </button>
+          <div class="user-profile-badge" id="userProfileBadge" style="display: none;">
+            <img class="user-avatar" id="userAvatar" src="" alt="Google Profile">
+            <span class="user-name" id="userName">User</span>
+            <button class="btn-signout" id="googleSignoutBtn" title="Sign Out">✕</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Site Header with Enlarged Logo, Home Icon, Photos in Nav, Colorful Socials, and Latest Issue (Magazine) -->
+  <header class="site-header">
+    <div class="container header-inner">
+      <a href="index.html" class="brand-logo" aria-label="Accolade Screenlady Home">
+        <img src="assets/images/logo-2.png" alt="Accolade Queen Emblem" class="brand-emblem-icon">
+        <img src="assets/images/logo.png" alt="Accolade Screenlady Logo" class="brand-logo-img">
+      </a>
+
+      <!-- Desktop Navigation Menu (Photos section placed on left of About Us) -->
+      <nav class="nav-menu" aria-label="Main Navigation">
+        <a href="index.html" class="nav-link nav-home-icon active" aria-label="Home" title="Home">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+            <polyline points="9 22 9 12 15 12 15 22"></polyline>
+          </svg>
+        </a>
+        <a href="updates.html" class="nav-link">Updates</a>
+        <a href="editorials.html" class="nav-link">Editorials</a>
+        <a href="podcast.html" class="nav-link">Podcast</a>
+        <a href="photos.html" class="nav-link">Gallery</a>
+        <a href="about-us.html" class="nav-link">About Us</a>
+      </nav>
+
+      <!-- Header Action Controls with Colorful Social Media Logos Left of Search -->
+      <div class="header-actions">
+        <!-- Vibrant Colorful Social Media Logos -->
+        <div class="header-social-links" aria-label="Official Social Channels">
+          <a href="https://www.instagram.com/accoladescreenlady_official?obrf=M2plNzAza252NWlu" target="_blank"
+            rel="noopener" class="header-social-icon instagram" aria-label="Instagram (@accoladescreenlady_official)"
+            title="Instagram (@accoladescreenlady_official)">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+              stroke-linecap="round" stroke-linejoin="round">
+              <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
+              <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
+              <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
+            </svg>
+          </a>
+          <a href="https://www.youtube.com/@AccoladeScreenlady" target="_blank" rel="noopener"
+            class="header-social-icon youtube" aria-label="YouTube (@AccoladeScreenlady)"
+            title="YouTube (@AccoladeScreenlady)">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+              stroke-linecap="round" stroke-linejoin="round">
+              <path
+                d="M22.54 6.42a2.78 2.78 0 0 0-1.94-2C18.88 4 12 4 12 4s-6.88 0-8.6.46a2.78 2.78 0 0 0-1.94 2A29 29 0 0 0 1 11.75a29 29 0 0 0 .46 5.33A2.78 2.78 0 0 0 3.4 19c1.72.46 8.6.46 8.6.46s6.88 0 8.6-.46a2.78 2.78 0 0 0 1.94-2 29 29 0 0 0 .46-5.25 29 29 0 0 0-.46-5.33z">
+              </path>
+              <polygon points="9.75 15.02 15.5 11.75 9.75 8.48 9.75 15.02" fill="currentColor"></polygon>
+            </svg>
+          </a>
+          <a href="https://www.facebook.com/AccoladeScreenlady" target="_blank" rel="noopener"
+            class="header-social-icon facebook" aria-label="Facebook (Accolade Screenlady)"
+            title="Facebook (Accolade Screenlady)">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+              stroke-linecap="round" stroke-linejoin="round">
+              <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path>
+            </svg>
+          </a>
+        </div>
+
+        <button class="btn-icon search-trigger" aria-label="Search content">
+          🔍
+        </button>
+        <button class="btn btn-gold btn-sm" data-modal-trigger data-modal-type="magazine-preview"
+          data-issue="Latest Issue (Magazine)">
+          Latest Issue (Magazine)
+        </button>
+        <button class="hamburger" id="hamburgerBtn" aria-label="Toggle navigation menu">
+          <span></span>
+          <span></span>
+          <span></span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Mobile Sub-Header Quick Navigation Strip (Direct 1-tap access to Home, Photos, About Us, etc.) -->
+  <nav class="mobile-sub-nav" aria-label="Mobile Quick Navigation">
+    <a href="index.html" class="mobile-sub-nav-pill active">🏠 Home</a>
+    <a href="photos.html" class="mobile-sub-nav-pill">📷 Gallery</a>
+    <a href="about-us.html" class="mobile-sub-nav-pill">🏛️ About Us</a>
+    <a href="editorials.html" class="mobile-sub-nav-pill">✒️ Editorials</a>
+    <a href="updates.html" class="mobile-sub-nav-pill">📰 Updates</a>
+    <a href="podcast.html" class="mobile-sub-nav-pill">🎙️ Podcast</a>
+  </nav>
+
+  <!-- Mobile Navigation Drawer -->
+  <div class="mobile-nav-backdrop" id="mobileNavBackdrop"></div>
+  <aside class="mobile-nav" id="mobileNav">
+    <div>
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+        <a href="index.html" style="display: flex; align-items: center; gap: 0.5rem;">
+          <img src="assets/images/logo-2.png" alt="Accolade Screenlady Emblem"
+            style="height: 38px; filter: drop-shadow(0 0 12px rgba(212,175,55,0.7));">
+          <img src="assets/images/logo.png" alt="Accolade Screenlady"
+            style="height: 30px; filter: drop-shadow(0 0 10px rgba(212,175,55,0.6));">
+        </a>
+        <button id="mobileNavClose" style="color: var(--gold-primary); font-size: 1.5rem;">✕</button>
+      </div>
+      <nav class="mobile-nav-links">
+        <a href="index.html" class="mobile-nav-link active">Home <span>→</span></a>
+        <a href="updates.html" class="mobile-nav-link">Updates <span>→</span></a>
+        <a href="editorials.html" class="mobile-nav-link">Editorials <span>→</span></a>
+        <a href="podcast.html" class="mobile-nav-link">Podcast <span>→</span></a>
+        <a href="photos.html" class="mobile-nav-link">Gallery <span>→</span></a>
+        <a href="about-us.html" class="mobile-nav-link">About Us <span>→</span></a>
+      </nav>
+    </div>
+    <div class="mobile-nav-footer">
+      <button class="btn btn-gold" data-modal-trigger data-modal-type="magazine-preview"
+        data-issue="Latest Issue (Magazine)" style="width: 100%;">
+        Read Latest Issue (Magazine)
+      </button>
+      <div class="mobile-socials">
+        <a href="https://www.instagram.com/accoladescreenlady_official?obrf=M2plNzAza252NWlu" target="_blank"
+          rel="noopener" aria-label="Instagram (@accoladescreenlady_official)">IG</a>
+        <a href="https://www.youtube.com/@AccoladeScreenlady" target="_blank" rel="noopener"
+          aria-label="YouTube (@AccoladeScreenlady)">YT</a>
+        <a href="https://www.facebook.com/AccoladeScreenlady" target="_blank" rel="noopener"
+          aria-label="Facebook (Accolade Screenlady)">FB</a>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ==============================================
+       HOME SECTION: MAGAZINE COVER SLIDESHOW & TIMELINE
+  ============================================== -->
+  <main class="main-content" id="homeSection" style="padding: 1.5rem 0 3.5rem;">
+    <div class="container">
+
+      <!-- ==============================================
+           HOMEPAGE HERO SPLIT SECTION: 
+           LEFT: 4 Latest News in Horizontal Format (with photos & running highlights)
+           RIGHT: Curated Photo Gallery Slideshow
+           ============================================== -->
+      <section class="home-hero-split-section" id="homeHeroSplitSection"
+        aria-label="Latest News & Event Photo Showcase">
+        <div class="home-split-grid">
+          <!-- LEFT COLUMN: 4 Latest News Running in Horizontal Format -->
+          <div class="home-split-news-col">
+            <div class="home-split-col-header">
+              <div class="home-split-header-left">
+                <span class="home-split-kicker-pill">
+                  <span class="live-pulse-dot"></span> ✦ Real-Time Live News
+                </span>
+                <h2 class="home-split-title">Screenlady Updates</h2>
+              </div>
+              <a href="updates.html" class="home-split-view-all-btn" title="View all updates and news">
+                <span>All Screenlady Updates</span>
+                <span class="btn-arrow">→</span>
+              </a>
+            </div>
+            <div class="home-news-horizontal-list" id="homeLatestNewsList">
+              <!-- Dynamically populated by assets/js/home-news-photos.js -->
+            </div>
+            <!-- Slider / Pagination 1, 2, 3 for Previous News -->
+            <div class="home-news-pagination" id="homeNewsPagination">
+              <!-- Dynamically populated by assets/js/home-news-photos.js -->
+            </div>
+          </div>
+
+          <!-- RIGHT COLUMN: Photo Showcase Slideshow -->
+          <div class="home-split-photos-col">
+            <div class="home-split-col-header">
+              <div class="home-split-header-left">
+                <span class="home-split-kicker-pill">✦ Event Photo Archives</span>
+                <h2 class="home-split-title">Photo Gallery Showcase</h2>
+              </div>
+              <a href="photos.html" class="home-split-view-all-btn" title="View all photo galleries">
+                <span>All Photos</span>
+                <span class="btn-arrow">→</span>
+              </a>
+            </div>
+            <div class="home-photo-slideshow-wrap" id="homePhotoSlideshowWrap">
+              <div class="home-photo-slides-stage" id="homePhotoSlidesStage">
+                <!-- Dynamically populated by assets/js/home-news-photos.js -->
+              </div>
+              <button type="button" class="home-photo-arrow prev" id="homePhotoPrevBtn"
+                aria-label="Previous Photograph">‹</button>
+              <button type="button" class="home-photo-arrow next" id="homePhotoNextBtn"
+                aria-label="Next Photograph">›</button>
+              <div class="home-photo-dots" id="homePhotoDots"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <!-- ==============================================
+       SECTION 1: HERO SECTION (Merged with Magazine Editions Slideshow)
+  ============================================== -->
+  <section class="editorial-hero-section" id="heroSection">
+    <div class="container">
+      <div class="editorial-hero-grid">
+
+        <div class="editorial-hero-content">
+          <div class="editorial-kicker">
+            <span>✦ A Marathi Magazine Celebrating Women</span>
+          </div>
+          <h1 class="editorial-hero-headline">
+            A Marathi Magazine Exploring the Diverse World of Women
+          </h1>
+          <p class="editorial-hero-desc">
+            Today's woman is no longer confined to managing household responsibilities. She is making her mark in
+            entertainment, politics, industry, business, education, medicine, technology, the stock market, real estate
+            and numerous other fields. With her intelligence, hard work and determination, she is reaching new heights
+            of success. Recognising the journeys of such accomplished women and bringing their achievements into the
+            spotlight is the vision behind <strong>Accolade Screenlady</strong>, a unique magazine dedicated to
+            celebrating women.
+          </p>
+          <div class="editorial-hero-actions">
+            <a href="about-us.html" class="btn-editorial-gold" id="heroDiscoverStoryBtn">
+              <span>Discover Our Story</span>
+              <span>→</span>
+            </a>
+            <button type="button" class="btn-editorial-outline" id="heroExploreMagazineBtn"
+              onclick="handleAvailableInPrintClick()">
+              <span>Order Collector's Edition</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="editorial-hero-visual">
+          <div class="pure-cover-slideshow-wrap">
+            <div class="pure-slideshow-theater" id="slideshowTheater">
+
+              <!-- Prev Button -->
+              <button type="button" class="pure-nav-arrow prev" id="slidePrevBtn" aria-label="Previous Cover"
+                title="Previous Cover">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+                  stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="15 18 9 12 15 6"></polyline>
+                </svg>
+              </button>
+
+              <!-- Slides Stage (All 5 covers preloaded with smooth crossfade) -->
+              <div class="pure-slides-stage" id="slidesStage">
+                <div class="pure-slide active" data-index="0">
+                  <div class="pure-cover-frame">
+                    <img src="assets/images/magazine-cover-june.jpg" alt="June 2026 Magazine Cover"
+                      class="pure-cover-image">
+                  </div>
+                </div>
+                <div class="pure-slide" data-index="1">
+                  <div class="pure-cover-frame">
+                    <img src="assets/images/magazine-cover-july.jpg" alt="July 2026 Magazine Cover"
+                      class="pure-cover-image">
+                  </div>
+                </div>
+                <div class="pure-slide" data-index="2">
+                  <div class="pure-cover-frame">
+                    <img src="assets/images/magazine-cover-august.jpg" alt="August 2026 Magazine Cover"
+                      class="pure-cover-image">
+                  </div>
+                </div>
+                <div class="pure-slide" data-index="3">
+                  <div class="pure-cover-frame">
+                    <img src="assets/images/magazine-cover-september.jpg" alt="September 2026 Magazine Cover"
+                      class="pure-cover-image">
+                  </div>
+                </div>
+                <div class="pure-slide" data-index="4">
+                  <div class="pure-cover-frame">
+                    <img src="assets/images/magazine-cover-october.jpg" alt="October 2026 Magazine Cover"
+                      class="pure-cover-image">
+                  </div>
+                </div>
+              </div>
+
+              <!-- Next Button -->
+              <button type="button" class="pure-nav-arrow next" id="slideNextBtn" aria-label="Next Cover"
+                title="Next Cover">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+                  stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="9 18 15 12 9 6"></polyline>
+                </svg>
+              </button>
+
+            </div>
+
+            <!-- Timeline of Covers (June to October) -->
+            <nav class="pure-timeline" aria-label="Edition Timeline">
+              <div class="pure-timeline-track">
+
+                <button type="button" class="pure-timeline-step active" data-index="0" title="June 2026">
+                  <div class="pure-step-indicator">
+                    <span class="pure-step-dot"></span>
+                    <span class="pure-step-bar"><span class="pure-step-fill"></span></span>
+                  </div>
+                  <span class="pure-step-label">June</span>
+                </button>
+
+                <button type="button" class="pure-timeline-step" data-index="1" title="July 2026">
+                  <div class="pure-step-indicator">
+                    <span class="pure-step-dot"></span>
+                    <span class="pure-step-bar"><span class="pure-step-fill"></span></span>
+                  </div>
+                  <span class="pure-step-label">July</span>
+                </button>
+
+                <button type="button" class="pure-timeline-step" data-index="2" title="August 2026">
+                  <div class="pure-step-indicator">
+                    <span class="pure-step-dot"></span>
+                    <span class="pure-step-bar"><span class="pure-step-fill"></span></span>
+                  </div>
+                  <span class="pure-step-label">August</span>
+                </button>
+
+                <button type="button" class="pure-timeline-step" data-index="3" title="September 2026">
+                  <div class="pure-step-indicator">
+                    <span class="pure-step-dot"></span>
+                    <span class="pure-step-bar"><span class="pure-step-fill"></span></span>
+                  </div>
+                  <span class="pure-step-label">September</span>
+                </button>
+
+                <button type="button" class="pure-timeline-step" data-index="4" title="October 2026">
+                  <div class="pure-step-indicator">
+                    <span class="pure-step-dot"></span>
+                    <span class="pure-step-bar"><span class="pure-step-fill"></span></span>
+                  </div>
+                  <span class="pure-step-label">October</span>
+                </button>
+
+              </div>
+            </nav>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ==============================================
+       SECTION 2: FILMY ADDA (Left: 4 Film Photos | Right: Content)
+  ============================================== -->
+  <section class="curated-feature-section filmy-adda-section" id="filmyAddaSection">
+    <div class="container">
+      <div class="curated-split-grid">
+
+        <!-- Left Column: 4 Film Photos in Interactive Grid -->
+        <div class="curated-photos-grid" id="filmyAddaPhotosGrid">
+          <div class="curated-photo-card"
+            onclick="if(window.openUpdateModal) window.openUpdateModal('update-ramayana-1'); else window.location.href='updates.html#update-ramayana-1';">
+            <img src="assets/images/news/ramayana.jpeg" alt="Ramayana: Rise of a Legend">
+            <div class="curated-photo-overlay">
+              <span class="curated-photo-badge">🎬 Box Office Record</span>
+              <div>
+                <h4 class="curated-photo-title">Ramayana: Rise of a Legend</h4>
+                <div class="curated-photo-action">
+                  <span>Read Story in Updates</span>
+                  <span>→</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="curated-photo-card"
+            onclick="if(window.openUpdateModal) window.openUpdateModal('update-boxoffice-1'); else window.location.href='updates.html#update-boxoffice-1';">
+            <img src="assets/images/news/films-box-office.jpeg" alt="November Box Office Clash">
+            <div class="curated-photo-overlay">
+              <span class="curated-photo-badge">🍿 Upcoming Releases</span>
+              <div>
+                <h4 class="curated-photo-title">November Box Office Battles</h4>
+                <div class="curated-photo-action">
+                  <span>Read Story in Updates</span>
+                  <span>→</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="curated-photo-card"
+            onclick="if(window.openUpdateModal) window.openUpdateModal('update-movietalk-1'); else window.location.href='updates.html#update-movietalk-1';">
+            <img src="assets/images/magazine-photos/3.1.jpg" alt="Cinema Behind-the-Scenes">
+            <div class="curated-photo-overlay">
+              <span class="curated-photo-badge">🎥 Behind The Screen</span>
+              <div>
+                <h4 class="curated-photo-title">Behind-the-Scenes Photo Session</h4>
+                <div class="curated-photo-action">
+                  <span>Read Story in Updates</span>
+                  <span>→</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="curated-photo-card"
+            onclick="if(window.openUpdateModal) window.openUpdateModal('update-jalsa-threat-1'); else window.location.href='updates.html#update-jalsa-threat-1';">
+            <img src="assets/images/news/amitabh-bachchan.jpeg" alt="Amitabh Bachchan Security Update">
+            <div class="curated-photo-overlay">
+              <span class="curated-photo-badge">🚨 Industry News</span>
+              <div>
+                <h4 class="curated-photo-title">Amitabh Bachchan Jalsa Alert</h4>
+                <div class="curated-photo-action">
+                  <span>Read Story in Updates</span>
+                  <span>→</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right Column: Filmy Adda Information Text -->
+        <div class="curated-content-box">
+          <div class="curated-box-inner-top">
+            <h2 class="curated-title-top">FILMY ADDA</h2>
+            <div class="curated-subtitle">The World of Glamour, Cinema & Celebrities</div>
+
+            <p class="curated-body-text">
+              Lights, Camera, Action! Welcome to <strong>Filmy Adda</strong>, your ultimate destination for everything
+              happening in the world of cinema and entertainment. From the glamour of Bollywood to the vibrant world of
+              Marathi cinema, we bring you closer to your favourite stars, their personal journeys, upcoming movie
+              releases, box-office milestones, and behind-the-scenes stories.
+            </p>
+            <p class="curated-body-text">
+              Discover exclusive interviews with renowned actors, actresses, filmmakers, singers, and emerging talents
+              who
+              are making their mark. Whether it is the magic of the silver screen, television drama, or the growing
+              influence of digital OTT entertainment, Filmy Adda keeps you connected with every major development.
+            </p>
+
+            <div class="curated-quote-pill">
+              “Because every star has a story, and every story deserves the spotlight — only on Accolade Screenlady!”
+            </div>
+
+            <div class="curated-tagline" style="margin-top: 0.85rem; margin-bottom: 0;">
+              Filmy Adda – Your Daily Dose of Cinema, Celebrities & Entertainment
+            </div>
+          </div>
+
+          <div class="curated-box-inner-bottom"
+            style="display: flex; gap: 0.85rem; flex-wrap: wrap; margin-top: 1.25rem;">
+            <a href="updates.html" class="btn-editorial-gold"
+              style="font-size: 0.84rem; padding: 0.65rem 1.35rem; text-decoration: none; display: inline-flex; align-items: center; gap: 0.5rem;">
+              <span>Explore All Cinema Updates</span>
+              <span>→</span>
+            </a>
+            <a href="photos.html" class="btn-editorial-outline"
+              style="font-size: 0.84rem; padding: 0.65rem 1.35rem; text-decoration: none; display: inline-flex; align-items: center; gap: 0.5rem;">
+              <span>View Film Gallery</span>
+              <span>→</span>
+            </a>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ==============================================
+       SECTION 3: BIZZ WORLD (Left: Content | Right: 4 Business Photos)
+  ============================================== -->
+  <section class="curated-feature-section bizz-world-section" id="bizzWorldSection">
+    <div class="container">
+      <div class="curated-split-grid">
+
+        <!-- Left Column: Business & Enterprise Content -->
+        <div class="curated-content-box">
+          <div class="curated-box-inner-top">
+            <h2 class="curated-title-top">BIZZ WORLD</h2>
+            <div class="curated-subtitle">Corporate Pioneers, Startups & Women Entrepreneurs</div>
+
+            <p class="curated-body-text">
+              Welcome to <strong>Bizz World</strong>, Accolade Screenlady’s premier corporate chronicle spotlighting
+              visionary industrial leaders, executive directors, and pioneering women entrepreneurs who are driving
+              commerce, innovation, and sustainable leadership across Maharashtra and nationwide.
+            </p>
+            <p class="curated-body-text">
+              From dynamic grassroots enterprises and small-business founders to established corporate conglomerates,
+              we deliver authentic reports on market expansions, funding triumphs, administrative breakthroughs, and
+              brand
+              journeys. We celebrate women breaking glass ceilings in finance, technology, manufacturing, and retail.
+            </p>
+
+            <div class="bizz-pillars-grid"
+              style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.65rem; margin: 0.95rem 0;">
+              <div
+                style="background: rgba(255,255,255,0.035); border: 1px solid rgba(212,175,55,0.25); border-radius: 8px; padding: 0.55rem 0.8rem; display: flex; align-items: center; gap: 0.5rem;">
+                <span style="font-size: 1.05rem;">📈</span>
+                <span style="font-size: 0.8rem; color: #FFFFFF; font-weight: 600;">Executive Governance</span>
+              </div>
+              <div
+                style="background: rgba(255,255,255,0.035); border: 1px solid rgba(212,175,55,0.25); border-radius: 8px; padding: 0.55rem 0.8rem; display: flex; align-items: center; gap: 0.5rem;">
+                <span style="font-size: 1.05rem;">🚀</span>
+                <span style="font-size: 0.8rem; color: #FFFFFF; font-weight: 600;">Women-Led Startups</span>
+              </div>
+              <div
+                style="background: rgba(255,255,255,0.035); border: 1px solid rgba(212,175,55,0.25); border-radius: 8px; padding: 0.55rem 0.8rem; display: flex; align-items: center; gap: 0.5rem;">
+                <span style="font-size: 1.05rem;">💎</span>
+                <span style="font-size: 0.8rem; color: #FFFFFF; font-weight: 600;">Brand & SME Spotlights</span>
+              </div>
+              <div
+                style="background: rgba(255,255,255,0.035); border: 1px solid rgba(212,175,55,0.25); border-radius: 8px; padding: 0.55rem 0.8rem; display: flex; align-items: center; gap: 0.5rem;">
+                <span style="font-size: 1.05rem;">🤝</span>
+                <span style="font-size: 0.8rem; color: #FFFFFF; font-weight: 600;">Conclaves & Summits</span>
+              </div>
+            </div>
+
+            <div class="curated-quote-pill" style="margin: 0.85rem 0;">
+              “From boardroom strategy to grassroots entrepreneurship — celebrating women who build industries, create
+              employment, and lead the future.”
+            </div>
+
+            <div class="curated-tagline" style="margin-top: 0.75rem; margin-bottom: 0;">
+              Bizz World – Where Leadership Meets Ambition & Enterprise
+            </div>
+          </div>
+
+          <div class="curated-box-inner-bottom"
+            style="display: flex; gap: 0.75rem; flex-wrap: wrap; margin-top: 1.25rem;">
+            <a href="https://wa.me/919665035503?text=Hello%20Accolade%20Screenlady%20Team%2C%20I%20am%20interested%20in%20Business%20Features%20and%20Brand%20Promotions."
+              target="_blank" rel="noopener" class="btn-editorial-gold"
+              style="font-size: 0.82rem; padding: 0.65rem 1.2rem; text-decoration: none; display: inline-flex; align-items: center; gap: 0.5rem;">
+              <span>💬 Advertise via WhatsApp</span>
+              <span>→</span>
+            </a>
+            <a href="mailto:editor@accoladescreenlady.com?cc=AccoladeScreenlady@gmail.com&subject=Bizz%20World%20Brand%20Feature%20Inquiry"
+              class="btn-editorial-outline"
+              style="font-size: 0.82rem; padding: 0.65rem 1.2rem; text-decoration: none; display: inline-flex; align-items: center; gap: 0.5rem;">
+              <span>✉️ Brand Desk</span>
+              <span>→</span>
+            </a>
+            <a href="updates.html" class="btn-editorial-outline"
+              style="font-size: 0.82rem; padding: 0.65rem 1.2rem; text-decoration: none; display: inline-flex; align-items: center; gap: 0.5rem;">
+              <span>Read in Updates</span>
+              <span>→</span>
+            </a>
+          </div>
+        </div>
+
+        <!-- Right Column: 4 Business & Enterprise Photos in Interactive Grid -->
+        <div class="curated-photos-grid" id="bizzWorldPhotosGrid">
+          <div class="curated-photo-card"
+            onclick="if(window.openUpdateModal) window.openUpdateModal('update-meeting-1'); else window.location.href='updates.html#update-meeting-1';">
+            <img src="assets/images/team/prashant-sagvekar.jpeg" alt="Executive Editorial Board">
+            <div class="curated-photo-overlay">
+              <span class="curated-photo-badge">💼 Executive Leadership</span>
+              <div>
+                <h4 class="curated-photo-title">Executive Publishing Conclave</h4>
+                <div class="curated-photo-action">
+                  <span>Read Story in Updates</span>
+                  <span>→</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="curated-photo-card"
+            onclick="if(window.openUpdateModal) window.openUpdateModal('update-meetgreet-1'); else window.location.href='updates.html#update-meetgreet-1';">
+            <img src="assets/images/magazine-photos/4.1.jpg" alt="Women Entrepreneurs Conclave">
+            <div class="curated-photo-overlay">
+              <span class="curated-photo-badge">🤝 Startup Founders</span>
+              <div>
+                <h4 class="curated-photo-title">Women Entrepreneurs Conclave</h4>
+                <div class="curated-photo-action">
+                  <span>Read Story in Updates</span>
+                  <span>→</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="curated-photo-card"
+            onclick="if(window.openUpdateModal) window.openUpdateModal('update-events-1'); else window.location.href='updates.html#update-events-1';">
+            <img src="assets/images/articles/article-1.jpg" alt="Strategic Brand Partnership">
+            <div class="curated-photo-overlay">
+              <span class="curated-photo-badge">✨ Brand Partnership</span>
+              <div>
+                <h4 class="curated-photo-title">Tantuh Jewellery Partnership</h4>
+                <div class="curated-photo-action">
+                  <span>Read Story in Updates</span>
+                  <span>→</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="curated-photo-card"
+            onclick="if(window.openUpdateModal) window.openUpdateModal('update-awards-1'); else window.location.href='updates.html#update-awards-1';">
+            <img src="assets/images/magazine-photos/4.2.jpg" alt="Distinction Honors">
+            <div class="curated-photo-overlay">
+              <span class="curated-photo-badge">🏆 Corporate Honors</span>
+              <div>
+                <h4 class="curated-photo-title">Women of Distinction Honors</h4>
+                <div class="curated-photo-action">
+                  <span>Read Story in Updates</span>
+                  <span>→</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ==============================================
+       SECTION 4: WOMEN OF INSPIRATION (Struggle to Success)
+  ============================================== -->
+  <section class="curated-showcase-section women-inspiration-section" id="womenInspirationSection">
+    <div class="container">
+
+      <div class="editorial-header-center">
+        <span class="editorial-kicker">✦ Triumphs Over Adversity</span>
+        <h2 class="editorial-section-title-dark">Women of Inspiration</h2>
+        <p class="editorial-section-sub-dark" style="max-width: 820px; margin: 0 auto 1.75rem;">
+          Behind every successful woman lies an inspiring story of courage, struggle, and perseverance. Accolade
+          Screenlady honors trailblazing women who overcame challenging circumstances to establish their own identities,
+          setting new benchmarks in social service, business, science, technology, medicine, and governance. Click any
+          story to read in full.
+        </p>
+      </div>
+
+      <!-- 4 Showcase Cards Grid -->
+      <div class="curated-showcase-grid" id="womenInspirationGrid">
+
+        <div class="curated-showcase-card"
+          onclick="if(window.openUpdateModal) window.openUpdateModal('update-sindhutai-1'); else window.location.href='updates.html#update-sindhutai-1';"
+          title="Padma Shri Sindhutai Sapkal">
+          <div class="curated-showcase-img-wrap">
+            <img src="assets/images/news/sindhutai-sapkal.jpeg" alt="Padma Shri Sindhutai Sapkal"
+              class="curated-showcase-img" loading="lazy">
+          </div>
+          <div class="curated-showcase-minimal-footer">
+            <h3 class="curated-showcase-name">Padma Shri Sindhutai Sapkal</h3>
+          </div>
+        </div>
+
+        <div class="curated-showcase-card"
+          onclick="if(window.openUpdateModal) window.openUpdateModal('update-awards-1'); else window.location.href='updates.html#update-awards-1';"
+          title="Accolade Screenlady Distinction Honorees">
+          <div class="curated-showcase-img-wrap">
+            <img src="assets/images/magazine-photos/4.2.jpg" alt="Women of Distinction Honorees"
+              class="curated-showcase-img" loading="lazy">
+          </div>
+          <div class="curated-showcase-minimal-footer">
+            <h3 class="curated-showcase-name">Women of Distinction Honorees</h3>
+          </div>
+        </div>
+
+        <div class="curated-showcase-card"
+          onclick="if(window.openUpdateModal) window.openUpdateModal('update-meetgreet-1'); else window.location.href='updates.html#update-meetgreet-1';"
+          title="Pioneering Women Entrepreneurs">
+          <div class="curated-showcase-img-wrap">
+            <img src="assets/images/magazine-photos/4.1.jpg" alt="Pioneering Women Entrepreneurs"
+              class="curated-showcase-img" loading="lazy">
+          </div>
+          <div class="curated-showcase-minimal-footer">
+            <h3 class="curated-showcase-name">Pioneering Women Entrepreneurs</h3>
+          </div>
+        </div>
+
+        <div class="curated-showcase-card"
+          onclick="if(window.openUpdateModal) window.openUpdateModal('update-meeting-1'); else window.location.href='updates.html#update-meeting-1';"
+          title="Founder Mr. Prashant Sagvekar">
+          <div class="curated-showcase-img-wrap">
+            <img src="assets/images/team/prashant-sagvekar.jpeg" alt="Founder Mr. Prashant Sagvekar"
+              class="curated-showcase-img" loading="lazy">
+          </div>
+          <div class="curated-showcase-minimal-footer">
+            <h3 class="curated-showcase-name">Founder Mr. Prashant Sagvekar</h3>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ==============================================
+       SECTION 5: FASHION AND LIFESTYLE (Couture & Living)
+  ============================================== -->
+  <section class="curated-showcase-section fashion-lifestyle-section" id="fashionLifestyleSection">
+    <div class="container">
+
+      <div class="editorial-header-center">
+        <span class="editorial-kicker">✦ Haute Aesthetics & Living</span>
+        <h2 class="editorial-section-title-dark">Fashion and Lifestyle</h2>
+        <p class="editorial-section-sub-dark" style="max-width: 820px; margin: 0 auto 1.75rem;">
+          When exploring the world of women, fashion, beauty, jewellery, and contemporary living hold special
+          importance. Accolade Screenlady covers haute couture, traditional elegance, wellness, and thought-provoking
+          lifestyle perspectives. Click any feature to read in full.
+        </p>
+      </div>
+
+      <!-- 4 Showcase Cards Grid -->
+      <div class="curated-showcase-grid" id="fashionLifestyleGrid">
+
+        <div class="curated-showcase-card"
+          onclick="if(window.openUpdateModal) window.openUpdateModal('update-events-1'); else window.location.href='updates.html#update-events-1';"
+          title="Tantuh Artisanal Handcrafted Jewellery">
+          <div class="curated-showcase-img-wrap">
+            <img src="assets/images/articles/article-1.jpg" alt="Tantuh Artisanal Handcrafted Jewellery"
+              class="curated-showcase-img" loading="lazy">
+          </div>
+          <div class="curated-showcase-minimal-footer">
+            <p class="curated-showcase-oneline">Tantuh Artisanal Handcrafted Jewellery</p>
+          </div>
+        </div>
+
+        <div class="curated-showcase-card"
+          onclick="if(window.openUpdateModal) window.openUpdateModal('fashion-spread-1'); else window.location.href='updates.html#fashion-spread-1';"
+          title="Contemporary Silhouettes & Ethnic Grace">
+          <div class="curated-showcase-img-wrap">
+            <img src="assets/images/magazine-photos/5.1.jpg" alt="Contemporary Silhouettes & Ethnic Grace"
+              class="curated-showcase-img" loading="lazy">
+          </div>
+          <div class="curated-showcase-minimal-footer">
+            <p class="curated-showcase-oneline">Contemporary Silhouettes & Ethnic Grace</p>
+          </div>
+        </div>
+
+        <div class="curated-showcase-card"
+          onclick="if(window.openUpdateModal) window.openUpdateModal('fashion-jewel-2'); else window.location.href='updates.html#fashion-jewel-2';"
+          title="Timeless Jewellery for the Modern Era">
+          <div class="curated-showcase-img-wrap">
+            <img src="assets/images/magazine-photos/5.2.jpg" alt="Timeless Jewellery for the Modern Era"
+              class="curated-showcase-img" loading="lazy">
+          </div>
+          <div class="curated-showcase-minimal-footer">
+            <p class="curated-showcase-oneline">Timeless Jewellery for the Modern Era</p>
+          </div>
+        </div>
+
+        <div class="curated-showcase-card"
+          onclick="if(window.openUpdateModal) window.openUpdateModal('fashion-well-3'); else window.location.href='updates.html#fashion-well-3';"
+          title="Holistic Wellness & Modern Balance">
+          <div class="curated-showcase-img-wrap">
+            <img src="assets/images/magazine-photos/5.3.jpg" alt="Holistic Wellness & Modern Balance"
+              class="curated-showcase-img" loading="lazy">
+          </div>
+          <div class="curated-showcase-minimal-footer">
+            <p class="curated-showcase-oneline">Holistic Wellness & Modern Balance</p>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ==============================================
+       SECTION 8: CLOSING PHILOSOPHY BANNER (Powerful Black & Gold Banner)
+  ============================================== -->
+  <section class="editorial-philosophy-banner" id="philosophyBanner">
+    <div class="container philosophy-container">
+
+      <img src="assets/images/logo-2.png" alt="Accolade Queen Crest" class="philosophy-crest">
+
+      <div
+        style="font-family: var(--font-editorial-body); font-size: 0.85rem; font-weight: 800; letter-spacing: 0.2em; text-transform: uppercase; color: var(--gold-light-accent); margin-bottom: 1rem;">
+        ✦ ACCOLADE SCREENLADY – A MIRROR OF THE WORLD OF WOMEN! ✦
+      </div>
+
+      <h2 class="philosophy-tagline-primary" style="font-size: clamp(2rem, 3.8vw, 3.2rem); margin-bottom: 1.5rem;">
+        Celebrating Women's Success, Inspiring the Next Generation!
+      </h2>
+
+      <div
+        style="max-width: 840px; margin: 0 auto 2.5rem; color: #D8D3C8; font-family: var(--font-editorial-body); font-size: 1.02rem; line-height: 1.8;">
+        <p style="margin-bottom: 1rem;">
+          Today, women have more opportunities than ever to demonstrate their abilities and establish themselves in
+          different fields. However, platforms that recognise their achievements and bring their experiences and stories
+          to society are equally important. Accolade Screenlady is committed to contributing to this vision.
+        </p>
+        <p>
+          From celebrated actresses to successful entrepreneurs in rural communities, from political leaders to
+          corporate professionals, and from established personalities to women who have built their own identities
+          through determination and hard work, the magazine aims to bring the stories of women from every walk of life
+          into the spotlight.
+        </p>
+      </div>
+
+      <div
+        style="padding: 1.5rem 2rem; border-top: 1px solid rgba(212, 175, 55, 0.3); border-bottom: 1px solid rgba(212, 175, 55, 0.3); margin-bottom: 2.5rem; background: rgba(212, 175, 55, 0.05); border-radius: 8px;">
+        <div
+          style="font-family: var(--font-editorial-heading); font-size: clamp(1.4rem, 2.5vw, 2.2rem); font-weight: 800; color: #FFFFFF; margin-bottom: 0.65rem;">
+          “Her Beauty, Her Achievements, Her Story of Struggle!”
+        </div>
+        <div
+          style="font-family: var(--font-editorial-heading); font-size: clamp(1.1rem, 1.8vw, 1.5rem); font-style: italic; color: var(--gold-light-accent);">
+          “Because every woman has a story to tell... and every story deserves to reach the world!”
+        </div>
+      </div>
+
+      <div class="philosophy-actions">
+        <button type="button" class="btn-editorial-gold" onclick="handleAvailableInPrintClick()">
+          <span>Order Collector's Print Edition</span>
+          <span>→</span>
+        </button>
+        <a href="about-us.html#contact" class="btn-editorial-outline">
+          <span>Connect With Our Editorial Desk</span>
+        </a>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- Master Site Footer with Highlighted Screenlady Logo (Lower Section) -->
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-top">
+
+        <!-- Brand Info -->
+        <div class="footer-brand">
+          <a href="index.html" class="footer-logo">
+            <img src="assets/images/logo-2.png" alt="Accolade Screenlady Emblem" class="footer-emblem">
+            <img src="assets/images/logo.png" alt="Accolade Screenlady Logo" class="footer-logo-img">
+          </a>
+          <p>
+            Accolade Screenlady is an esteemed digital media platform and luxury print publication dedicated to honoring
+            trailblazing women, cinematic icons, and pioneering leaders across all walks of life.
+          </p>
+          <p style="font-size: 0.8rem; color: var(--gold-light);">
+            Producer & Concept Creator <strong>Mr. Prashant Chandrakant Sagvekar</strong>
+          </p>
+        </div>
+
+        <!-- Quick Navigation -->
+        <div>
+          <h4 class="footer-heading">Platform</h4>
+          <ul class="footer-nav-list">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="updates.html">Updates & Events</a></li>
+            <li><a href="editorials.html">Editorial Columns</a></li>
+            <li><a href="podcast.html">Podcast Broadcasts</a></li>
+            <li><a href="photos.html">Photos & Gallery</a></li>
+            <li><a href="about-us.html">About Us & Vision</a></li>
+          </ul>
+        </div>
+
+        <!-- Pillars -->
+        <div>
+          <h4 class="footer-heading">Sections</h4>
+          <ul class="footer-nav-list">
+            <li><a href="editorials.html">Cinema & Arts</a></li>
+            <li><a href="editorials.html">Corporate Leadership</a></li>
+            <li><a href="updates.html">Screenlady Honors</a></li>
+            <li><a href="podcast.html">Video Series</a></li>
+            <li><a href="about-us.html">Founder's Note</a></li>
+          </ul>
+        </div>
+
+        <!-- Connect -->
+        <div>
+          <h4 class="footer-heading">Official Channels</h4>
+          <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1.25rem;">
+            Follow our verified handles for behind-the-scenes footage, premiere alerts, and magazine release
+            announcements.
+          </p>
+          <div class="social-icon-row">
+            <a href="https://www.instagram.com/accoladescreenlady_official?obrf=M2plNzAza252NWlu" target="_blank"
+              rel="noopener" class="social-icon-btn" aria-label="Instagram (@accoladescreenlady_official)"
+              title="Instagram (@accoladescreenlady_official)">IG</a>
+            <a href="https://www.youtube.com/@AccoladeScreenlady" target="_blank" rel="noopener" class="social-icon-btn"
+              aria-label="YouTube (@AccoladeScreenlady)" title="YouTube (@AccoladeScreenlady)">YT</a>
+            <a href="https://www.facebook.com/AccoladeScreenlady" target="_blank" rel="noopener" class="social-icon-btn"
+              aria-label="Facebook (Accolade Screenlady)" title="Facebook (Accolade Screenlady)">FB</a>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="footer-bottom">
+        <p>© 2026 Accolade Screenlady. All Rights Reserved.</p>
+        <div class="footer-bottom-links">
+          <a href="about-us.html#contact">Contact Us</a>
+          <span style="color: var(--text-muted); opacity: 0.4;">•</span>
+          <a href="admin.html" style="color: var(--gold-light); opacity: 0.75;" title="Editorial Access">Editorial Desk
+            🔒</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Floating Back to Top Button -->
+  <button class="back-to-top" id="backToTopBtn" aria-label="Back to Top">↑</button>
+
+  <!-- Global Modal Component -->
+  <div class="modal-overlay" id="globalModal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <div class="modal-content-wrap">
+      <button class="modal-close-btn" id="modalCloseBtn" aria-label="Close modal">✕</button>
+      <div id="modalBody"></div>
+    </div>
+  </div>
+
+  <script src="assets/js/main.js"></script>
+  <script src="assets/js/magazine-orders.js"></script>
+  <script src="assets/js/home-slider.js"></script>
+  <script src="assets/js/editorial-homepage.js"></script>
+  <script src="assets/js/updates.js"></script>
+  <script src="assets/js/home-news-photos.js"></script>
+</body>
+
+</html>
