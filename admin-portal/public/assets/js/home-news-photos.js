@@ -120,7 +120,7 @@
   }
 
   /* ==========================================================================
-     3. RETRIEVE CURATED HOMEPAGE SLIDESHOW PHOTOS (Independent from Photos Section)
+     3. RETRIEVE CURATED HOMEPAGE SLIDESHOW PHOTOS (Strictly Gallery & Photo Archives)
      ========================================================================== */
   function getSlideshowPhotos() {
     try {
@@ -128,63 +128,54 @@
         ? window.getScreenladyDeletedIds() 
         : (() => { try { const r = localStorage.getItem('screenlady_deleted_ids'); return r ? JSON.parse(r) : []; } catch(e){ return []; } })();
 
-      // Dedicated Homepage Photos from Editorial Desk
+      // Dedicated Gallery & Home Photos from Editorial Desk
       let customHomePhotos = [];
-      const rawHomePhotos = localStorage.getItem('screenlady_custom_home_photos');
-      if (rawHomePhotos) {
-        customHomePhotos = JSON.parse(rawHomePhotos);
-      }
+      try {
+        const rawHome = localStorage.getItem('screenlady_custom_home_photos');
+        if (rawHome) customHomePhotos = JSON.parse(rawHome);
+      } catch (e) { customHomePhotos = []; }
+
+      let customPhotos = [];
+      try {
+        const rawCustom = localStorage.getItem('screenlady_custom_photos');
+        if (rawCustom) customPhotos = JSON.parse(rawCustom);
+      } catch (e) { customPhotos = []; }
 
       const backendPhotos = window.backendLivePhotos || [];
 
-      // Preload current news items into the slideshow so every news story has an instant slide
-      const allNews = (typeof getAllNews === 'function') ? getAllNews() : [];
-      const newsSlides = allNews.map(n => ({
-        id: `slide-news-${n.id}`,
-        newsId: n.id,
-        isNews: true,
-        category: n.category || 'Live News',
-        badge: n.categoryBadge || (n.category ? `${n.category}` : 'Live News'),
-        title: n.title || 'Screenlady Update',
-        location: n.venue || 'Screenlady News Desk, Mumbai',
-        date: n.date || 'Recent',
-        photo: n.photo,
-        link: 'javascript:void(0)'
-      }));
-
+      // Combine ONLY gallery / photo showcase items — completely separate from Live News!
       const combined = [
-        ...newsSlides,
         ...customHomePhotos,
-        ...backendPhotos,
-        ...DEFAULT_SLIDESHOW_PHOTOS
-      ].filter(item => item && item.photo && !deletedIds.includes(item.id) && !deletedIds.includes(item.newsId));
+        ...customPhotos,
+        ...backendPhotos
+      ].filter(item => item && item.photo && !deletedIds.includes(item.id));
 
-      // Dedup by photo src
+      // Dedup by photo src / ID
       const seen = new Set();
       const deduped = [];
       for (const p of combined) {
         if (!p.photo) continue;
-        if (!seen.has(p.photo)) {
-          seen.add(p.photo);
+        const key = p.id || p.photo;
+        if (!seen.has(key)) {
+          seen.add(key);
           deduped.push({
             id: p.id || 'photo-' + deduped.length,
-            newsId: p.newsId || null,
-            isNews: Boolean(p.isNews),
+            isNews: false,
             category: p.category || 'Gallery',
-            badge: p.badge || `✦ ${p.category || 'Featured'}`,
+            badge: p.categoryBadge || (p.category ? `✦ ${p.category}` : '✦ Gallery Showcase'),
             title: p.title || p.caption || 'Accolade Screenlady Photograph',
-            location: p.venue || p.location || 'Mumbai, India',
-            date: p.displayDate || p.date || '2026',
+            location: p.venue || p.location || 'Screenlady Archives',
+            date: p.displayDate || p.date || 'Recent',
             photo: p.photo,
-            link: p.isNews ? 'javascript:void(0)' : (p.link || `/photos#${p.id || ''}`)
+            link: '/photos'
           });
         }
       }
 
-      return deduped.length > 0 ? deduped.slice(0, 16) : DEFAULT_SLIDESHOW_PHOTOS;
+      return deduped.slice(0, 16);
     } catch (e) {
       console.warn('Error loading slideshow photos:', e);
-      return DEFAULT_SLIDESHOW_PHOTOS;
+      return [];
     }
   }
 
@@ -245,7 +236,6 @@
       card.addEventListener('mouseenter', () => {
         newsIsPaused = true;
         setHighlightedNewsCard(idx);
-        syncSlideshowWithNewsItem(pageItems[idx]);
       });
       card.addEventListener('mouseleave', () => {
         newsIsPaused = false;
@@ -261,9 +251,6 @@
     renderNewsPaginationControls(totalPages);
     activeNewsCardIndex = 0;
     setHighlightedNewsCard(0);
-    if (pageItems[0]) {
-      syncSlideshowWithNewsItem(pageItems[0]);
-    }
     startNewsCycleTimer(pageItems.length);
   }
 
@@ -374,20 +361,6 @@
         if (activeProg) activeProg.style.width = '0%';
         activeNewsCardIndex = (activeNewsCardIndex + 1) % itemsOnPage;
         setHighlightedNewsCard(activeNewsCardIndex);
-
-        // Also sync slideshow
-        const cards = document.querySelectorAll('.home-news-h-card');
-        if (cards[activeNewsCardIndex]) {
-          const currentNewsId = cards[activeNewsCardIndex].getAttribute('data-news-id');
-          const allNewsList = getAllNews();
-          const activeItem = allNewsList.find(n => n && n.id === currentNewsId);
-          if (activeItem) {
-            syncSlideshowWithNewsItem(activeItem);
-          } else {
-            const photoUrl = cards[activeNewsCardIndex].getAttribute('data-photo');
-            if (photoUrl) syncSlideshowWithPhotoUrl(photoUrl);
-          }
-        }
       }
     }, tick);
   }
@@ -403,42 +376,45 @@
 
   function renderPhotoSlideshow() {
     const stage = document.getElementById('homePhotoSlidesStage');
-    const dotsContainer = document.getElementById('homePhotoDots');
     const theaterWrap = document.getElementById('homePhotoSlideshowWrap');
-    if (!stage || !dotsContainer || !theaterWrap) return;
+    if (!stage || !theaterWrap) return;
 
     activePhotosList = getSlideshowPhotos();
-    if (activePhotosList.length === 0) return;
+    if (activePhotosList.length === 0) {
+      stage.innerHTML = `
+        <div class="home-photo-slide active" style="position:relative;display:flex;align-items:center;justify-content:center;height:100%;min-height:440px;background:#0d0c0a;text-align:center;padding:2.5rem 1.5rem;">
+          <div>
+            <div style="font-size:2rem;margin-bottom:0.75rem;opacity:0.5;">📷</div>
+            <h3 style="font-family:var(--font-serif,'Cinzel',serif);font-size:1.3rem;color:var(--gold-bright,#FFE894);margin-bottom:0.5rem;letter-spacing:0.04em;">Photo Gallery Archives</h3>
+            <p style="font-size:0.85rem;color:var(--text-muted,#A3A09A);max-width:320px;margin:0 auto 1.25rem;line-height:1.6;">High-resolution event photographs published to the Gallery will be showcased here.</p>
+            <a href="/photos" class="btn-editorial-gold" style="display:inline-flex;align-items:center;gap:0.5rem;padding:0.5rem 1.25rem;font-size:0.78rem;">
+              <span>Explore All Galleries</span>
+              <span>→</span>
+            </a>
+          </div>
+        </div>
+      `;
+      return;
+    }
 
-    // Render Slides
+    // Render Gallery Slides (Strictly Gallery Photography, linking to /photos)
     stage.innerHTML = activePhotosList.map((item, index) => {
       const isActive = index === 0 ? 'active' : '';
-      const isNews = Boolean(item.isNews || item.newsId);
-      const clickAttr = isNews
-        ? `onclick="if(window.openHomeNewsReader && '${item.newsId || ''}'){ window.openHomeNewsReader('${item.newsId || ''}'); return false; }"`
-        : '';
-      const slideHref = isNews ? 'javascript:void(0)' : (item.link || '/photos');
 
       return `
-        <a href="${slideHref}" class="home-photo-slide ${isActive}" data-slide-index="${index}" id="homePhotoSlide-${index}" title="${escapeHtml(item.title)}" ${clickAttr}>
-          <img src="${item.photo}" alt="${escapeHtml(item.title)}" class="home-photo-slide-img" loading="lazy">
-          <div class="home-photo-slide-kicker">${escapeHtml(item.badge || item.category)}</div>
+        <a href="${escapeHtml(item.link || '/photos')}" class="home-photo-slide ${isActive}" data-slide-index="${index}" id="homePhotoSlide-${index}" title="${escapeHtml(item.title)}">
+          <img src="${escapeHtml(item.photo)}" alt="${escapeHtml(item.title)}" class="home-photo-slide-img" loading="lazy">
+          <div class="home-photo-slide-kicker">${escapeHtml(item.badge || item.category || 'Gallery')}</div>
           <div class="home-photo-caption-bar">
             <h3 class="home-photo-caption-title">${escapeHtml(item.title)}</h3>
             <div class="home-photo-caption-meta">
-              <span>${escapeHtml(item.location)}</span>
+              <span>📍 ${escapeHtml(item.location || 'Mumbai')}</span>
               <span>•</span>
-              <span>${escapeHtml(item.date)}</span>
+              <span>📅 ${escapeHtml(item.date || 'Recent')}</span>
             </div>
           </div>
         </a>
       `;
-    }).join('');
-
-    // Render Dots
-    dotsContainer.innerHTML = activePhotosList.map((_, index) => {
-      const isActive = index === 0 ? 'active' : '';
-      return `<button type="button" class="home-photo-dot ${isActive}" data-dot-index="${index}" aria-label="Go to slide ${index + 1}"></button>`;
     }).join('');
 
     // Event Listeners for Nav Arrows
@@ -458,12 +434,6 @@
         changePhotoSlide(currentPhotoIndex + 1);
       };
     }
-
-    // Dot Clicks
-    const dots = dotsContainer.querySelectorAll('.home-photo-dot');
-    dots.forEach((dot, idx) => {
-      dot.onclick = () => changePhotoSlide(idx);
-    });
 
     // Pause on Hover
     theaterWrap.addEventListener('mouseenter', () => { photoIsPaused = true; });
@@ -500,7 +470,6 @@
     currentPhotoIndex = targetIndex;
 
     const slides = document.querySelectorAll('.home-photo-slide');
-    const dots = document.querySelectorAll('.home-photo-dot');
 
     slides.forEach((slide, i) => {
       if (i === currentPhotoIndex) {
@@ -509,104 +478,13 @@
         slide.classList.remove('active');
       }
     });
-
-    dots.forEach((dot, i) => {
-      if (i === currentPhotoIndex) {
-        dot.classList.add('active');
-      } else {
-        dot.classList.remove('active');
-      }
-    });
   }
 
-  function syncSlideshowWithNewsPhoto(newsItem) {
-    syncSlideshowWithNewsItem(newsItem);
-  }
-
-  function syncSlideshowWithNewsItem(newsItem) {
-    if (!newsItem) return;
-    const photoUrl = newsItem.photo;
-    if (!photoUrl) return;
-
-    if (!activePhotosList || activePhotosList.length === 0) {
-      activePhotosList = getSlideshowPhotos();
-    }
-
-    // Try finding by exact photo or newsId or id
-    let matchIdx = activePhotosList.findIndex(p => 
-      p && (p.photo === photoUrl || (p.newsId && p.newsId === newsItem.id) || p.id === newsItem.id)
-    );
-
-    // If not found in current slides list, dynamically inject this slide into activePhotosList & DOM!
-    if (matchIdx === -1) {
-      const dynamicSlide = {
-        id: `slide-news-${newsItem.id}`,
-        newsId: newsItem.id,
-        isNews: true,
-        category: newsItem.category || 'Live News',
-        badge: newsItem.categoryBadge || (newsItem.category ? `${newsItem.category}` : 'Live News'),
-        title: newsItem.title || newsItem.headline || 'Accolade Screenlady Dispatch',
-        location: newsItem.venue || 'Screenlady News Desk, Mumbai',
-        date: newsItem.date || newsItem.displayDate || 'Recent',
-        photo: newsItem.photo,
-        link: 'javascript:void(0)'
-      };
-      activePhotosList.push(dynamicSlide);
-      matchIdx = activePhotosList.length - 1;
-
-      const stage = document.getElementById('homePhotoSlidesStage');
-      const dotsContainer = document.getElementById('homePhotoDots');
-      if (stage) {
-        const slideEl = document.createElement('a');
-        slideEl.href = 'javascript:void(0)';
-        slideEl.className = 'home-photo-slide';
-        slideEl.setAttribute('data-slide-index', matchIdx);
-        slideEl.id = `homePhotoSlide-${matchIdx}`;
-        slideEl.title = dynamicSlide.title;
-        slideEl.onclick = (e) => {
-          e.preventDefault();
-          if (window.openHomeNewsReader) window.openHomeNewsReader(newsItem.id);
-        };
-        slideEl.innerHTML = `
-          <img src="${escapeHtml(dynamicSlide.photo)}" alt="${escapeHtml(dynamicSlide.title)}" class="home-photo-slide-img" loading="lazy">
-          <div class="home-photo-slide-kicker">${escapeHtml(dynamicSlide.badge)}</div>
-          <div class="home-photo-caption-bar">
-            <h3 class="home-photo-caption-title">${escapeHtml(dynamicSlide.title)}</h3>
-            <div class="home-photo-caption-meta">
-              <span>${escapeHtml(dynamicSlide.location)}</span>
-              <span>•</span>
-              <span>${escapeHtml(dynamicSlide.date)}</span>
-            </div>
-          </div>
-        `;
-        stage.appendChild(slideEl);
-      }
-
-      if (dotsContainer) {
-        const dot = document.createElement('button');
-        dot.type = 'button';
-        dot.className = 'home-photo-dot';
-        dot.setAttribute('data-dot-index', matchIdx);
-        dot.setAttribute('aria-label', `Go to slide ${matchIdx + 1}`);
-        const thisIdx = matchIdx;
-        dot.onclick = () => changePhotoSlide(thisIdx);
-        dotsContainer.appendChild(dot);
-      }
-    }
-
-    if (matchIdx !== -1 && matchIdx !== currentPhotoIndex) {
-      changePhotoSlide(matchIdx);
-    }
-  }
-
-  function syncSlideshowWithPhotoUrl(photoUrl) {
-    if (!photoUrl) return;
-    if (!activePhotosList || activePhotosList.length === 0) return;
-    const matchIdx = activePhotosList.findIndex(p => p && p.photo === photoUrl);
-    if (matchIdx !== -1 && matchIdx !== currentPhotoIndex) {
-      changePhotoSlide(matchIdx);
-    }
-  }
+  // The photo gallery slideshow is completely independent from Live News.
+  // News items never inject into or overwrite the right-side Gallery Showcase.
+  function syncSlideshowWithNewsPhoto() {}
+  function syncSlideshowWithNewsItem() {}
+  function syncSlideshowWithPhotoUrl() {}
 
   function startPhotoSlideshowTimer() {
     if (photoSlideshowTimer) clearInterval(photoSlideshowTimer);
@@ -959,28 +837,28 @@
     const photoSrc = item.photo || item.image || item.coverSrc || 'https://ik.imagekit.io/acooladescreenlady/screenlady/magazine-photos/4.1__HQ0nEUET8.jpg';
 
     const contentHtml = `
-      <div class="curated-modal-view" style="display: flex; flex-direction: column; font-family: var(--font-editorial-body, sans-serif); color: #F5F2EB;">
-        <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.75rem; margin-bottom: 1.25rem; border-bottom: 1px solid rgba(212,175,55,0.25); padding-bottom: 0.75rem;">
-          <span class="badge-gold" style="background: rgba(212,175,55,0.15); border: 1px solid var(--accent-gold); color: var(--accent-gold); font-size: 0.8rem; font-weight: 700; text-transform: uppercase; padding: 4px 14px; border-radius: 50px; letter-spacing: 0.05em;">
+      <div class="curated-modal-view" style="display: flex; flex-direction: column; font-family: var(--font-sans, sans-serif); color: var(--text-ivory-soft);">
+        <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.75rem; margin-bottom: 1.25rem; border-bottom: 1px solid var(--gold-border); padding-bottom: 0.75rem;">
+          <span class="badge-gold" style="background: rgba(197,160,89,0.12); border: 1px solid var(--gold-primary); color: var(--gold-bright); font-family: var(--font-display); font-size: 0.72rem; font-weight: 700; text-transform: uppercase; padding: 4px 12px; border-radius: var(--radius-xs); letter-spacing: 0.12em;">
             ${escapeHtml(badge)}
           </span>
-          <span style="font-size: 0.82rem; color: #9E9AA7;">${escapeHtml(dateStr)}</span>
+          <span style="font-size: 0.78rem; color: var(--text-muted);">${escapeHtml(dateStr)}</span>
         </div>
 
-        <div style="width: 100%; max-height: 520px; background: #07070B radial-gradient(circle, #161622 0%, #07070B 100%); border-radius: 8px; border: 1.5px solid rgba(212,175,55,0.4); box-shadow: 0 16px 45px rgba(0,0,0,0.95); overflow: hidden; display: flex; align-items: center; justify-content: center; margin-bottom: 1.5rem; padding: 0.75rem;">
-          <img src="${escapeHtml(photoSrc)}" alt="${escapeHtml(title)}" style="max-height: 490px; max-width: 100%; width: auto; height: auto; object-fit: contain; display: block; margin: 0 auto; border-radius: 4px; box-shadow: 0 8px 30px rgba(0,0,0,0.8);" />
+        <div style="width: 100%; max-height: 520px; background: #080705; border-radius: var(--radius-xs); border: 1px solid var(--gold-border-bright); box-shadow: var(--shadow-modal); overflow: hidden; display: flex; align-items: center; justify-content: center; margin-bottom: 1.5rem; padding: 0.75rem;">
+          <img src="${escapeHtml(photoSrc)}" alt="${escapeHtml(title)}" style="max-height: 490px; max-width: 100%; width: auto; height: auto; object-fit: contain; display: block; margin: 0 auto; border-radius: 2px;" />
         </div>
 
-        <h2 style="font-family: var(--font-editorial-heading, serif); font-size: clamp(1.4rem, 2.8vw, 2.1rem); font-weight: 700; color: #FFFFFF; line-height: 1.25; margin: 0 0 1.25rem;">
+        <h2 style="font-family: var(--font-serif, serif); font-size: clamp(1.6rem, 3vw, 2.4rem); font-weight: 500; color: var(--text-ivory); line-height: 1.25; margin: 0 0 1.25rem;">
           ${escapeHtml(title)}
         </h2>
 
-        <div style="font-size: 1.02rem; line-height: 1.85; color: #DDD8CE; margin-bottom: 2rem;">
+        <div style="font-size: 1.02rem; line-height: 1.85; color: var(--text-secondary); margin-bottom: 2rem;">
           ${rawText}
         </div>
 
-        <div style="display: flex; justify-content: flex-end; gap: 1rem; border-top: 1px solid rgba(212,175,55,0.2); padding-top: 1rem;">
-          <button type="button" class="btn-editorial-gold" onclick="if(window.closeModal) window.closeModal();" style="padding: 0.6rem 1.6rem; font-size: 0.88rem; cursor: pointer;">
+        <div style="display: flex; justify-content: flex-end; gap: 1rem; border-top: 1px solid var(--border-subtle); padding-top: 1rem;">
+          <button type="button" class="btn-editorial-gold" onclick="if(window.closeModal) window.closeModal();" style="padding: 0.65rem 1.75rem; font-size: 0.82rem; cursor: pointer;">
             <span>Close Story</span>
           </button>
         </div>
@@ -1063,34 +941,34 @@
     }
 
     const modalHtml = `
-      <div class="home-news-reader-view" style="display: flex; flex-direction: column; font-family: var(--font-editorial-body, sans-serif); color: #F5F2EB;">
-        <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.75rem; margin-bottom: 1.25rem; border-bottom: 1px solid rgba(212,175,55,0.25); padding-bottom: 0.75rem;">
-          <span class="badge-gold" style="background: rgba(212,175,55,0.18); border: 1px solid var(--accent-gold); color: var(--accent-gold); font-size: 0.82rem; font-weight: 700; text-transform: uppercase; padding: 4px 14px; border-radius: 50px; letter-spacing: 0.05em;">
+      <div class="home-news-reader-view" style="display: flex; flex-direction: column; font-family: var(--font-sans, sans-serif); color: var(--text-ivory-soft);">
+        <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.75rem; margin-bottom: 1.25rem; border-bottom: 1px solid var(--gold-border); padding-bottom: 0.75rem;">
+          <span class="badge-gold" style="background: rgba(197,160,89,0.12); border: 1px solid var(--gold-primary); color: var(--gold-bright); font-family: var(--font-display); font-size: 0.72rem; font-weight: 700; text-transform: uppercase; padding: 4px 12px; border-radius: var(--radius-xs); letter-spacing: 0.12em;">
             ${escapeHtml(badge)}
           </span>
-          <span style="font-size: 0.85rem; color: #9E9AA7; font-weight: 500;">${escapeHtml(dateStr)}</span>
+          <span style="font-size: 0.78rem; color: var(--text-muted); font-weight: 500;">${escapeHtml(dateStr)}</span>
         </div>
 
-        <div style="width: 100%; max-height: 520px; background: #07070B radial-gradient(circle, #161622 0%, #07070B 100%); border-radius: 8px; border: 1.5px solid rgba(212,175,55,0.4); box-shadow: 0 16px 45px rgba(0,0,0,0.95); overflow: hidden; display: flex; align-items: center; justify-content: center; margin-bottom: 1.5rem; padding: 0.75rem;">
-          <img src="${escapeHtml(photoSrc)}" alt="${escapeHtml(title)}" style="max-height: 490px; max-width: 100%; width: auto; height: auto; object-fit: contain; display: block; margin: 0 auto; border-radius: 4px; box-shadow: 0 8px 30px rgba(0,0,0,0.8);" />
+        <div style="width: 100%; max-height: 520px; background: #080705; border-radius: var(--radius-xs); border: 1px solid var(--gold-border-bright); box-shadow: var(--shadow-modal); overflow: hidden; display: flex; align-items: center; justify-content: center; margin-bottom: 1.5rem; padding: 0.75rem;">
+          <img src="${escapeHtml(photoSrc)}" alt="${escapeHtml(title)}" style="max-height: 490px; max-width: 100%; width: auto; height: auto; object-fit: contain; display: block; margin: 0 auto; border-radius: 2px;" />
         </div>
 
-        <h2 style="font-family: var(--font-editorial-heading, serif); font-size: clamp(1.4rem, 2.8vw, 2.2rem); font-weight: 700; color: #FFFFFF; line-height: 1.25; margin: 0 0 1.25rem;">
+        <h2 style="font-family: var(--font-serif, serif); font-size: clamp(1.6rem, 3vw, 2.4rem); font-weight: 500; color: var(--text-ivory); line-height: 1.25; margin: 0 0 1.25rem;">
           ${escapeHtml(title)}
         </h2>
 
         ${item.summary && item.summary !== title ? `
-          <div style="font-size: 1.1rem; line-height: 1.6; color: var(--gold-light, #F7E7A9); font-weight: 500; font-style: italic; margin-bottom: 1.5rem; padding-left: 1rem; border-left: 3px solid var(--accent-gold, #D4AF37);">
+          <div style="font-family: var(--font-serif); font-size: 1.15rem; line-height: 1.6; color: var(--gold-light); font-style: italic; margin-bottom: 1.5rem; padding-left: 1.25rem; border-left: 2px solid var(--gold-primary);">
             ${escapeHtml(item.summary)}
           </div>
         ` : ''}
 
-        <div style="font-size: 1.05rem; line-height: 1.85; color: #DDD8CE; margin-bottom: 2rem;">
+        <div style="font-size: 1.02rem; line-height: 1.85; color: var(--text-secondary); margin-bottom: 2rem;">
           ${rawBody}
         </div>
 
-        <div style="display: flex; justify-content: flex-end; gap: 1rem; border-top: 1px solid rgba(212,175,55,0.2); padding-top: 1rem;">
-          <button type="button" class="btn-editorial-gold" onclick="if(window.closeModal) window.closeModal();" style="padding: 0.65rem 1.8rem; font-size: 0.9rem; cursor: pointer; border-radius: 4px; background: linear-gradient(135deg, #d4af37, #aa820a); color: #000; font-weight: 700; border: none;">
+        <div style="display: flex; justify-content: flex-end; gap: 1rem; border-top: 1px solid var(--border-subtle); padding-top: 1rem;">
+          <button type="button" class="btn-editorial-gold" onclick="if(window.closeModal) window.closeModal();" style="padding: 0.65rem 1.75rem; font-size: 0.82rem; cursor: pointer;">
             <span>Close Article</span>
           </button>
         </div>

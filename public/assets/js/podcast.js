@@ -465,17 +465,31 @@ function openPodcastModal(id) {
 
 function initPodcastPage() {
   purgeLegacyMockPodcasts();
-  renderPodcasts('all');
+  const container = document.getElementById('podcastFeedContainer');
+  if (!container) return;
+
+  container.innerHTML = `
+    <div style="grid-column: 1 / -1; text-align: center; padding: 4.5rem 1rem;">
+      <p style="color: var(--gold-light); font-size: 0.85rem; letter-spacing: 0.1em; text-transform: uppercase;">Loading Broadcasts...</p>
+    </div>
+  `;
 
   // Async sync with Cloudflare Worker Backend:
-  if (window.ScreenladyAPI && typeof window.ScreenladyAPI.getPodcasts === 'function') {
-    window.ScreenladyAPI.getPodcasts().then(liveData => {
-      if (liveData && liveData.length > 0) {
-        window.backendLivePodcasts = liveData;
-        renderPodcasts('all');
+  async function fetchPodcasts() {
+    if (window.ScreenladyAPI && typeof window.ScreenladyAPI.getPodcasts === 'function') {
+      try {
+        const liveData = await window.ScreenladyAPI.getPodcasts();
+        if (Array.isArray(liveData)) {
+          window.backendLivePodcasts = liveData;
+        }
+      } catch (e) {
+        console.warn('[Screenlady Podcast] API notice:', e.message);
       }
-    });
+    }
+    renderPodcasts(window.activePodcastFilter || 'all');
   }
+
+  fetchPodcasts();
 
   // Filter Buttons
   const filterBtns = document.querySelectorAll('.podcast-filter-btn');
@@ -484,6 +498,7 @@ function initPodcastPage() {
       filterBtns.forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
       const cat = btn.getAttribute('data-filter') || 'all';
+      window.activePodcastFilter = cat;
       renderPodcasts(cat);
     });
   });
@@ -501,6 +516,10 @@ function initPodcastPage() {
   }
 }
 
-document.addEventListener('DOMContentLoaded', () => {
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', () => {
+    initPodcastPage();
+  });
+} else {
   initPodcastPage();
-});
+}

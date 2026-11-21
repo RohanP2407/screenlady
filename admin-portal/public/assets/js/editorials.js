@@ -159,11 +159,25 @@ function renderEditorials(filter = 'all') {
   }
 
   if (filtered.length === 0) {
+    const isTotalEmpty = editorials.length === 0;
     container.innerHTML = `
-      <div style="grid-column: 1 / -1; text-align: center; padding: 4rem 2rem; background: rgba(255,255,255,0.02); border: 1px dashed rgba(212,175,55,0.3); border-radius: var(--radius-md);">
-        <p style="font-family: var(--font-serif-display); font-size: 1.5rem; color: var(--gold-light); margin-bottom: 0.5rem;">No Articles Found in This Category</p>
-        <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1.5rem;">Select "All Editorials" to view published articles.</p>
-        <button class="btn btn-gold btn-sm" onclick="renderEditorials('all')">Show All Articles</button>
+      <div class="editorial-empty-state" style="grid-column: 1 / -1;">
+        <div class="empty-state-crest">
+          <img src="/assets/images/logo-2.png" alt="Accolade Screenlady" style="height: 48px; width: auto; opacity: 0.85; margin-bottom: 1.25rem;">
+        </div>
+        <span class="editorial-kicker-pill" style="margin-bottom: 0.75rem;">Editorial Columns</span>
+        <h3 style="font-family: var(--font-serif); font-size: clamp(1.4rem, 2.5vw, 1.85rem); color: var(--gold-light); margin-bottom: 0.6rem;">
+          ${isTotalEmpty ? 'Long-Form Essays Forthcoming' : 'No Essays in This Category'}
+        </h3>
+        <p style="color: var(--text-secondary); font-size: 0.92rem; max-width: 520px; margin: 0 auto 1.5rem; line-height: 1.6;">
+          ${isTotalEmpty 
+            ? 'The editorial council is compiling upcoming critical inquiries and long-form philosophical essays celebrating women pioneers.' 
+            : 'There are currently no essays filed under this topic. Select another section or explore all published columns.'}
+        </p>
+        <div style="display: flex; gap: 0.75rem; justify-content: center; flex-wrap: wrap;">
+          ${!isTotalEmpty ? `<button type="button" class="btn btn-gold btn-sm" onclick="resetEditorialFilters()"><span>View All Editorials</span></button>` : ''}
+          <a href="/about-us" class="btn-editorial-gold"><span>About Screenlady</span></a>
+        </div>
       </div>
     `;
     return;
@@ -449,11 +463,40 @@ async function syncEditorialsFromBackend() {
 
 function initEditorialsPage() {
   purgeLegacyMockEditorials();
-  renderEditorials('all');
-  renderQuickJumpBar();
+  const container = document.getElementById('editorialsFeedContainer');
+  if (!container) return;
 
-  // Async sync with Cloudflare Worker Backend once on load:
-  syncEditorialsFromBackend();
+  container.innerHTML = `
+    <div style="grid-column: 1 / -1; text-align: center; padding: 4.5rem 1rem;">
+      <p style="color: var(--gold-light); font-size: 0.85rem; letter-spacing: 0.1em; text-transform: uppercase;">Loading Editorials...</p>
+    </div>
+  `;
+
+  async function fetchAndRenderEditorials() {
+    if (window.ScreenladyAPI && typeof window.ScreenladyAPI.getEditorials === 'function') {
+      try {
+        const liveData = await window.ScreenladyAPI.getEditorials();
+        if (Array.isArray(liveData)) {
+          window.backendLiveEditorials = liveData;
+        }
+      } catch (e) {
+        console.warn('[Screenlady Editorials] API notice:', e.message);
+      }
+    }
+    renderEditorials(window.activeEditorialFilter || 'all');
+    renderQuickJumpBar();
+  }
+
+  fetchAndRenderEditorials();
+
+  window.resetEditorialFilters = function() {
+    const filterBtns = document.querySelectorAll('.editorials-filter-btn, .editorial-filter-btn');
+    filterBtns.forEach(btn => {
+      btn.classList.toggle('active', btn.getAttribute('data-filter') === 'all');
+    });
+    window.activeEditorialFilter = 'all';
+    renderEditorials('all');
+  };
 
   // Filter Buttons
   const filterBtns = document.querySelectorAll('.editorials-filter-btn, .editorial-filter-btn');
@@ -462,6 +505,7 @@ function initEditorialsPage() {
       filterBtns.forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
       const cat = btn.getAttribute('data-filter') || 'all';
+      window.activeEditorialFilter = cat;
       renderEditorials(cat);
     });
   });
@@ -485,6 +529,10 @@ function initEditorialsPage() {
   }
 }
 
-document.addEventListener('DOMContentLoaded', () => {
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', () => {
+    initEditorialsPage();
+  });
+} else {
   initEditorialsPage();
-});
+}

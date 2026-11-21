@@ -131,33 +131,44 @@ function purgeLegacyMockUpdates() {
   }
 }
 
-document.addEventListener('DOMContentLoaded', () => {
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', () => {
+    initUpdatesManager();
+  });
+} else {
   initUpdatesManager();
-});
+}
 
 function initUpdatesManager() {
   purgeLegacyMockUpdates();
   const container = document.getElementById('updatesFeedContainer');
   if (!container) return;
 
-  renderUpdates('all');
   initUpdatesToolbar();
 
-  // Async sync with Cloudflare Worker Backend once on load:
-  async function syncUpdatesFromBackend() {
-    if (!window.ScreenladyAPI) return;
-    try {
-      const liveData = typeof window.ScreenladyAPI.getUpdates === 'function' ? await window.ScreenladyAPI.getUpdates() : [];
-      if (Array.isArray(liveData)) {
-        window.backendLiveUpdates = liveData;
-        renderUpdates(activeUpdatesFilter || 'all');
+  // Show loading state while fetching from API
+  container.innerHTML = `
+    <div style="text-align: center; padding: 4.5rem 1rem;">
+      <p style="color: var(--gold-light); font-size: 0.85rem; letter-spacing: 0.1em; text-transform: uppercase;">Loading Updates...</p>
+    </div>
+  `;
+
+  // Fetch API when updates page loads
+  async function fetchUpdatesFromBackend() {
+    if (window.ScreenladyAPI && typeof window.ScreenladyAPI.getUpdates === 'function') {
+      try {
+        const liveData = await window.ScreenladyAPI.getUpdates();
+        if (Array.isArray(liveData)) {
+          window.backendLiveUpdates = liveData;
+        }
+      } catch (e) {
+        console.warn('[Screenlady Updates] Backend sync notice:', e.message);
       }
-    } catch (e) {
-      console.warn('[Screenlady Updates] Backend sync notice:', e.message);
     }
+    renderUpdates(window.activeUpdatesFilter || 'all');
   }
 
-  syncUpdatesFromBackend();
+  fetchUpdatesFromBackend();
 
   // If a hash exists in URL, scroll to it and open the reader modal
   const hash = window.location.hash.replace('#', '');
@@ -170,7 +181,7 @@ function initUpdatesManager() {
       if (typeof window.openUpdateModal === 'function') {
         window.openUpdateModal(hash);
       }
-    }, 250);
+    }, 350);
   }
 }
 
@@ -350,10 +361,9 @@ function renderUpdates(filter = 'all') {
 
   if (filtered.length === 0) {
     container.innerHTML = `
-      <div style="text-align: center; padding: 4rem 2rem; background: rgba(255,255,255,0.02); border: 1px dashed rgba(212,175,55,0.3); border-radius: var(--radius-md);">
-        <p style="font-family: var(--font-serif-display); font-size: 1.5rem; color: var(--gold-light); margin-bottom: 0.5rem;">No Updates Found in This Section</p>
-        <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1.5rem;">Try selecting "All Updates" or post a new update via the Admin Panel.</p>
-        <button class="btn btn-gold btn-sm" onclick="renderUpdates('all')">Show All Updates</button>
+      <div class="editorial-empty-state" style="text-align: center; padding: 4rem 1rem;">
+        <p style="font-family: var(--font-serif); font-size: 1.4rem; color: var(--gold-light); margin-bottom: 0.5rem;">No Updates</p>
+        <p style="color: var(--text-secondary); font-size: 0.88rem;">There are currently no updates found in this section.</p>
       </div>
     `;
     return;
@@ -528,6 +538,14 @@ function renderPhotoCard(item, highlightClass, latestRibbon) {
 /**
  * Filter toolbar click handling
  */
+window.resetUpdateFilters = function() {
+  const filterBtns = document.querySelectorAll('.update-filter-btn');
+  filterBtns.forEach(btn => {
+    btn.classList.toggle('active', btn.getAttribute('data-filter') === 'all');
+  });
+  renderUpdates('all');
+};
+
 function initUpdatesToolbar() {
   const filterBtns = document.querySelectorAll('.update-filter-btn');
   filterBtns.forEach(btn => {
@@ -535,6 +553,7 @@ function initUpdatesToolbar() {
       filterBtns.forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
       const filter = btn.getAttribute('data-filter') || 'all';
+      window.activeUpdatesFilter = filter;
       renderUpdates(filter);
     });
   });

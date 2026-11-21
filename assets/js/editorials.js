@@ -159,11 +159,25 @@ function renderEditorials(filter = 'all') {
   }
 
   if (filtered.length === 0) {
+    const isTotalEmpty = editorials.length === 0;
     container.innerHTML = `
-      <div style="grid-column: 1 / -1; text-align: center; padding: 4rem 2rem; background: rgba(255,255,255,0.02); border: 1px dashed rgba(212,175,55,0.3); border-radius: var(--radius-md);">
-        <p style="font-family: var(--font-serif-display); font-size: 1.5rem; color: var(--gold-light); margin-bottom: 0.5rem;">No Articles Found in This Category</p>
-        <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1.5rem;">Select "All Editorials" to view published articles.</p>
-        <button class="btn btn-gold btn-sm" onclick="renderEditorials('all')">Show All Articles</button>
+      <div class="editorial-empty-state" style="grid-column: 1 / -1;">
+        <div class="empty-state-crest">
+          <img src="/assets/images/logo-2.png" alt="Accolade Screenlady" style="height: 48px; width: auto; opacity: 0.85; margin-bottom: 1.25rem;">
+        </div>
+        <span class="editorial-kicker-pill" style="margin-bottom: 0.75rem;">Editorial Columns</span>
+        <h3 style="font-family: var(--font-serif); font-size: clamp(1.4rem, 2.5vw, 1.85rem); color: var(--gold-light); margin-bottom: 0.6rem;">
+          ${isTotalEmpty ? 'Long-Form Essays Forthcoming' : 'No Essays in This Category'}
+        </h3>
+        <p style="color: var(--text-secondary); font-size: 0.92rem; max-width: 520px; margin: 0 auto 1.5rem; line-height: 1.6;">
+          ${isTotalEmpty 
+            ? 'The editorial council is compiling upcoming critical inquiries and long-form philosophical essays celebrating women pioneers.' 
+            : 'There are currently no essays filed under this topic. Select another section or explore all published columns.'}
+        </p>
+        <div style="display: flex; gap: 0.75rem; justify-content: center; flex-wrap: wrap;">
+          ${!isTotalEmpty ? `<button type="button" class="btn btn-gold btn-sm" onclick="resetEditorialFilters()"><span>View All Editorials</span></button>` : ''}
+          <a href="/about-us" class="btn-editorial-gold"><span>About Screenlady</span></a>
+        </div>
       </div>
     `;
     return;
@@ -178,13 +192,15 @@ function renderEditorials(filter = 'all') {
           <header class="editorial-card-header">
             <div class="editorial-card-meta-row">
               <span class="editorial-kicker-pill">${item.categoryBadge || item.category || 'Special Feature'}</span>
-              <span class="editorial-meta-date">📅 ${item.displayDate || item.date} • ⏱️ ${item.readTime || '6 Min Read'}</span>
+              <span class="editorial-meta-date">${item.displayDate || item.date} • ${item.readTime || '6 Min Read'}</span>
             </div>
             
             <h2 class="editorial-card-title">${item.title}</h2>
             
             <div class="editorial-card-author-line">
-              <div class="editorial-avatar-circle">✍️</div>
+              <div class="editorial-avatar-circle">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>
+              </div>
               <div>
                 <span class="editorial-byline-name">${item.author || 'Accolade Screenlady Desk'}</span>
                 <span class="editorial-byline-role">${item.authorRole || 'Editorial Feature'}</span>
@@ -195,7 +211,7 @@ function renderEditorials(filter = 'all') {
           <!-- 2. The Photo Fitted in Frame -->
           <div class="editorial-card-photo-box" onclick="openFullScreenReader('${item.id}')" title="Click to Read Full Article">
             <img src="${item.photo}" alt="${item.title}" class="editorial-card-photo-img" loading="lazy">
-            <div class="editorial-card-photo-badge">✦ Feature Photo</div>
+            <div class="editorial-card-photo-badge">Feature Photo</div>
           </div>
 
           <!-- 3. Showcase Complete Writings / Expandable Below Photo -->
@@ -210,10 +226,10 @@ function renderEditorials(filter = 'all') {
         <!-- 4. Read Options: Inline Expand Below Photo & Full Screen Reader -->
         <div class="editorial-card-action-bar" style="display: flex; gap: 0.65rem; flex-wrap: wrap;">
           <button type="button" class="btn btn-gold editorial-read-btn" id="editorialInlineToggleBtn-${item.id}" onclick="toggleInlineEditorial('${item.id}')" title="Read Complete Article Below Photo">
-            <span id="editorialToggleText-${item.id}">📖 Read Full Article Below Photo ↓</span>
+            <span id="editorialToggleText-${item.id}">Read Full Article ↓</span>
           </button>
           <button type="button" class="btn btn-outline-gold" onclick="openFullScreenReader('${item.id}')" title="Read In Full-Screen Reader Mode" style="font-size: 0.88rem; padding: 0.65rem 1.15rem;">
-            <span>⛶ Full-Screen Reader</span>
+            <span>Full-Screen Reader</span>
           </button>
         </div>
 
@@ -279,7 +295,7 @@ window.openFullScreenReader = function(id) {
         <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.85rem; margin-bottom: 1.25rem;">
           <span class="editorial-kicker-pill">${item.categoryBadge || item.category || 'Special Feature'}</span>
           <span style="font-size: 0.9rem; color: var(--gold-light, #F3E5AB); font-weight: 600;">
-            📅 ${item.displayDate || item.date} • ⏱️ ${item.readTime || '6 Min Read'}
+            ${item.displayDate || item.date} • ${item.readTime || '6 Min Read'}
           </span>
         </div>
 
@@ -289,7 +305,9 @@ window.openFullScreenReader = function(id) {
 
         <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem; padding: 1.1rem 1.4rem; background: rgba(255,255,255,0.03); border: 1px solid rgba(212,175,55,0.25); border-radius: 12px;">
           <div style="display: flex; align-items: center; gap: 0.9rem;">
-            <div class="editorial-avatar-circle" style="width: 44px; height: 44px; font-size: 1.2rem;">✍️</div>
+            <div class="editorial-avatar-circle" style="width: 44px; height: 44px;">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>
+            </div>
             <div>
               <div style="font-family: var(--font-serif-display, 'Cinzel', serif); font-size: 1rem; font-weight: 700; color: #FFFFFF;">${item.author}</div>
               <div style="color: var(--gold-light, #F3E5AB); font-size: 0.82rem;">${item.authorRole}</div>
@@ -297,10 +315,10 @@ window.openFullScreenReader = function(id) {
           </div>
           <div style="display: flex; gap: 0.6rem; align-items: center;">
             <a href="https://wa.me/?text=${shareTitle}%20${shareUrl}" target="_blank" rel="noopener" class="reader-btn" style="font-size: 0.78rem;">
-              💬 Share WhatsApp
+              <span>WhatsApp</span>
             </a>
             <button type="button" class="reader-btn" onclick="window.copyArticleLink('${item.id}')" style="font-size: 0.78rem;">
-              🔗 Copy Link
+              <span>Copy Link</span>
             </button>
           </div>
         </div>
@@ -310,7 +328,7 @@ window.openFullScreenReader = function(id) {
       <div class="reader-full-photo-wrap">
         <img src="${item.photo}" alt="${item.title}" class="reader-full-photo-img">
         <div class="editorial-photo-caption">
-          <span>✦ ${item.photoCaption || 'Accolade Screenlady Official Editorial Publication • Feature Photo'}</span>
+          <span>${item.photoCaption || 'Accolade Screenlady Official Editorial Publication'}</span>
         </div>
       </div>
 
@@ -394,10 +412,10 @@ function renderQuickJumpBar() {
   if (!container) return;
   const editorials = getAllEditorials();
   container.innerHTML = `
-    <span class="jump-bar-label">✦ Read Full Screen:</span>
+    <span class="jump-bar-label">Read Full Screen:</span>
     ${editorials.map((e, idx) => `
       <button type="button" class="jump-pill" onclick="openFullScreenReader('${e.id}')" style="cursor: pointer; border: none;" title="${e.title}">
-        <span>${idx === 0 ? '💎' : idx === 1 ? '📱' : '✒️'} ${e.title.length > 34 ? e.title.substring(0, 31) + '...' : e.title}</span>
+        <span>Column ${idx + 1}: ${e.title.length > 34 ? e.title.substring(0, 31) + '...' : e.title}</span>
       </button>
     `).join('')}
   `;
@@ -417,12 +435,12 @@ window.toggleInlineEditorial = function(id) {
     content.classList.remove('expanded');
     content.style.maxHeight = '250px';
     if (fade) fade.style.display = 'block';
-    if (textSpan) textSpan.textContent = '📖 Read Full Article Below Photo ↓';
+    if (textSpan) textSpan.textContent = 'Read Full Article ↓';
   } else {
     content.classList.add('expanded');
     content.style.maxHeight = 'none';
     if (fade) fade.style.display = 'none';
-    if (textSpan) textSpan.textContent = '↑ Collapse to Excerpt';
+    if (textSpan) textSpan.textContent = 'Collapse Article ↑';
   }
 };
 
@@ -445,11 +463,40 @@ async function syncEditorialsFromBackend() {
 
 function initEditorialsPage() {
   purgeLegacyMockEditorials();
-  renderEditorials('all');
-  renderQuickJumpBar();
+  const container = document.getElementById('editorialsFeedContainer');
+  if (!container) return;
 
-  // Async sync with Cloudflare Worker Backend once on load:
-  syncEditorialsFromBackend();
+  container.innerHTML = `
+    <div style="grid-column: 1 / -1; text-align: center; padding: 4.5rem 1rem;">
+      <p style="color: var(--gold-light); font-size: 0.85rem; letter-spacing: 0.1em; text-transform: uppercase;">Loading Editorials...</p>
+    </div>
+  `;
+
+  async function fetchAndRenderEditorials() {
+    if (window.ScreenladyAPI && typeof window.ScreenladyAPI.getEditorials === 'function') {
+      try {
+        const liveData = await window.ScreenladyAPI.getEditorials();
+        if (Array.isArray(liveData)) {
+          window.backendLiveEditorials = liveData;
+        }
+      } catch (e) {
+        console.warn('[Screenlady Editorials] API notice:', e.message);
+      }
+    }
+    renderEditorials(window.activeEditorialFilter || 'all');
+    renderQuickJumpBar();
+  }
+
+  fetchAndRenderEditorials();
+
+  window.resetEditorialFilters = function() {
+    const filterBtns = document.querySelectorAll('.editorials-filter-btn, .editorial-filter-btn');
+    filterBtns.forEach(btn => {
+      btn.classList.toggle('active', btn.getAttribute('data-filter') === 'all');
+    });
+    window.activeEditorialFilter = 'all';
+    renderEditorials('all');
+  };
 
   // Filter Buttons
   const filterBtns = document.querySelectorAll('.editorials-filter-btn, .editorial-filter-btn');
@@ -458,6 +505,7 @@ function initEditorialsPage() {
       filterBtns.forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
       const cat = btn.getAttribute('data-filter') || 'all';
+      window.activeEditorialFilter = cat;
       renderEditorials(cat);
     });
   });
@@ -481,6 +529,10 @@ function initEditorialsPage() {
   }
 }
 
-document.addEventListener('DOMContentLoaded', () => {
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', () => {
+    initEditorialsPage();
+  });
+} else {
   initEditorialsPage();
-});
+}

@@ -147,10 +147,10 @@ window.showMagazineModal = function(issueTitle) {
 
         <div class="magazine-nav-tabs">
           <button class="magazine-tab-btn active" id="magSpreadTab1" onclick="switchMagazineSpread(1)">
-            📖 Page 1: Cover Page
+            Page 1: Cover
           </button>
           <button class="magazine-tab-btn" id="magSpreadTab2" onclick="switchMagazineSpread(2)">
-            📄 Page 2: Inside Feature
+            Page 2: Inside Feature
           </button>
         </div>
       </div>
@@ -209,7 +209,7 @@ window.showMagazineModal = function(issueTitle) {
           </div>
 
           <button type="button" class="btn btn-gold btn-sm" onclick="openMagazineOrderModal()" style="font-weight: 800; padding: 0.65rem 1.35rem; font-size: 0.9rem;">
-            ✨ Order Collector's Print Edition →
+            Order Collector's Print Edition &rarr;
           </button>
         </div>
       </div>
@@ -242,7 +242,7 @@ window.openMagazineOrderModal = function() {
       <!-- Order Header -->
       <div style="text-align: center; margin-bottom: 1.5rem; padding-bottom: 1.25rem; border-bottom: 1px solid rgba(212, 175, 55, 0.25);">
         <span class="badge-gold" style="font-size: 0.72rem; letter-spacing: 0.12em; margin-bottom: 0.5rem; display: inline-block;">
-          🛍️ Direct Publisher Order • Official Print Edition
+          Direct Publisher Order • Official Print Edition
         </span>
         <h2 style="font-family: var(--font-serif-display); font-size: 1.6rem; color: #FFFFFF; margin: 0 0 0.35rem 0;">
           Order Collector's Print Edition
@@ -264,8 +264,8 @@ window.openMagazineOrderModal = function() {
           </p>
           <div style="display: flex; gap: 0.75rem; align-items: center; flex-wrap: wrap;">
             <span class="badge-gold" style="font-size: 0.68rem;">₹${settings.price} per copy</span>
-            <span style="font-size: 0.75rem; color: #4ade80;">✓ Free Express Shipping</span>
-            <span style="font-size: 0.75rem; color: #94a3b8;">📦 Ships in 24–48 Hours</span>
+            <span style="font-size: 0.75rem; color: #4ade80;">Free Express Shipping</span>
+            <span style="font-size: 0.75rem; color: #94a3b8;">Ships in 24–48 Hours</span>
           </div>
         </div>
       </div>
@@ -273,7 +273,7 @@ window.openMagazineOrderModal = function() {
       <!-- Customer & Shipping Address Form -->
       <form id="screenladyOrderForm" onsubmit="handleMagazineOrderSubmit(event)">
         <h3 style="color: var(--gold-light); font-size: 0.95rem; font-weight: 700; margin: 1.5rem 0 0.85rem; display: flex; align-items: center; gap: 0.4rem;">
-          <span>📍 1. Delivery & Contact Information</span>
+          <span>1. Delivery & Contact Details</span>
         </h3>
 
         <div class="post-form-grid" style="margin-bottom: 1rem;">
@@ -324,22 +324,21 @@ window.openMagazineOrderModal = function() {
         <!-- 2. Online Payment Gateway (Online Payment Only) -->
         <h3 style="color: var(--gold-light); font-size: 0.95rem; font-weight: 700; margin: 1.5rem 0 0.85rem; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.5rem;">
           <span style="display: inline-flex; align-items: center; gap: 0.4rem;">
-            <span>💳 2. Online Payment Gateway</span>
+            <span>2. Payment Method</span>
             <span class="badge-gold" style="font-size: 0.65rem;">Online Payment Only</span>
           </span>
-          <span style="font-size: 0.74rem; color: #4ade80; font-weight: 600;">🔒 256-Bit SSL Encrypted</span>
         </h3>
 
         <!-- Payment Method Tabs -->
         <div class="payment-tabs-row">
           <button type="button" class="payment-method-btn active" id="payMethodUPI" onclick="selectPaymentMethod('UPI')">
-            <span>⚡ UPI (GPay / PhonePe / Paytm / BHIM)</span>
+            <span>UPI (GPay / PhonePe / Paytm / BHIM)</span>
           </button>
           <button type="button" class="payment-method-btn" id="payMethodCard" onclick="selectPaymentMethod('Card')">
-            <span>💳 Credit / Debit Card</span>
+            <span>Credit / Debit Card</span>
           </button>
           <button type="button" class="payment-method-btn" id="payMethodNet" onclick="selectPaymentMethod('NetBanking')">
-            <span>🏦 Net Banking</span>
+            <span>Net Banking</span>
           </button>
         </div>
 
@@ -416,7 +415,7 @@ window.openMagazineOrderModal = function() {
               ← Back to Preview
             </button>
             <button type="submit" id="btnPlaceOrder" class="btn btn-gold btn-sm" style="font-weight: 800; font-size: 0.95rem; padding: 0.75rem 1.75rem;">
-              💳 Pay Online & Confirm Order →
+              Pay Online & Confirm Order &rarr;
             </button>
           </div>
         </div>
@@ -609,18 +608,18 @@ window.handleMagazineOrderSubmit = function(e) {
 
   // 2. Prepare WhatsApp notification message to Screenlady (+91 96650 35503)
   const whatsappMsg = 
-`✨ *NEW SCREENLADY MAGAZINE ORDER*
+`*NEW SCREENLADY MAGAZINE ORDER*
 ━━━━━━━━━━━━━━━━━━━━━
-🔖 *Order ID:* ${orderId}
-📅 *Date:* ${displayDate}
-👤 *Customer:* ${fullName}
-📞 *Phone:* ${phone}
-✉️ *Email:* ${email}
-📦 *Plan / Option:* ${planName}
-📖 *Edition:* ${settings.edition}
-💰 *Total Amount:* ₹${totalAmount}/-
-💳 *Payment Status:* Paid (Online via ${paymentMethod})
-📍 *Shipping Address:* 
+*Order ID:* ${orderId}
+*Date:* ${displayDate}
+*Customer:* ${fullName}
+*Phone:* ${phone}
+*Email:* ${email}
+*Plan / Option:* ${planName}
+*Edition:* ${settings.edition}
+*Total Amount:* ₹${totalAmount}/-
+*Payment Status:* Paid (Online via ${paymentMethod})
+*Shipping Address:* 
 ${address},
 ${city}, ${state} - ${pincode}
 ━━━━━━━━━━━━━━━━━━━━━
@@ -719,24 +718,24 @@ function renderOrderSuccessModal(order, whatsappUrl, emailUrl) {
       <!-- Instant Notification Actions -->
       <div style="background: rgba(212, 175, 55, 0.08); border: 1px solid var(--border-gold-bright); border-radius: var(--radius-sm); padding: 1.15rem; margin-bottom: 1.5rem;">
         <div style="font-size: 0.82rem; font-weight: 700; color: var(--gold-light); margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.4rem;">
-          <span>📲 Instant Screenlady Desk Notification:</span>
+          <span>Screenlady Desk Notification:</span>
         </div>
         <p style="font-size: 0.78rem; color: #E5E7EB; line-height: 1.5; margin-bottom: 0.85rem;">
           Order details are automatically forwarded to our dispatch headquarters. You can also send a direct instant copy to our verified WhatsApp desk or email:
         </p>
         <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
           <a href="${whatsappUrl}" target="_blank" rel="noopener" class="btn btn-gold btn-sm" style="display: inline-flex; align-items: center; gap: 0.4rem; font-weight: 700; text-decoration: none;">
-            <span>💬 Send Copy to WhatsApp (+91 96650 35503)</span>
+            <span>Send Copy to WhatsApp (+91 96650 35503)</span>
           </a>
           <a href="${emailUrl}" class="btn btn-outline-gold btn-sm" style="display: inline-flex; align-items: center; gap: 0.4rem; text-decoration: none;">
-            <span>✉️ Send Copy via Email</span>
+            <span>Send Copy via Email</span>
           </a>
         </div>
       </div>
 
       <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.75rem;">
         <button type="button" class="btn btn-outline-gold btn-sm" onclick="window.print()">
-          🖨️ Print Order Receipt
+          Print Order Receipt
         </button>
         <button type="button" class="btn btn-gold btn-sm" onclick="closeOrderModal()">
           Close Window
@@ -828,200 +827,25 @@ function updateLatestMagazinePopupContent() {
     sub.textContent = customMsg;
   }
   if (orderBtn) {
-    orderBtn.innerHTML = `<span>💳 Order Print (₹220/-)</span>`;
+    orderBtn.innerHTML = `<span>Order Print (₹220/-)</span>`;
   }
   if (reopenText) {
     reopenText.textContent = `${settings.edition || 'Latest Magazine'} (From ₹220/-)`;
   }
 }
 
+// Pop-up completely removed per user design requirements
 window.initMagazineSellPopup = function() {
-  // Do not show popup on admin editorial desk to keep admin work clean
-  if (window.location.pathname.includes('admin.html')) return;
-
-  const settings = getMagazineSettings();
-
-  // Create popup DOM if not already present
-  if (!document.getElementById('magPopupWrap')) {
-    const popupEl = document.createElement('div');
-    popupEl.id = 'magPopupWrap';
-    popupEl.className = 'mag-popup-wrap';
-    popupEl.innerHTML = `
-      <div class="mag-popup-card" id="magPopupCard">
-        <button type="button" class="mag-popup-close-btn" onclick="dismissMagazinePopup()" title="Close notification" aria-label="Close">✕</button>
-        
-        <div class="mag-popup-thumb-wrap" onclick="openMagazineOrderModal()" title="Click to view & order latest magazine">
-          <img src="${settings.coverImage || 'assets/images/magazine-cover-latest.jpg'}" id="magPopupThumb" alt="Latest Magazine Cover" class="mag-popup-thumb" onerror="this.src='assets/images/featured-icon-saree.jpg'">
-        </div>
-
-        <div class="mag-popup-body">
-          <div class="mag-popup-meta">
-            <span class="mag-popup-tag">
-              <span class="mag-popup-pulse-dot"></span>
-              <span id="magPopupTag">${escapeHtml(settings.popupBadge || 'Latest Print Magazine')}</span>
-            </span>
-            <span class="mag-popup-time" id="magPopupTime">Official Issue</span>
-          </div>
-
-          <div class="mag-popup-headline" id="magPopupHeadline" onclick="openMagazineOrderModal()" title="Click to order magazine" style="cursor: pointer;">
-            ${escapeHtml(settings.edition || 'November 2026 Print Edition')}
-          </div>
-
-          <div class="mag-popup-sub" id="magPopupSub">
-            ${escapeHtml(settings.popupMessage || settings.headline || settings.subtitle || "Collector's Print Edition • Monthly ₹220/- | Yearly ₹2450/-")}
-          </div>
-
-          <div class="mag-popup-actions">
-            <button type="button" id="magPopupOrderBtn" class="mag-popup-btn-order" onclick="openMagazineOrderModal()">
-              <span>💳 Order Print (₹220/-)</span>
-            </button>
-            <button type="button" class="mag-popup-btn-preview" onclick="showMagazineModal()">
-              <span>📖 Preview Spread</span>
-            </button>
-          </div>
-        </div>
-
-        <div class="mag-popup-progress-track">
-          <div class="mag-popup-progress-bar" id="magPopupProgressBar"></div>
-        </div>
-      </div>
-    `;
-
-    const reopenBtn = document.createElement('button');
-    reopenBtn.id = 'magPopupReopenPill';
-    reopenBtn.className = 'mag-popup-reopen-pill';
-    reopenBtn.innerHTML = `<span>📖</span><span id="magPopupReopenText">${escapeHtml(settings.edition || 'Latest Magazine')} (From ₹220/-)</span>`;
-    reopenBtn.onclick = () => {
-      isMagPopupDismissed = false;
-      reopenBtn.style.display = 'none';
-      showMagazinePopup();
-    };
-
-    document.body.appendChild(popupEl);
-    document.body.appendChild(reopenBtn);
-
-    // Pause countdown timer on hover so user can read or click
-    popupEl.addEventListener('mouseenter', () => {
-      if (magPopupState === 'visible') {
-        isMagPopupPaused = true;
-        clearTimeout(magPopupCycleTimeout);
-        magPopupVisibleElapsed += (Date.now() - magPopupVisibleStartTime);
-      }
-    });
-
-    popupEl.addEventListener('mouseleave', () => {
-      if (magPopupState === 'visible' && isMagPopupPaused) {
-        isMagPopupPaused = false;
-        const remainingMs = Math.max(800, POPUP_VISIBLE_MS - magPopupVisibleElapsed);
-        magPopupVisibleStartTime = Date.now();
-        startProgressBar(POPUP_VISIBLE_MS, magPopupVisibleElapsed);
-        clearTimeout(magPopupCycleTimeout);
-        magPopupCycleTimeout = setTimeout(() => {
-          hideMagazinePopup();
-        }, remainingMs);
-      }
-    });
-  }
-
-  // Initial popup appears 2.5 seconds after page load, then runs 5s show / 10s hide loop
-  clearTimeout(magPopupCycleTimeout);
-  magPopupCycleTimeout = setTimeout(() => {
-    if (!isMagPopupDismissed) {
-      showMagazinePopup();
-    }
-  }, 2500);
+  const existingWrap = document.getElementById('magPopupWrap');
+  if (existingWrap) existingWrap.remove();
+  const existingPill = document.getElementById('magPopupReopenPill');
+  if (existingPill) existingPill.remove();
 };
 
-window.showMagazinePopup = function() {
-  if (isMagPopupDismissed) return;
-  const wrap = document.getElementById('magPopupWrap');
-  if (!wrap) return;
-
-  magPopupState = 'visible';
-  updateLatestMagazinePopupContent();
-
-  wrap.classList.add('visible');
-  wrap.classList.remove('pop-cycle-out');
-  wrap.classList.add('pop-cycle-in');
-  setTimeout(() => {
-    wrap.classList.remove('pop-cycle-in');
-  }, 450);
-
-  // Start progress bar animation for strictly 5 seconds (5000ms)
-  magPopupVisibleStartTime = Date.now();
-  magPopupVisibleElapsed = 0;
-  startProgressBar(POPUP_VISIBLE_MS, 0);
-
-  // Strictly disappears after 5 seconds
-  clearTimeout(magPopupCycleTimeout);
-  magPopupCycleTimeout = setTimeout(() => {
-    if (!isMagPopupPaused) {
-      hideMagazinePopup();
-    }
-  }, POPUP_VISIBLE_MS);
-};
-
-window.hideMagazinePopup = function() {
-  if (isMagPopupDismissed) return;
-  const wrap = document.getElementById('magPopupWrap');
-  if (!wrap) return;
-
-  magPopupState = 'hidden';
-  clearInterval(magPopupProgressTimer);
-  const bar = document.getElementById('magPopupProgressBar');
-  if (bar) bar.style.width = '0%';
-
-  wrap.classList.remove('visible');
-
-  // Strictly reappears after 10 seconds (10000ms)
-  clearTimeout(magPopupCycleTimeout);
-  magPopupCycleTimeout = setTimeout(() => {
-    if (!isMagPopupDismissed) {
-      showMagazinePopup();
-    }
-  }, POPUP_HIDDEN_MS);
-};
-
-function startProgressBar(totalDurationMs, startElapsedMs = 0) {
-  const bar = document.getElementById('magPopupProgressBar');
-  if (!bar) return;
-
-  clearInterval(magPopupProgressTimer);
-  const startStamp = Date.now() - startElapsedMs;
-
-  magPopupProgressTimer = setInterval(() => {
-    if (isMagPopupPaused) return;
-    const elapsed = Date.now() - startStamp;
-    const pct = Math.min((elapsed / totalDurationMs) * 100, 100);
-    bar.style.width = `${pct}%`;
-
-    if (pct >= 100) {
-      clearInterval(magPopupProgressTimer);
-    }
-  }, 40);
-}
-
-window.dismissMagazinePopup = function() {
-  isMagPopupDismissed = true;
-  clearTimeout(magPopupCycleTimeout);
-  clearInterval(magPopupProgressTimer);
-
-  const wrap = document.getElementById('magPopupWrap');
-  if (wrap) wrap.classList.remove('visible');
-
-  const reopenPill = document.getElementById('magPopupReopenPill');
-  if (reopenPill) reopenPill.style.display = 'inline-flex';
-};
-
-window.updateMagazinePopupFromSettings = function() {
-  isMagPopupDismissed = false;
-
-  const reopenBtn = document.getElementById('magPopupReopenPill');
-  if (reopenBtn) reopenBtn.style.display = 'none';
-
-  updateLatestMagazinePopupContent();
-  showMagazinePopup();
-};
+window.showMagazinePopup = function() {};
+window.hideMagazinePopup = function() {};
+window.dismissMagazinePopup = function() {};
+window.updateMagazinePopupFromSettings = function() {};
 
 // Initialize listeners on DOM ready
 document.addEventListener('DOMContentLoaded', () => {

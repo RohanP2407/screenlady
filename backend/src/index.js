@@ -356,7 +356,7 @@ app.get('/api/updates', async (c) => {
     if (sectionFilter) {
       const rows = await db.prepare(`
         SELECT * FROM content_items
-        WHERE id NOT IN (SELECT id FROM deleted_records)
+        WHERE NOT EXISTS (SELECT 1 FROM deleted_records WHERE deleted_records.id = content_items.id)
           AND (curated_section = ? OR section = ?)
         ORDER BY timestamp DESC
       `).bind(sectionFilter, sectionFilter).all();
@@ -371,8 +371,8 @@ app.get('/api/updates', async (c) => {
 
     const rows = await db.prepare(`
       SELECT * FROM content_items
-      WHERE id NOT IN (SELECT id FROM deleted_records)
-        AND (section = 'updates' OR curated_section IS NOT NULL)
+      WHERE NOT EXISTS (SELECT 1 FROM deleted_records WHERE deleted_records.id = content_items.id)
+        AND (section IN ('updates', 'news', 'article', 'filmy_adda', 'bizz_world', 'women_inspiration', 'fashion_lifestyle') OR curated_section IS NOT NULL)
       ORDER BY timestamp DESC
     `).all();
 
@@ -420,7 +420,7 @@ app.get('/api/editorials', async (c) => {
     const db = getDb(c);
     const rows = await db.prepare(`
       SELECT * FROM content_items
-      WHERE id NOT IN (SELECT id FROM deleted_records)
+      WHERE NOT EXISTS (SELECT 1 FROM deleted_records WHERE deleted_records.id = content_items.id)
         AND section = 'editorials'
       ORDER BY timestamp DESC
     `).all();
@@ -442,7 +442,7 @@ app.get('/api/photos', async (c) => {
     const db = getDb(c);
     const rows = await db.prepare(`
       SELECT * FROM content_items
-      WHERE id NOT IN (SELECT id FROM deleted_records)
+      WHERE NOT EXISTS (SELECT 1 FROM deleted_records WHERE deleted_records.id = content_items.id)
         AND section IN ('photos', 'home_photos')
       ORDER BY timestamp DESC
     `).all();
@@ -464,7 +464,7 @@ app.get('/api/podcast', async (c) => {
     const db = getDb(c);
     const rows = await db.prepare(`
       SELECT * FROM content_items
-      WHERE id NOT IN (SELECT id FROM deleted_records)
+      WHERE NOT EXISTS (SELECT 1 FROM deleted_records WHERE deleted_records.id = content_items.id)
         AND section = 'podcast'
       ORDER BY timestamp DESC
     `).all();

@@ -327,7 +327,6 @@ window.openMagazineOrderModal = function() {
             <span>2. Payment Method</span>
             <span class="badge-gold" style="font-size: 0.65rem;">Online Payment Only</span>
           </span>
-          <span style="font-size: 0.74rem; color: #4ade80; font-weight: 600;">256-Bit SSL Encrypted</span>
         </h3>
 
         <!-- Payment Method Tabs -->

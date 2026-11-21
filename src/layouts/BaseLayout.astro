@@ -1,6 +1,5 @@
 ---
 // BaseLayout.astro - Master Layout for Accolade Screenlady
-import TopBar from '../components/TopBar.astro';
 import Header from '../components/Header.astro';
 import MobileNav from '../components/MobileNav.astro';
 import Footer from '../components/Footer.astro';
@@ -49,9 +48,6 @@ const pageTitle = title.includes("Accolade Screenlady") ? title : `${title} | Ac
   <script src="https://accounts.google.com/gsi/client" async defer is:inline></script>
 </head>
 <body>
-
-  <!-- Top Announcement Bar -->
-  <TopBar />
 
   <!-- Master Site Header -->
   <Header activeNav={activeNav} />
