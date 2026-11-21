@@ -158,7 +158,7 @@ function renderPhotosFeed() {
         <div class="photo-event-img-wrap" onclick="openPhotoLightbox('${photo.id}')" title="Click to view full photo: ${safeTitle}">
           <img src="${imgSrc}" alt="${safeTitle}" class="photo-event-img" loading="lazy">
           <div class="photo-event-overlay">
-            <span class="photo-zoom-hint">🔍 Expand Photo</span>
+            <span class="photo-zoom-hint">Expand Photo</span>
           </div>
         </div>
 
@@ -167,7 +167,7 @@ function renderPhotosFeed() {
             ${safeTitle}
           </h3>
           <div class="photo-gallery-card-date">
-            <span>📅 ${safeDate}</span>
+            <span>${safeDate}</span>
           </div>
         </div>
       </article>
@@ -210,7 +210,7 @@ window.openPhotoLightbox = function(photoId) {
 
       <div class="lightbox-details-panel">
         <div style="display: flex; gap: 0.5rem; align-items: center; flex-wrap: wrap; margin-bottom: 0.75rem;">
-          <span class="event-date-pill">📅 ${safeDate}</span>
+          <span class="event-date-pill">${safeDate}</span>
           <span class="badge-gold">${safeCategory}</span>
         </div>
 
@@ -220,7 +220,6 @@ window.openPhotoLightbox = function(photoId) {
 
         ${safeVenue ? `
         <div class="event-venue-tag" style="margin-bottom: 1rem; display: flex; align-items: center; gap: 0.4rem; color: var(--text-ivory); font-size: 0.9rem;">
-          <span>📍</span>
           <span>${safeVenue}</span>
         </div>` : ''}
 

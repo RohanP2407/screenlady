@@ -144,7 +144,7 @@
         newsId: n.id,
         isNews: true,
         category: n.category || 'Live News',
-        badge: n.categoryBadge || (n.category ? `✦ ${n.category}` : '⚡ Live News'),
+        badge: n.categoryBadge || (n.category ? `${n.category}` : 'Live News'),
         title: n.title || 'Screenlady Update',
         location: n.venue || 'Screenlady News Desk, Mumbai',
         date: n.date || 'Recent',
@@ -229,7 +229,7 @@
           <div class="home-news-h-content">
             <div class="home-news-h-meta">
               <span class="home-news-h-cat">${escapeHtml(item.categoryBadge || item.category)}</span>
-              <span class="home-news-h-date">📅 ${escapeHtml(item.date)}</span>
+              <span class="home-news-h-date">${escapeHtml(item.date)}</span>
             </div>
             <h3 class="home-news-h-title">${escapeHtml(item.title)}</h3>
             <p class="home-news-h-desc">${escapeHtml(item.summary)}</p>
@@ -426,9 +426,9 @@
           <div class="home-photo-caption-bar">
             <h3 class="home-photo-caption-title">${escapeHtml(item.title)}</h3>
             <div class="home-photo-caption-meta">
-              <span>📍 ${escapeHtml(item.location)}</span>
+              <span>${escapeHtml(item.location)}</span>
               <span>•</span>
-              <span>📅 ${escapeHtml(item.date)}</span>
+              <span>${escapeHtml(item.date)}</span>
             </div>
           </div>
         </a>
@@ -544,7 +544,7 @@
         newsId: newsItem.id,
         isNews: true,
         category: newsItem.category || 'Live News',
-        badge: newsItem.categoryBadge || (newsItem.category ? `✦ ${newsItem.category}` : '⚡ Live News'),
+        badge: newsItem.categoryBadge || (newsItem.category ? `${newsItem.category}` : 'Live News'),
         title: newsItem.title || newsItem.headline || 'Accolade Screenlady Dispatch',
         location: newsItem.venue || 'Screenlady News Desk, Mumbai',
         date: newsItem.date || newsItem.displayDate || 'Recent',
@@ -573,9 +573,9 @@
           <div class="home-photo-caption-bar">
             <h3 class="home-photo-caption-title">${escapeHtml(dynamicSlide.title)}</h3>
             <div class="home-photo-caption-meta">
-              <span>📍 ${escapeHtml(dynamicSlide.location)}</span>
+              <span>${escapeHtml(dynamicSlide.location)}</span>
               <span>•</span>
-              <span>📅 ${escapeHtml(dynamicSlide.date)}</span>
+              <span>${escapeHtml(dynamicSlide.date)}</span>
             </div>
           </div>
         `;
@@ -742,7 +742,7 @@
         <div class="curated-photo-card" onclick="if(window.openCuratedCardModal) window.openCuratedCardModal('${item.id}', 'filmy_adda'); else if(window.openUpdateModal) window.openUpdateModal('${item.id}');" title="${escapeHtml(item.title || item.headline || 'Cinema Feature')}">
           <img src="${item.photo}" alt="${escapeHtml(item.title || item.headline || 'Film Photo')}" loading="lazy">
           <div class="curated-photo-overlay">
-            <span class="curated-photo-badge">${escapeHtml(item.categoryBadge || item.category || '🎬 Cinema')}</span>
+            <span class="curated-photo-badge">${escapeHtml(item.categoryBadge || item.category || 'Cinema')}</span>
             <div>
               <h4 class="curated-photo-title">${escapeHtml(item.title || item.headline)}</h4>
               <div class="curated-photo-action">
@@ -787,7 +787,7 @@
         <div class="curated-photo-card" onclick="if(window.openCuratedCardModal) window.openCuratedCardModal('${item.id}', 'bizz_world'); else if(window.openUpdateModal) window.openUpdateModal('${item.id}');" title="${escapeHtml(item.title || item.headline || 'Business Feature')}">
           <img src="${item.photo}" alt="${escapeHtml(item.title || item.headline || 'Business Photo')}" loading="lazy">
           <div class="curated-photo-overlay">
-            <span class="curated-photo-badge">${escapeHtml(item.categoryBadge || item.category || '💼 Business')}</span>
+            <span class="curated-photo-badge">${escapeHtml(item.categoryBadge || item.category || 'Business')}</span>
             <div>
               <h4 class="curated-photo-title">${escapeHtml(item.title || item.headline)}</h4>
               <div class="curated-photo-action">
@@ -943,11 +943,11 @@
     const title = item.title || item.headline || item.womanName || "Accolade Screenlady Feature";
     let badge = item.categoryBadge || item.category || "";
     if (!badge) {
-      if (sectionName === 'bizz_world' || item.curatedSection === 'bizz_world') badge = "💼 Bizz World";
-      else if (sectionName === 'filmy_adda' || item.curatedSection === 'filmy_adda') badge = "🎬 Filmy Adda";
-      else if (sectionName === 'women_inspiration' || item.curatedSection === 'women_inspiration') badge = "👑 Women of Inspiration";
-      else if (sectionName === 'fashion_lifestyle' || item.curatedSection === 'fashion_lifestyle') badge = "✨ Fashion & Lifestyle";
-      else badge = "✦ Special Feature";
+      if (sectionName === 'bizz_world' || item.curatedSection === 'bizz_world') badge = "Bizz World";
+      else if (sectionName === 'filmy_adda' || item.curatedSection === 'filmy_adda') badge = "Filmy Adda";
+      else if (sectionName === 'women_inspiration' || item.curatedSection === 'women_inspiration') badge = "Women of Inspiration";
+      else if (sectionName === 'fashion_lifestyle' || item.curatedSection === 'fashion_lifestyle') badge = "Fashion & Lifestyle";
+      else badge = "Special Feature";
     }
 
     const dateStr = item.date || item.displayDate || "Editorial Feature";
@@ -1042,7 +1042,7 @@
         id: id,
         title: "Screenlady Live Dispatch",
         category: "Live News",
-        categoryBadge: "⚡ Live News",
+        categoryBadge: "Live News",
         date: "Recent Update",
         photo: "https://ik.imagekit.io/acooladescreenlady/screenlady/news/ramayana_MHoDF4dFm.jpeg",
         summary: "Latest real-time bulletin from Accolade Screenlady.",
@@ -1051,7 +1051,7 @@
     }
 
     const title = item.title || item.headline || "Screenlady Live Update";
-    const badge = item.categoryBadge || (item.category ? `✦ ${item.category}` : "⚡ Live News");
+    const badge = item.categoryBadge || item.category || "Live News";
     const dateStr = item.date || item.displayDate || "Recent";
     const photoSrc = item.photo || 'https://ik.imagekit.io/acooladescreenlady/screenlady/news/ramayana_MHoDF4dFm.jpeg';
 
@@ -1068,7 +1068,7 @@
           <span class="badge-gold" style="background: rgba(212,175,55,0.18); border: 1px solid var(--accent-gold); color: var(--accent-gold); font-size: 0.82rem; font-weight: 700; text-transform: uppercase; padding: 4px 14px; border-radius: 50px; letter-spacing: 0.05em;">
             ${escapeHtml(badge)}
           </span>
-          <span style="font-size: 0.85rem; color: #9E9AA7; font-weight: 500;">📅 ${escapeHtml(dateStr)}</span>
+          <span style="font-size: 0.85rem; color: #9E9AA7; font-weight: 500;">${escapeHtml(dateStr)}</span>
         </div>
 
         <div style="width: 100%; max-height: 520px; background: #07070B radial-gradient(circle, #161622 0%, #07070B 100%); border-radius: 8px; border: 1.5px solid rgba(212,175,55,0.4); box-shadow: 0 16px 45px rgba(0,0,0,0.95); overflow: hidden; display: flex; align-items: center; justify-content: center; margin-bottom: 1.5rem; padding: 0.75rem;">

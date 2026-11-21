@@ -2019,6 +2019,33 @@
   margin-bottom: 1.15rem;
 }
 
+.curated-pillar-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 1rem 0 1.25rem;
+}
+
+.curated-pillar-tag {
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-weight: 600;
+  color: var(--gold-light, #F3E5AB);
+  border: 1px solid rgba(212, 175, 55, 0.25);
+  background: rgba(212, 175, 55, 0.05);
+  padding: 0.35rem 0.75rem;
+  border-radius: 4px;
+  display: inline-block;
+  transition: all 0.2s ease;
+}
+
+.curated-pillar-tag:hover {
+  border-color: var(--gold-primary, #D4AF37);
+  background: rgba(212, 175, 55, 0.12);
+  color: #FFFFFF;
+}
+
 .curated-photos-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);

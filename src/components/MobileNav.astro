@@ -9,12 +9,12 @@ const { activeNav = 'home' } = Astro.props;
 
 <!-- Mobile Sub-Header Quick Navigation Strip (1-tap access on phones) -->
 <nav class="mobile-sub-nav" aria-label="Mobile Quick Navigation">
-  <a href="/" class={`mobile-sub-nav-pill ${activeNav === 'home' ? 'active' : ''}`}>🏠 Home</a>
-  <a href="/photos" class={`mobile-sub-nav-pill ${activeNav === 'photos' ? 'active' : ''}`}>📷 Gallery</a>
-  <a href="/about-us" class={`mobile-sub-nav-pill ${activeNav === 'about-us' ? 'active' : ''}`}>🏛️ About Us</a>
-  <a href="/editorials" class={`mobile-sub-nav-pill ${activeNav === 'editorials' ? 'active' : ''}`}>✒️ Editorials</a>
-  <a href="/updates" class={`mobile-sub-nav-pill ${activeNav === 'updates' ? 'active' : ''}`}>📰 Updates</a>
-  <a href="/podcast" class={`mobile-sub-nav-pill ${activeNav === 'podcast' ? 'active' : ''}`}>🎙️ Podcast</a>
+  <a href="/" class={`mobile-sub-nav-pill ${activeNav === 'home' ? 'active' : ''}`}>Home</a>
+  <a href="/photos" class={`mobile-sub-nav-pill ${activeNav === 'photos' ? 'active' : ''}`}>Gallery</a>
+  <a href="/about-us" class={`mobile-sub-nav-pill ${activeNav === 'about-us' ? 'active' : ''}`}>About Us</a>
+  <a href="/editorials" class={`mobile-sub-nav-pill ${activeNav === 'editorials' ? 'active' : ''}`}>Editorials</a>
+  <a href="/updates" class={`mobile-sub-nav-pill ${activeNav === 'updates' ? 'active' : ''}`}>Updates</a>
+  <a href="/podcast" class={`mobile-sub-nav-pill ${activeNav === 'podcast' ? 'active' : ''}`}>Podcast</a>
 </nav>
 
 <!-- Mobile Navigation Drawer & Backdrop -->
@@ -23,8 +23,8 @@ const { activeNav = 'home' } = Astro.props;
   <div>
     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
       <a href="/" style="display: flex; align-items: center; gap: 0.5rem; text-decoration: none;">
-        <img src="/assets/images/logo-2.png" alt="Accolade Screenlady Emblem" style="height: 38px; filter: drop-shadow(0 0 12px rgba(212,175,55,0.7));" />
-        <img src="/assets/images/logo.png" alt="Accolade Screenlady" style="height: 30px; filter: drop-shadow(0 0 10px rgba(212,175,55,0.6));" />
+        <img src="/assets/images/logo-2.png" alt="Accolade Screenlady Emblem" style="height: 38px;" />
+        <img src="/assets/images/logo.png" alt="Accolade Screenlady" style="height: 30px;" />
       </a>
       <button id="mobileNavClose" style="background: none; border: none; color: var(--gold-primary); font-size: 1.5rem; cursor: pointer; padding: 0.5rem;" aria-label="Close Navigation">✕</button>
     </div>

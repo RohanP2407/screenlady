@@ -23,22 +23,22 @@ const extraScripts = [
 
       <!-- ==============================================
            HOMEPAGE HERO SPLIT SECTION: 
-           LEFT: 4 Latest News in Horizontal Format (with photos & running highlights)
+           LEFT: 4 Latest News in Horizontal Format
            RIGHT: Curated Photo Gallery Slideshow
            ============================================== -->
       <section class="home-hero-split-section" id="homeHeroSplitSection" aria-label="Latest News & Event Photo Showcase">
         <div class="home-split-grid">
-          <!-- LEFT COLUMN: 4 Latest News Running in Horizontal Format -->
+          <!-- LEFT COLUMN: Latest News Horizontal List -->
           <div class="home-split-news-col">
             <div class="home-split-col-header">
               <div class="home-split-header-left">
                 <span class="home-split-kicker-pill">
-                  <span class="live-pulse-dot"></span> ✦ Real-Time Live News
+                  <span class="live-pulse-dot"></span> Real-Time News
                 </span>
                 <h2 class="home-split-title">Screenlady Updates</h2>
               </div>
               <a href="/updates" class="home-split-view-all-btn" title="View all updates and news">
-                <span>All Screenlady Updates</span>
+                <span>All Updates</span>
                 <span class="btn-arrow">→</span>
               </a>
             </div>
@@ -55,8 +55,8 @@ const extraScripts = [
           <div class="home-split-photos-col">
             <div class="home-split-col-header">
               <div class="home-split-header-left">
-                <span class="home-split-kicker-pill">✦ Event Photo Archives</span>
-                <h2 class="home-split-title">Photo Gallery Showcase</h2>
+                <span class="home-split-kicker-pill">Photo Archives</span>
+                <h2 class="home-split-title">Gallery Showcase</h2>
               </div>
               <a href="/photos" class="home-split-view-all-btn" title="View all photo galleries">
                 <span>All Photos</span>
@@ -79,7 +79,7 @@ const extraScripts = [
   </main>
 
   <!-- ==============================================
-       SECTION 1: HERO SECTION (Merged with Magazine Editions Slideshow)
+       SECTION 1: HERO SECTION (Magazine Editions Slideshow)
   ============================================== -->
   <section class="editorial-hero-section" id="heroSection">
     <div class="container">
@@ -87,13 +87,13 @@ const extraScripts = [
 
         <div class="editorial-hero-content">
           <div class="editorial-kicker">
-            <span>✦ A Marathi Magazine Celebrating Women</span>
+            <span>A Marathi Publication Celebrating Women</span>
           </div>
           <h1 class="editorial-hero-headline">
-            A Marathi Magazine Exploring the Diverse World of Women
+            Exploring the Diverse World of Women
           </h1>
           <p class="editorial-hero-desc">
-            Today's woman is no longer confined to managing household responsibilities. She is making her mark in entertainment, politics, industry, business, education, medicine, technology, the stock market, real estate and numerous other fields. With her intelligence, hard work and determination, she is reaching new heights of success. Recognising the journeys of such accomplished women and bringing their achievements into the spotlight is the vision behind <strong>Accolade Screenlady</strong>, a unique magazine dedicated to celebrating women.
+            Spotlighting accomplished women across cinema, corporate leadership, governance, entrepreneurship, and cultural arts. Bringing remarkable journeys and achievements into focus.
           </p>
           <div class="editorial-hero-actions">
             <a href="/about-us" class="btn-editorial-gold" id="heroDiscoverStoryBtn">
@@ -106,7 +106,7 @@ const extraScripts = [
               id="heroExploreMagazineBtn" 
               onclick="window.handleAvailableInPrintClick ? window.handleAvailableInPrintClick() : (window.openMagazineOrderModal ? window.openMagazineOrderModal('October 2026') : null)"
             >
-              <span>Order Collector's Edition</span>
+              <span>Order Print Edition</span>
             </button>
           </div>
         </div>
@@ -117,7 +117,7 @@ const extraScripts = [
 
               <!-- Prev Button -->
               <button type="button" class="pure-nav-arrow prev" id="slidePrevBtn" aria-label="Previous Cover" title="Previous Cover">
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                   <polyline points="15 18 9 12 15 6"></polyline>
                 </svg>
               </button>
@@ -129,7 +129,7 @@ const extraScripts = [
 
               <!-- Next Button -->
               <button type="button" class="pure-nav-arrow next" id="slideNextBtn" aria-label="Next Cover" title="Next Cover">
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                   <polyline points="9 18 15 12 9 6"></polyline>
                 </svg>
               </button>
@@ -156,73 +156,40 @@ const extraScripts = [
     <div class="container">
       <div class="curated-split-grid">
 
-        <!-- Left Column: 4 Film Photos in Interactive Grid (Populated dynamically from database) -->
+        <!-- Left Column: 4 Film Photos in Interactive Grid -->
         <div class="curated-photos-grid" id="filmyAddaPhotosGrid">
           <!-- Dynamically populated from Cloudflare D1 database by assets/js/home-news-photos.js -->
         </div>
 
-        <!-- Right Column: Filmy Adda Information Text -->
+        <!-- Right Column: Filmy Adda Content -->
         <div class="curated-content-box">
           <div class="curated-box-inner-top">
             <h2 class="curated-title-top">FILMY ADDA</h2>
-            <div class="curated-subtitle">The World of Glamour, Cinema & Celebrities</div>
+            <div class="curated-subtitle">Cinema, Celebrities & Visual Storytelling</div>
 
             <p class="curated-body-text">
-              Lights, Camera, Action! Welcome to <strong>Filmy Adda</strong>, your ultimate destination for everything happening in the world of cinema and entertainment. From the glamour of Bollywood to the vibrant world of Marathi cinema, we bring you closer to your favourite stars, their personal journeys, upcoming movie releases, box-office milestones, and behind-the-scenes stories.
-            </p>
-            <p class="curated-body-text">
-              Discover exclusive interviews with renowned actors, actresses, filmmakers, singers, and emerging talents who are making their mark. Whether it is the magic of the silver screen, television drama, or the growing influence of digital OTT entertainment, Filmy Adda keeps you connected with every major development.
-            </p>
-            <p class="curated-body-text">
-              From prestigious Marathi film festivals and National Film Awards to red carpet premieres and exclusive set visits, our cinema bureau delivers uncompromised journalistic depth, authentic photo spreads, and high-impact discussions with the storytellers shaping our screen culture.
-            </p>
-            <p class="curated-body-text">
-              Celebrating the multifaceted power of visual storytelling, we chronicle how women screenwriters, producers, technicians, and actors are transforming modern entertainment, blending commercial appeal with cultural integrity.
+              From Marathi cinema to Bollywood, Filmy Adda chronicles the women screenwriters, directors, actors, and technicians shaping screen culture with critical depth, authentic photo spreads, and industry insights.
             </p>
 
-            <div class="filmy-pillars-grid" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.65rem; margin: 0.95rem 0;">
-              <div style="background: rgba(255,255,255,0.035); border: 1px solid rgba(212,175,55,0.25); border-radius: 8px; padding: 0.55rem 0.8rem; display: flex; align-items: center; gap: 0.5rem;">
-                <span style="font-size: 1.05rem;">🎬</span>
-                <span style="font-size: 0.8rem; color: #FFFFFF; font-weight: 600;">Cinema & Studio Shoots</span>
-              </div>
-              <div style="background: rgba(255,255,255,0.035); border: 1px solid rgba(212,175,55,0.25); border-radius: 8px; padding: 0.55rem 0.8rem; display: flex; align-items: center; gap: 0.5rem;">
-                <span style="font-size: 1.05rem;">🌟</span>
-                <span style="font-size: 0.8rem; color: #FFFFFF; font-weight: 600;">Celebrity Spotlight</span>
-              </div>
-              <div style="background: rgba(255,255,255,0.035); border: 1px solid rgba(212,175,55,0.25); border-radius: 8px; padding: 0.55rem 0.8rem; display: flex; align-items: center; gap: 0.5rem;">
-                <span style="font-size: 1.05rem;">🍿</span>
-                <span style="font-size: 0.8rem; color: #FFFFFF; font-weight: 600;">Box Office & Trade</span>
-              </div>
-              <div style="background: rgba(255,255,255,0.035); border: 1px solid rgba(212,175,55,0.25); border-radius: 8px; padding: 0.55rem 0.8rem; display: flex; align-items: center; gap: 0.5rem;">
-                <span style="font-size: 1.05rem;">🎥</span>
-                <span style="font-size: 0.8rem; color: #FFFFFF; font-weight: 600;">Behind the Screen</span>
-              </div>
-              <div style="background: rgba(255,255,255,0.035); border: 1px solid rgba(212,175,55,0.25); border-radius: 8px; padding: 0.55rem 0.8rem; display: flex; align-items: center; gap: 0.5rem;">
-                <span style="font-size: 1.05rem;">🏆</span>
-                <span style="font-size: 0.8rem; color: #FFFFFF; font-weight: 600;">Red Carpet & Awards</span>
-              </div>
-              <div style="background: rgba(255,255,255,0.035); border: 1px solid rgba(212,175,55,0.25); border-radius: 8px; padding: 0.55rem 0.8rem; display: flex; align-items: center; gap: 0.5rem;">
-                <span style="font-size: 1.05rem;">🎧</span>
-                <span style="font-size: 0.8rem; color: #FFFFFF; font-weight: 600;">Music & Playback Arts</span>
-              </div>
+            <div class="curated-pillars-list" style="display: flex; flex-wrap: wrap; gap: 0.5rem; margin: 1.25rem 0;">
+              <span class="curated-pillar-tag">Studio & Cinema</span>
+              <span class="curated-pillar-tag">Celebrity Spotlight</span>
+              <span class="curated-pillar-tag">Box Office Trade</span>
+              <span class="curated-pillar-tag">Playback Arts</span>
             </div>
 
             <div class="curated-quote-pill">
-              “Because every star has a story, and every story deserves the spotlight — only on Accolade Screenlady!”
-            </div>
-
-            <div class="curated-tagline" style="margin-top: 0.85rem; margin-bottom: 0;">
-              Filmy Adda – Your Daily Dose of Cinema, Celebrities & Entertainment
+              “Every star has a story, and every story deserves the spotlight.”
             </div>
           </div>
 
-          <div class="curated-box-inner-bottom" style="display: flex; gap: 0.85rem; flex-wrap: wrap; margin-top: 1.25rem;">
+          <div class="curated-box-inner-bottom" style="display: flex; gap: 0.85rem; flex-wrap: wrap; margin-top: 1.5rem;">
             <a href="/updates" class="btn-editorial-gold" style="font-size: 0.84rem; padding: 0.65rem 1.35rem; text-decoration: none; display: inline-flex; align-items: center; gap: 0.5rem;">
-              <span>Explore All Cinema Updates</span>
+              <span>Cinema Updates</span>
               <span>→</span>
             </a>
             <a href="/photos" class="btn-editorial-outline" style="font-size: 0.84rem; padding: 0.65rem 1.35rem; text-decoration: none; display: inline-flex; align-items: center; gap: 0.5rem;">
-              <span>View Film Gallery</span>
+              <span>Photo Gallery</span>
               <span>→</span>
             </a>
           </div>
@@ -243,50 +210,27 @@ const extraScripts = [
         <div class="curated-content-box">
           <div class="curated-box-inner-top">
             <h2 class="curated-title-top">BIZZ WORLD</h2>
-            <div class="curated-subtitle">Corporate Pioneers, Startups & Women Entrepreneurs</div>
+            <div class="curated-subtitle">Enterprise, Governance & Women Pioneers</div>
 
             <p class="curated-body-text">
-              Welcome to <strong>Bizz World</strong>, Accolade Screenlady’s premier corporate chronicle spotlighting visionary industrial leaders, executive directors, and pioneering women entrepreneurs who are driving commerce, innovation, and sustainable leadership across Maharashtra and nationwide.
-            </p>
-            <p class="curated-body-text">
-              From dynamic grassroots enterprises and small-business founders to established corporate conglomerates, we deliver authentic reports on market expansions, funding triumphs, administrative breakthroughs, and brand journeys. We celebrate women breaking glass ceilings in finance, technology, manufacturing, and retail.
+              Accolade Screenlady’s corporate chronicle spotlighting visionary industrial leaders, executive directors, and women entrepreneurs driving commerce, innovation, and sustainable leadership.
             </p>
 
-            <div class="bizz-pillars-grid" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.65rem; margin: 0.95rem 0;">
-              <div style="background: rgba(255,255,255,0.035); border: 1px solid rgba(212,175,55,0.25); border-radius: 8px; padding: 0.55rem 0.8rem; display: flex; align-items: center; gap: 0.5rem;">
-                <span style="font-size: 1.05rem;">📈</span>
-                <span style="font-size: 0.8rem; color: #FFFFFF; font-weight: 600;">Executive Governance</span>
-              </div>
-              <div style="background: rgba(255,255,255,0.035); border: 1px solid rgba(212,175,55,0.25); border-radius: 8px; padding: 0.55rem 0.8rem; display: flex; align-items: center; gap: 0.5rem;">
-                <span style="font-size: 1.05rem;">🚀</span>
-                <span style="font-size: 0.8rem; color: #FFFFFF; font-weight: 600;">Women-Led Startups</span>
-              </div>
-              <div style="background: rgba(255,255,255,0.035); border: 1px solid rgba(212,175,55,0.25); border-radius: 8px; padding: 0.55rem 0.8rem; display: flex; align-items: center; gap: 0.5rem;">
-                <span style="font-size: 1.05rem;">💎</span>
-                <span style="font-size: 0.8rem; color: #FFFFFF; font-weight: 600;">Brand & SME Spotlights</span>
-              </div>
-              <div style="background: rgba(255,255,255,0.035); border: 1px solid rgba(212,175,55,0.25); border-radius: 8px; padding: 0.55rem 0.8rem; display: flex; align-items: center; gap: 0.5rem;">
-                <span style="font-size: 1.05rem;">🤝</span>
-                <span style="font-size: 0.8rem; color: #FFFFFF; font-weight: 600;">Conclaves & Summits</span>
-              </div>
+            <div class="curated-pillars-list" style="display: flex; flex-wrap: wrap; gap: 0.5rem; margin: 1.25rem 0;">
+              <span class="curated-pillar-tag">Corporate Governance</span>
+              <span class="curated-pillar-tag">Women-Led Ventures</span>
+              <span class="curated-pillar-tag">Brand Features</span>
+              <span class="curated-pillar-tag">Leadership Summits</span>
             </div>
 
-            <div class="curated-quote-pill" style="margin: 0.85rem 0;">
-              “From boardroom strategy to grassroots entrepreneurship — celebrating women who build industries, create employment, and lead the future.”
-            </div>
-
-            <div class="curated-tagline" style="margin-top: 0.75rem; margin-bottom: 0;">
-              Bizz World – Where Leadership Meets Ambition & Enterprise
+            <div class="curated-quote-pill">
+              “Celebrating women who build industries, create opportunities, and lead the future.”
             </div>
           </div>
 
-          <div class="curated-box-inner-bottom" style="display: flex; gap: 0.75rem; flex-wrap: wrap; margin-top: 1.25rem;">
-            <a href="https://wa.me/919665035503?text=Hello%20Accolade%20Screenlady%20Team%2C%20I%20am%20interested%20in%20Business%20Features%20and%20Brand%20Promotions." target="_blank" rel="noopener" class="btn-editorial-gold" style="font-size: 0.82rem; padding: 0.65rem 1.2rem; text-decoration: none; display: inline-flex; align-items: center; gap: 0.5rem;">
-              <span>💬 Advertise via WhatsApp</span>
-              <span>→</span>
-            </a>
-            <a href="mailto:editor@accoladescreenlady.com?cc=AccoladeScreenlady@gmail.com&subject=Bizz%20World%20Brand%20Feature%20Inquiry" class="btn-editorial-outline" style="font-size: 0.82rem; padding: 0.65rem 1.2rem; text-decoration: none; display: inline-flex; align-items: center; gap: 0.5rem;">
-              <span>✉️ Brand Desk</span>
+          <div class="curated-box-inner-bottom" style="display: flex; gap: 0.75rem; flex-wrap: wrap; margin-top: 1.5rem;">
+            <a href="https://wa.me/919665035503?text=Hello%20Accolade%20Screenlady%20Team%2C%20I%20am%20interested%20in%20Business%20Features." target="_blank" rel="noopener" class="btn-editorial-gold" style="font-size: 0.82rem; padding: 0.65rem 1.2rem; text-decoration: none; display: inline-flex; align-items: center; gap: 0.5rem;">
+              <span>Brand Inquiries</span>
               <span>→</span>
             </a>
             <a href="/updates" class="btn-editorial-outline" style="font-size: 0.82rem; padding: 0.65rem 1.2rem; text-decoration: none; display: inline-flex; align-items: center; gap: 0.5rem;">
@@ -296,7 +240,7 @@ const extraScripts = [
           </div>
         </div>
 
-        <!-- Right Column: 4 Business & Enterprise Photos (Populated dynamically from database) -->
+        <!-- Right Column: 4 Business & Enterprise Photos -->
         <div class="curated-photos-grid" id="bizzWorldPhotosGrid">
           <!-- Dynamically populated from Cloudflare D1 database by assets/js/home-news-photos.js -->
         </div>
@@ -306,20 +250,20 @@ const extraScripts = [
   </section>
 
   <!-- ==============================================
-       SECTION 4: WOMEN OF INSPIRATION (Struggle to Success)
+       SECTION 4: WOMEN OF INSPIRATION
   ============================================== -->
   <section class="curated-showcase-section women-inspiration-section" id="womenInspirationSection">
     <div class="container">
 
       <div class="editorial-header-center">
-        <span class="editorial-kicker">✦ Triumphs Over Adversity</span>
+        <span class="editorial-kicker">Triumphs Over Adversity</span>
         <h2 class="editorial-section-title-dark">Women of Inspiration</h2>
-        <p class="editorial-section-sub-dark" style="max-width: 820px; margin: 0 auto 1.75rem;">
-          Behind every successful woman lies an inspiring story of courage, struggle, and perseverance. Accolade Screenlady honors trailblazing women who overcame challenging circumstances to establish their own identities, setting new benchmarks in social service, business, science, technology, medicine, and governance. Click any story to read in full.
+        <p class="editorial-section-sub-dark" style="max-width: 680px; margin: 0 auto 1.75rem;">
+          Honoring women who surmounted arduous circumstances to forge distinct paths across social reform, medicine, science, and governance.
         </p>
       </div>
 
-      <!-- 4 Showcase Cards Grid (Populated dynamically from database) -->
+      <!-- 4 Showcase Cards Grid -->
       <div class="curated-showcase-grid" id="womenInspirationGrid">
         <!-- Dynamically populated from Cloudflare D1 database by assets/js/home-news-photos.js -->
       </div>
@@ -328,20 +272,20 @@ const extraScripts = [
   </section>
 
   <!-- ==============================================
-       SECTION 5: FASHION AND LIFESTYLE (Couture & Living)
+       SECTION 5: FASHION AND LIFESTYLE
   ============================================== -->
   <section class="curated-showcase-section fashion-lifestyle-section" id="fashionLifestyleSection">
     <div class="container">
 
       <div class="editorial-header-center">
-        <span class="editorial-kicker">✦ Haute Aesthetics & Living</span>
+        <span class="editorial-kicker">Aesthetics & Contemporary Living</span>
         <h2 class="editorial-section-title-dark">Fashion and Lifestyle</h2>
-        <p class="editorial-section-sub-dark" style="max-width: 820px; margin: 0 auto 1.75rem;">
-          When exploring the world of women, fashion, beauty, jewellery, and contemporary living hold special importance. Accolade Screenlady covers haute couture, traditional elegance, wellness, and thought-provoking lifestyle perspectives. Click any feature to read in full.
+        <p class="editorial-section-sub-dark" style="max-width: 680px; margin: 0 auto 1.75rem;">
+          Exploring haute couture, traditional craftsmanship, wellness, and personal growth for modern women balancing ambition and serenity.
         </p>
       </div>
 
-      <!-- 4 Showcase Cards Grid (Populated dynamically from database) -->
+      <!-- 4 Showcase Cards Grid -->
       <div class="curated-showcase-grid" id="fashionLifestyleGrid">
         <!-- Dynamically populated from Cloudflare D1 database by assets/js/home-news-photos.js -->
       </div>
@@ -350,36 +294,31 @@ const extraScripts = [
   </section>
 
   <!-- ==============================================
-       SECTION 8: CLOSING PHILOSOPHY BANNER
+       SECTION 6: CLOSING PHILOSOPHY BANNER
   ============================================== -->
   <section class="editorial-philosophy-banner" id="philosophyBanner">
     <div class="container philosophy-container">
 
       <img src="/assets/images/logo-2.png" alt="Accolade Queen Crest" class="philosophy-crest" />
 
-      <div style="font-family: var(--font-editorial-body); font-size: 0.85rem; font-weight: 800; letter-spacing: 0.2em; text-transform: uppercase; color: var(--gold-light-accent); margin-bottom: 1rem;">
-        ✦ ACCOLADE SCREENLADY – A MIRROR OF THE WORLD OF WOMEN! ✦
+      <div style="font-family: var(--font-editorial-body); font-size: 0.8rem; font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase; color: var(--gold-light-accent); margin-bottom: 1rem;">
+        ACCOLADE SCREENLADY — A MIRROR OF THE WORLD OF WOMEN
       </div>
 
-      <h2 class="philosophy-tagline-primary" style="font-size: clamp(2rem, 3.8vw, 3.2rem); margin-bottom: 1.5rem;">
-        Celebrating Women's Success, Inspiring the Next Generation!
+      <h2 class="philosophy-tagline-primary" style="font-size: clamp(1.8rem, 3.2vw, 2.8rem); margin-bottom: 1.25rem;">
+        Celebrating Women's Achievements, Inspiring the Future
       </h2>
 
-      <div style="max-width: 840px; margin: 0 auto 2.5rem; color: #D8D3C8; font-family: var(--font-editorial-body); font-size: 1.02rem; line-height: 1.8;">
-        <p style="margin-bottom: 1rem;">
-          Today, women have more opportunities than ever to demonstrate their abilities and establish themselves in different fields. However, platforms that recognise their achievements and bring their experiences and stories to society are equally important. Accolade Screenlady is committed to contributing to this vision.
-        </p>
-        <p>
-          From celebrated actresses to successful entrepreneurs in rural communities, from political leaders to corporate professionals, and from established personalities to women who have built their own identities through determination and hard work, the magazine aims to bring the stories of women from every walk of life into the spotlight.
-        </p>
-      </div>
+      <p style="max-width: 640px; margin: 0 auto 2rem; color: #D8D3C8; font-family: var(--font-editorial-body); font-size: 0.98rem; line-height: 1.7;">
+        From cinema luminaries to grassroots entrepreneurs, from corporate boardrooms to cultural pioneers — dedicated to bringing authentic stories of determination and excellence into focus.
+      </p>
 
-      <div style="padding: 1.5rem 2rem; border-top: 1px solid rgba(212, 175, 55, 0.3); border-bottom: 1px solid rgba(212, 175, 55, 0.3); margin-bottom: 2.5rem; background: rgba(212, 175, 55, 0.05); border-radius: 8px;">
-        <div style="font-family: var(--font-editorial-heading); font-size: clamp(1.4rem, 2.5vw, 2.2rem); font-weight: 800; color: #FFFFFF; margin-bottom: 0.65rem;">
-          “Her Beauty, Her Achievements, Her Story of Struggle!”
+      <div style="padding: 1.25rem 1.75rem; border-top: 1px solid rgba(212, 175, 55, 0.25); border-bottom: 1px solid rgba(212, 175, 55, 0.25); margin-bottom: 2rem; background: rgba(212, 175, 55, 0.03); border-radius: 6px;">
+        <div style="font-family: var(--font-editorial-heading); font-size: clamp(1.2rem, 2vw, 1.6rem); font-weight: 700; color: #FFFFFF; margin-bottom: 0.4rem;">
+          “Her Beauty, Her Achievements, Her Story.”
         </div>
-        <div style="font-family: var(--font-editorial-heading); font-size: clamp(1.1rem, 1.8vw, 1.5rem); font-style: italic; color: var(--gold-light-accent);">
-          “Because every woman has a story to tell... and every story deserves to reach the world!”
+        <div style="font-family: var(--font-editorial-heading); font-size: clamp(0.95rem, 1.4vw, 1.15rem); font-style: italic; color: var(--gold-light-accent);">
+          Every woman has a journey worth telling.
         </div>
       </div>
 
@@ -389,11 +328,11 @@ const extraScripts = [
           class="btn-editorial-gold" 
           onclick="window.handleAvailableInPrintClick ? window.handleAvailableInPrintClick() : (window.openMagazineOrderModal ? window.openMagazineOrderModal('October 2026') : null)"
         >
-          <span>Order Collector's Print Edition</span>
+          <span>Order Print Edition</span>
           <span>→</span>
         </button>
         <a href="/about-us#contact" class="btn-editorial-outline">
-          <span>Connect With Our Editorial Desk</span>
+          <span>Contact Editorial Desk</span>
         </a>
       </div>
 

@@ -381,18 +381,18 @@ function renderPhotoInfoCard(item, highlightClass, latestRibbon) {
   const tagsHtml = (item.tags || []).slice(0, 2).map(t => `<span class="update-tag">#${escapeHtml(t)}</span>`).join('');
   const womanName = item.womanName || item.title;
 
-  let badgeLabel = '📸 Photo + Info';
+  let badgeLabel = 'Photo & Story';
   let badgeClass = 'type-photo-info';
   if (item.curatedSection === 'filmy_adda' || isFilmyAddaUpdate(item)) {
-    badgeLabel = '🎬 Filmy Adda';
+    badgeLabel = 'Filmy Adda';
   } else if (item.curatedSection === 'bizz_world' || isBizzWorldUpdate(item)) {
-    badgeLabel = '💼 Bizz World';
+    badgeLabel = 'Bizz World';
   } else if (item.curatedSection === 'women_inspiration' || isInspirationUpdate(item)) {
-    badgeLabel = '👑 Inspiration';
+    badgeLabel = 'Inspiration';
   } else if (item.curatedSection === 'fashion_lifestyle' || isFashionUpdate(item)) {
-    badgeLabel = '✨ Fashion';
+    badgeLabel = 'Fashion';
   } else if (item.curatedSection === 'news' || item._section === 'news' || item.type === 'news') {
-    badgeLabel = '⚡ Live News';
+    badgeLabel = 'Live News';
   }
 
   return `
@@ -433,7 +433,6 @@ function renderPhotoInfoCard(item, highlightClass, latestRibbon) {
           </button>
           <button class="update-share-btn" onclick="shareUpdate('${escapeHtml(womanName)}')" title="Share update">
             <span>Share</span>
-            <span>🔗</span>
           </button>
         </div>
       </div>
@@ -459,7 +458,7 @@ function renderArticleCard(item, highlightClass, latestRibbon) {
       <div class="update-details-wrap">
         <div>
           <div class="update-meta-top">
-            <span class="update-type-pill type-article">📝 Article</span>
+            <span class="update-type-pill type-article">Article</span>
             <span class="update-date-text">${item.displayDate || item.date}</span>
           </div>
 
@@ -489,7 +488,6 @@ function renderArticleCard(item, highlightClass, latestRibbon) {
           </button>
           <button class="update-share-btn" onclick="shareUpdate('${item.title}')" title="Share article">
             <span>Share</span>
-            <span>🔗</span>
           </button>
         </div>
       </div>
@@ -514,11 +512,11 @@ function renderPhotoCard(item, highlightClass, latestRibbon) {
       </div>
 
       <div class="photo-event-details">
-        <div class="photo-card-date">📅 ${safeDate}</div>
+        <div class="photo-card-date">${safeDate}</div>
         <h3 class="photo-card-name" onclick="openUpdateModal('${item.id}')" style="cursor: pointer;">
           ${safeTitle}
         </h3>
-        <div class="photo-card-location">📍 ${safeLocation}</div>
+        <div class="photo-card-location">${safeLocation}</div>
         <p class="photo-card-desc">
           ${safeDesc}
         </p>
@@ -582,24 +580,24 @@ window.openUpdateModal = function(updateId) {
   const dateStr = item.displayDate || item.date || '';
 
   // Determine section badge
-  let sectionBadge = '📸 Spotlight';
+  let sectionBadge = 'Spotlight';
   if (item.curatedSection === 'filmy_adda' || isFilmyAddaUpdate(item)) {
-    sectionBadge = '🎬 Filmy Adda';
+    sectionBadge = 'Filmy Adda';
   } else if (item.curatedSection === 'bizz_world' || isBizzWorldUpdate(item)) {
-    sectionBadge = '💼 Bizz World';
+    sectionBadge = 'Bizz World';
   } else if (item.curatedSection === 'women_inspiration' || isInspirationUpdate(item)) {
-    sectionBadge = '👑 Women of Inspiration';
+    sectionBadge = 'Women of Inspiration';
   } else if (item.curatedSection === 'fashion_lifestyle' || isFashionUpdate(item)) {
-    sectionBadge = '✨ Fashion & Lifestyle';
+    sectionBadge = 'Fashion & Lifestyle';
   } else if (item.curatedSection === 'news' || item._section === 'news' || item.type === 'news') {
-    sectionBadge = '⚡ Real-Time News';
+    sectionBadge = 'Real-Time News';
   } else if (item.type === 'article') {
-    sectionBadge = '📝 Article';
+    sectionBadge = 'Article';
   }
 
   // Full photo stage: guarantees complete, uncropped photo display inside the reader
   const photoHtml = item.photo ? `
-    <div class="reader-modal-hero-photo-wrap" style="width: 100%; max-height: 540px; background: #07070B radial-gradient(circle, #161622 0%, #07070B 100%); border-radius: var(--radius-md); border: 1.5px solid var(--border-gold-bright); box-shadow: 0 16px 45px rgba(0,0,0,0.95), 0 0 25px rgba(212,175,55,0.15); overflow: hidden; display: flex; align-items: center; justify-content: center; margin-bottom: 1.5rem; padding: 0.75rem;">
+    <div class="reader-modal-hero-photo-wrap" style="width: 100%; max-height: 540px; background: #07070B radial-gradient(circle, #161622 0%, #07070B 100%); border-radius: var(--radius-md); border: 1px solid var(--border-gold-bright); box-shadow: 0 16px 45px rgba(0,0,0,0.95); overflow: hidden; display: flex; align-items: center; justify-content: center; margin-bottom: 1.5rem; padding: 0.75rem;">
       <img src="${item.photo}" alt="${escapeHtml(displayTitle)}" style="max-height: 510px; max-width: 100%; width: auto; height: auto; object-fit: contain; display: block; margin: 0 auto; border-radius: 4px; box-shadow: 0 8px 30px rgba(0,0,0,0.8);">
     </div>
   ` : '';
@@ -612,8 +610,8 @@ window.openUpdateModal = function(updateId) {
         <div style="display: flex; gap: 0.6rem; align-items: center; flex-wrap: wrap; margin-bottom: 0.75rem;">
           <span class="update-type-pill type-photo-info" style="font-weight: 700;">${sectionBadge}</span>
           ${item.category ? `<span class="update-category-pill">${escapeHtml(item.category)}</span>` : ''}
-          ${dateStr ? `<span style="font-size: 0.82rem; color: var(--gold-light);">• 📅 ${escapeHtml(dateStr)}</span>` : ''}
-          ${item.venue ? `<span style="font-size: 0.82rem; color: var(--text-muted);">• 📍 ${escapeHtml(item.venue)}</span>` : ''}
+          ${dateStr ? `<span style="font-size: 0.82rem; color: var(--gold-light); font-weight: 600;">• ${escapeHtml(dateStr)}</span>` : ''}
+          ${item.venue ? `<span style="font-size: 0.82rem; color: var(--text-muted);">• ${escapeHtml(item.venue)}</span>` : ''}
         </div>
 
         <h2 style="font-family: var(--font-serif-display); font-size: 2.15rem; color: var(--gold-light); margin-bottom: 0.6rem; line-height: 1.25; font-weight: 700;">
