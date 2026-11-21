@@ -126,18 +126,41 @@
     });
   }
 
+  function escapeHtml(str) {
+    if (!str) return '';
+    return String(str)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#039;');
+  }
+
   function renderSlideshow(availableIssues) {
     const stage = document.getElementById('slidesStage');
     const theater = document.getElementById('slideshowTheater');
     const timelineTrack = document.getElementById('timelineTrack') || document.querySelector('.pure-timeline-track');
 
-    if (!stage || !theater || !Array.isArray(availableIssues) || availableIssues.length === 0) return;
+    if (!stage || !theater) return;
+
+    if (!Array.isArray(availableIssues) || availableIssues.length === 0) {
+      stage.innerHTML = `
+        <div class="pure-slide active" data-index="0" style="display:flex;align-items:center;justify-content:center;height:100%;min-height:360px;background:#0d0c0a;text-align:center;padding:2rem;">
+          <div>
+            <div style="font-family:var(--font-serif,'Cinzel',serif);color:var(--gold-bright,#FFE894);font-size:1.15rem;font-weight:600;margin-bottom:0.4rem;letter-spacing:0.04em;">Magazine Edition Showcase</div>
+            <p style="color:var(--text-muted,#A3A09A);font-size:0.85rem;max-width:280px;margin:0 auto;line-height:1.5;">Monthly magazine editions updated from the Admin Desk will appear here.</p>
+          </div>
+        </div>
+      `;
+      if (timelineTrack) timelineTrack.innerHTML = '';
+      return;
+    }
 
     // 1. Render Slides
     stage.innerHTML = availableIssues.map((issue, i) => `
-      <div class="pure-slide ${i === 0 ? 'active' : ''}" data-index="${i}">
+      <div class="pure-slide ${i === 0 ? 'active' : ''}" data-index="${i}" onclick="if(window.openMagazineOrderModal) window.openMagazineOrderModal('${escapeHtml(issue.title || 'Collector Edition')}');" style="cursor: pointer;" title="Click to view & order ${escapeHtml(issue.title || 'Edition')}">
         <div class="pure-cover-frame">
-          <img src="${issue.cover}" alt="${issue.title || 'Screenlady Magazine Cover'}" class="pure-cover-image" />
+          <img src="${escapeHtml(issue.cover)}" alt="${escapeHtml(issue.title || 'Screenlady Magazine Cover')}" class="pure-cover-image" />
         </div>
       </div>
     `).join('');

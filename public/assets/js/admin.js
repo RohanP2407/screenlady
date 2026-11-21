@@ -269,7 +269,8 @@ window.switchAdminView = function(viewId, targetFilter = null) {
     'panel-content': 'Content Management Archive',
     'panel-orders': 'Customer Purchase Orders',
     'panel-magazine': 'Monthly Magazine Issue & Settings',
-    'panel-media': 'ImageKit Global Media CDN'
+    'panel-media': 'ImageKit Global Media CDN',
+    'panel-business-ads': 'Homepage Business Showcase'
   };
   const sectionTitles = {
     all: 'All Content Archive',
@@ -299,6 +300,12 @@ window.switchAdminView = function(viewId, targetFilter = null) {
   if (sidebar && sidebar.classList.contains('open')) {
     sidebar.classList.remove('open');
     if (overlay) overlay.style.display = 'none';
+  }
+
+  if (viewId === 'panel-business-ads') {
+    if (typeof renderBusinessAdsPanel === 'function') renderBusinessAdsPanel();
+  } else if (viewId === 'panel-magazine') {
+    if (typeof renderMagazineEditionsList === 'function') renderMagazineEditionsList();
   }
 
   window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -2633,3 +2640,572 @@ function escapeHtml(str) {
     .replace(/"/g, '&quot;')
     .replace(/'/g, '&#39;');
 }
+
+/* =============================================================
+   HOMEPAGE BUSINESS SHOWCASE (BRAND SPOTLIGHT) CONTROLLER
+   Connected to 'business_ads' D1 table
+   ============================================================= */
+
+window.updateAdPhotoPreview = function(url) {
+  const img = document.getElementById('adPhotoPreview');
+  const ph = document.getElementById('adPhotoPreviewPlaceholder');
+  if (img) {
+    if (url && url.trim().length > 0) {
+      img.src = url.trim();
+      img.style.display = 'block';
+      if (ph) ph.style.display = 'none';
+    } else {
+      img.style.display = 'none';
+      if (ph) ph.style.display = 'inline';
+    }
+  }
+};
+
+window.handleAdPhotoUpload = async function(e) {
+  const file = e.target.files && e.target.files[0];
+  if (!file) return;
+
+  const status = document.getElementById('adPhotoUploadStatus');
+  if (status) status.textContent = 'Uploading photo to ImageKit CDN...';
+
+  try {
+    if (window.ScreenladyAPI && typeof window.ScreenladyAPI.uploadMedia === 'function') {
+      const customKey = 'brand-' + Date.now();
+      const res = await window.ScreenladyAPI.uploadMedia(file, customKey, 'brands');
+      const url = res.url || (res.data && res.data.url);
+      if (url) {
+        const input = document.getElementById('adPhotoInput');
+        if (input) input.value = url;
+        updateAdPhotoPreview(url);
+        if (status) status.textContent = '✓ Uploaded to ImageKit CDN successfully.';
+        showToast('✓ Photo uploaded to ImageKit CDN');
+        return;
+      }
+    }
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const dataUrl = event.target.result;
+      const input = document.getElementById('adPhotoInput');
+      if (input) input.value = dataUrl;
+      updateAdPhotoPreview(dataUrl);
+      if (status) status.textContent = '✓ Photo loaded locally.';
+    };
+    reader.readAsDataURL(file);
+  } catch (err) {
+    if (status) status.textContent = 'Upload failed: ' + err.message;
+    console.warn('Brand photo upload error:', err);
+  }
+};
+
+window.renderBusinessAdsPanel = async function() {
+  const tableBody = document.getElementById('businessAdsTableBody');
+  const statBadge = document.getElementById('navStatBusinessAds');
+  const kpiStat = document.getElementById('statTotalBusinessAds');
+
+  let ads = [];
+  try {
+    if (window.ScreenladyAPI && typeof window.ScreenladyAPI.getBusinessAds === 'function') {
+      const backendAds = await window.ScreenladyAPI.getBusinessAds();
+      if (backendAds && Array.isArray(backendAds)) {
+        ads = backendAds;
+        window.backendLiveBusinessAds = ads;
+      }
+    }
+  } catch (err) {
+    console.warn('[Admin] Notice fetching business ads:', err);
+  }
+
+  if (ads.length === 0 && window.backendLiveBusinessAds && window.backendLiveBusinessAds.length > 0) {
+    ads = window.backendLiveBusinessAds;
+  }
+
+  if (ads.length === 0) {
+    try {
+      const raw = localStorage.getItem('screenlady_custom_business_ads');
+      if (raw) ads = JSON.parse(raw);
+    } catch (e) { ads = []; }
+  }
+
+  const deletedIds = (typeof window.getScreenladyDeletedIds === 'function')
+    ? window.getScreenladyDeletedIds()
+    : (() => { try { const r = localStorage.getItem('screenlady_deleted_ids'); return r ? JSON.parse(r) : []; } catch(e){ return []; } })();
+
+  ads = ads.filter(item => item && !deletedIds.includes(item.id));
+
+  if (statBadge) statBadge.textContent = ads.length;
+  if (kpiStat) kpiStat.textContent = ads.length;
+
+  if (!tableBody) return;
+
+  if (ads.length === 0) {
+    tableBody.innerHTML = `
+      <tr>
+        <td colspan="5" style="text-align: center; padding: 3rem 1.5rem; color: var(--admin-text-muted);">
+          <div style="font-size: 1.1rem; color: var(--admin-gold-light); font-weight: 600; margin-bottom: 0.5rem;">No Brand Partners Published Yet</div>
+          <p style="font-size: 0.85rem; max-width: 420px; margin: 0 auto;">Use the form above to publish your first brand partner to the homepage right-hand showcase.</p>
+        </td>
+      </tr>
+    `;
+    return;
+  }
+
+  tableBody.innerHTML = ads.map(item => `
+    <tr>
+      <td>
+        <img src="${escapeHtml(item.photo || item.image)}" alt="${escapeHtml(item.brandName || item.title)}" style="width: 58px; height: 58px; object-fit: cover; border-radius: 4px; border: 1px solid var(--admin-border-gold);" onerror="this.src='/assets/images/featured-icon-saree.jpg'">
+      </td>
+      <td>
+        <div style="font-weight: 700; color: #FFFFFF; font-size: 0.92rem;">${escapeHtml(item.brandName || item.title)}</div>
+        <span class="admin-badge admin-badge-gold" style="font-size: 0.7rem; margin-top: 0.25rem;">${escapeHtml(item.category || 'Featured Partner')}</span>
+      </td>
+      <td>
+        <div style="font-weight: 600; color: var(--admin-gold-light); font-size: 0.85rem; margin-bottom: 0.2rem;">${escapeHtml(item.headline || '')}</div>
+        <div style="color: var(--admin-text-muted); font-size: 0.78rem; max-width: 380px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">${escapeHtml(item.summary || '')}</div>
+      </td>
+      <td>
+        ${item.destinationUrl ? `<a href="${escapeHtml(item.destinationUrl)}" target="_blank" rel="noopener" style="color: var(--admin-gold); font-size: 0.8rem; text-decoration: underline;">Visit &rarr;</a>` : '<span style="color: var(--admin-text-faint); font-size: 0.75rem;">None</span>'}
+      </td>
+      <td style="text-align: right;">
+        <div style="display: inline-flex; gap: 0.4rem;">
+          <button type="button" class="admin-btn admin-btn-outline admin-btn-sm" onclick="editBusinessAd('${escapeHtml(item.id)}')">Edit</button>
+          <button type="button" class="admin-btn admin-btn-danger admin-btn-sm" onclick="deleteBusinessAd('${escapeHtml(item.id)}')">Delete</button>
+        </div>
+      </td>
+    </tr>
+  `).join('');
+};
+
+window.handleSaveBusinessAd = async function(e) {
+  if (e && typeof e.preventDefault === 'function') e.preventDefault();
+
+  const editingId = (document.getElementById('adEditingId')?.value || '').trim();
+  const brandName = (document.getElementById('adBrandName')?.value || '').trim();
+  const category = (document.getElementById('adCategory')?.value || '').trim();
+  const headline = (document.getElementById('adHeadline')?.value || '').trim();
+  const tagline = (document.getElementById('adTagline')?.value || '').trim();
+  const destUrl = (document.getElementById('adDestUrl')?.value || '').trim();
+  const summary = (document.getElementById('adSummary')?.value || '').trim();
+  const photo = (document.getElementById('adPhotoInput')?.value || '').trim();
+
+  if (!brandName || !headline || !summary || !photo) {
+    showToast('⚠️ Please fill in all required fields (Brand Name, Headline, Summary, Photo).');
+    return;
+  }
+
+  const id = editingId || ('brand-' + Date.now());
+  const now = new Date();
+  const dateStr = now.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+
+  const adItem = {
+    id,
+    brandName,
+    title: brandName,
+    category: category || 'Enterprise',
+    categoryBadge: 'Brand Spotlight',
+    badge: 'Brand Spotlight',
+    headline,
+    tagline: tagline || headline,
+    summary,
+    destinationUrl: destUrl,
+    photo,
+    image: photo,
+    date: dateStr,
+    displayDate: dateStr,
+    timestamp: Date.now(),
+    isCustom: true
+  };
+
+  const pin = getSavedPin();
+
+  // Save to Cloudflare D1 Backend
+  if (window.ScreenladyAPI && typeof window.ScreenladyAPI.publishItem === 'function') {
+    try {
+      await window.ScreenladyAPI.publishItem('business_ads', adItem, pin);
+    } catch (err) {
+      console.warn('Backend publish notice:', err);
+    }
+  }
+
+  // Update localStorage custom ads
+  let localAds = [];
+  try {
+    const raw = localStorage.getItem('screenlady_custom_business_ads');
+    if (raw) localAds = JSON.parse(raw);
+  } catch (e) { localAds = []; }
+
+  const existIdx = localAds.findIndex(a => a.id === id);
+  if (existIdx >= 0) {
+    localAds[existIdx] = adItem;
+  } else {
+    localAds.unshift(adItem);
+  }
+  localStorage.setItem('screenlady_custom_business_ads', JSON.stringify(localAds));
+
+  // Update in-memory backend list
+  if (!window.backendLiveBusinessAds) window.backendLiveBusinessAds = [];
+  const bIdx = window.backendLiveBusinessAds.findIndex(a => a.id === id);
+  if (bIdx >= 0) {
+    window.backendLiveBusinessAds[bIdx] = adItem;
+  } else {
+    window.backendLiveBusinessAds.unshift(adItem);
+  }
+
+  cancelBusinessAdEdit();
+  renderBusinessAdsPanel();
+  showToast(editingId ? '✓ Brand partner updated successfully!' : '✓ Brand partner published to homepage showcase!');
+};
+
+window.editBusinessAd = function(id) {
+  let ads = window.backendLiveBusinessAds || [];
+  if (ads.length === 0) {
+    try {
+      const raw = localStorage.getItem('screenlady_custom_business_ads');
+      if (raw) ads = JSON.parse(raw);
+    } catch (e) { ads = []; }
+  }
+
+  const item = ads.find(a => a && a.id === id);
+  if (!item) return;
+
+  const idField = document.getElementById('adEditingId');
+  if (idField) idField.value = item.id;
+  const bn = document.getElementById('adBrandName');
+  if (bn) bn.value = item.brandName || item.title || '';
+  const cat = document.getElementById('adCategory');
+  if (cat) cat.value = item.category || '';
+  const hl = document.getElementById('adHeadline');
+  if (hl) hl.value = item.headline || '';
+  const tl = document.getElementById('adTagline');
+  if (tl) tl.value = item.tagline || '';
+  const dest = document.getElementById('adDestUrl');
+  if (dest) dest.value = item.destinationUrl || '';
+  const sum = document.getElementById('adSummary');
+  if (sum) sum.value = item.summary || '';
+  const photo = document.getElementById('adPhotoInput');
+  if (photo) photo.value = item.photo || item.image || '';
+
+  updateAdPhotoPreview(item.photo || item.image || '');
+
+  const titleEl = document.getElementById('adFormTitle');
+  if (titleEl) titleEl.textContent = 'Edit Brand Partner Showcase';
+  const subBtn = document.getElementById('adSubmitBtn');
+  if (subBtn) subBtn.innerHTML = 'Update Brand Partner &rarr;';
+  const cancelBtn = document.getElementById('adCancelBtn');
+  if (cancelBtn) cancelBtn.style.display = 'inline-block';
+
+  const form = document.getElementById('businessAdForm');
+  if (form) form.scrollIntoView({ behavior: 'smooth' });
+};
+
+window.cancelBusinessAdEdit = function() {
+  const form = document.getElementById('businessAdForm');
+  if (form) form.reset();
+  const idField = document.getElementById('adEditingId');
+  if (idField) idField.value = '';
+  updateAdPhotoPreview('');
+  const titleEl = document.getElementById('adFormTitle');
+  if (titleEl) titleEl.textContent = '+ Add New Brand Partner Showcase';
+  const subBtn = document.getElementById('adSubmitBtn');
+  if (subBtn) subBtn.innerHTML = 'Publish Brand Partner &rarr;';
+  const cancelBtn = document.getElementById('adCancelBtn');
+  if (cancelBtn) cancelBtn.style.display = 'none';
+  const status = document.getElementById('adPhotoUploadStatus');
+  if (status) status.textContent = '';
+};
+
+window.deleteBusinessAd = async function(id) {
+  if (!confirm('Are you sure you want to remove this brand partner from the homepage showcase?')) return;
+
+  const pin = getSavedPin();
+
+  if (window.ScreenladyAPI && typeof window.ScreenladyAPI.deleteItem === 'function') {
+    try {
+      await window.ScreenladyAPI.deleteItem('business_ads', id, pin);
+    } catch (err) {
+      console.warn('Backend delete notice:', err);
+    }
+  }
+
+  let deletedIds = [];
+  try {
+    const raw = localStorage.getItem('screenlady_deleted_ids');
+    if (raw) deletedIds = JSON.parse(raw);
+  } catch (e) { deletedIds = []; }
+  if (!deletedIds.includes(id)) {
+    deletedIds.push(id);
+    localStorage.setItem('screenlady_deleted_ids', JSON.stringify(deletedIds));
+  }
+  if (!window.backendDeletedIds) window.backendDeletedIds = [];
+  if (!window.backendDeletedIds.includes(id)) window.backendDeletedIds.push(id);
+
+  try {
+    const raw = localStorage.getItem('screenlady_custom_business_ads');
+    if (raw) {
+      const list = JSON.parse(raw).filter(a => a.id !== id);
+      localStorage.setItem('screenlady_custom_business_ads', JSON.stringify(list));
+    }
+  } catch (e) {}
+
+  if (window.backendLiveBusinessAds) {
+    window.backendLiveBusinessAds = window.backendLiveBusinessAds.filter(a => a.id !== id);
+  }
+
+  renderBusinessAdsPanel();
+  showToast('✓ Brand partner removed from homepage showcase.');
+};
+
+
+/* =============================================================
+   HOMEPAGE MAGAZINE EDITION SLIDESHOW CONTROLLER
+   Connected to 'magazine_settings.available_issues' in D1
+   ============================================================= */
+
+window.updateEdCoverPreview = function(url) {
+  const img = document.getElementById('edIssueCoverPreview');
+  const ph = document.getElementById('edIssueCoverPlaceholder');
+  if (img) {
+    if (url && url.trim().length > 0) {
+      img.src = url.trim();
+      img.style.display = 'block';
+      if (ph) ph.style.display = 'none';
+    } else {
+      img.style.display = 'none';
+      if (ph) ph.style.display = 'inline';
+    }
+  }
+};
+
+window.handleEdCoverUpload = async function(e) {
+  const file = e.target.files && e.target.files[0];
+  if (!file) return;
+
+  const status = document.getElementById('edIssueUploadStatus');
+  if (status) status.textContent = 'Uploading cover to ImageKit CDN...';
+
+  try {
+    if (window.ScreenladyAPI && typeof window.ScreenladyAPI.uploadMedia === 'function') {
+      const customKey = 'mag-cover-' + Date.now();
+      const res = await window.ScreenladyAPI.uploadMedia(file, customKey, 'magazine');
+      const url = res.url || (res.data && res.data.url);
+      if (url) {
+        const input = document.getElementById('edIssueCover');
+        if (input) input.value = url;
+        updateEdCoverPreview(url);
+        if (status) status.textContent = '✓ Uploaded cover to ImageKit CDN.';
+        showToast('✓ Cover uploaded to ImageKit CDN');
+        return;
+      }
+    }
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const dataUrl = event.target.result;
+      const input = document.getElementById('edIssueCover');
+      if (input) input.value = dataUrl;
+      updateEdCoverPreview(dataUrl);
+      if (status) status.textContent = '✓ Cover loaded locally.';
+    };
+    reader.readAsDataURL(file);
+  } catch (err) {
+    if (status) status.textContent = 'Upload failed: ' + err.message;
+  }
+};
+
+window.getAvailableMagazineIssues = function() {
+  let settings = null;
+  try {
+    const raw = localStorage.getItem('screenlady_magazine_settings');
+    if (raw) settings = JSON.parse(raw);
+  } catch (e) {}
+
+  if (settings && Array.isArray(settings.availableIssues)) {
+    return settings.availableIssues;
+  }
+  return [];
+};
+
+window.renderMagazineEditionsList = async function(passedIssues) {
+  const tableBody = document.getElementById('magEditionsTableBody');
+  if (!tableBody) return;
+
+  let issues = passedIssues;
+  if (!issues || !Array.isArray(issues)) {
+    if (window.ScreenladyAPI && typeof window.ScreenladyAPI.getMagazineSettings === 'function') {
+      try {
+        const backendMag = await window.ScreenladyAPI.getMagazineSettings();
+        if (backendMag && Array.isArray(backendMag.availableIssues)) {
+          issues = backendMag.availableIssues;
+        }
+      } catch (err) {}
+    }
+  }
+
+  if (!issues || !Array.isArray(issues)) {
+    issues = getAvailableMagazineIssues();
+  }
+
+  if (issues.length === 0) {
+    tableBody.innerHTML = `
+      <tr>
+        <td colspan="5" style="text-align: center; padding: 2.5rem 1.5rem; color: var(--admin-text-muted);">
+          <div style="font-size: 1rem; color: var(--admin-gold-light); font-weight: 600; margin-bottom: 0.35rem;">No Monthly Editions Added to Slideshow</div>
+          <p style="font-size: 0.82rem; margin: 0;">Add monthly editions using the form above to showcase them on the Homepage Hero Slideshow.</p>
+        </td>
+      </tr>
+    `;
+    return;
+  }
+
+  tableBody.innerHTML = issues.map((issue, idx) => `
+    <tr>
+      <td>
+        <img src="${escapeHtml(issue.cover)}" alt="${escapeHtml(issue.title || 'Edition')}" style="width: 48px; height: 68px; object-fit: cover; border-radius: 3px; border: 1px solid var(--admin-border-gold);" onerror="this.src='/assets/images/magazine-cover-latest.jpg'">
+      </td>
+      <td>
+        <div style="font-weight: 700; color: #FFFFFF; font-size: 0.92rem;">${escapeHtml(issue.monthYear || (issue.title ? issue.title.split('—')[0].trim() : 'Edition'))}</div>
+        <span style="font-size: 0.72rem; color: var(--admin-text-faint); font-family: monospace;">ID: ${escapeHtml(issue.id || 'issue-' + idx)}</span>
+      </td>
+      <td>
+        <div style="font-weight: 600; color: var(--admin-gold-light); font-size: 0.85rem;">${escapeHtml(issue.title || '')}</div>
+      </td>
+      <td>
+        <span style="font-weight: 600; color: #34D399; font-size: 0.85rem;">₹${escapeHtml(issue.price || 220)}</span>
+      </td>
+      <td style="text-align: right;">
+        <div style="display: inline-flex; gap: 0.4rem;">
+          <button type="button" class="admin-btn admin-btn-outline admin-btn-sm" onclick="editMagazineEdition('${escapeHtml(issue.id || '')}')">Edit</button>
+          <button type="button" class="admin-btn admin-btn-danger admin-btn-sm" onclick="deleteMagazineEdition('${escapeHtml(issue.id || '')}')">Delete</button>
+        </div>
+      </td>
+    </tr>
+  `).join('');
+};
+
+window.handleSaveMagazineEdition = async function(e) {
+  if (e && typeof e.preventDefault === 'function') e.preventDefault();
+
+  const issueId = (document.getElementById('edIssueId')?.value || '').trim();
+  const month = (document.getElementById('edIssueMonth')?.value || '').trim();
+  const title = (document.getElementById('edIssueTitle')?.value || '').trim();
+  const cover = (document.getElementById('edIssueCover')?.value || '').trim();
+  const price = parseInt(document.getElementById('edIssuePrice')?.value || '220', 10);
+
+  if (!month || !title || !cover) {
+    showToast('⚠️ Please enter Month, Title, and Cover Image URL.');
+    return;
+  }
+
+  let currentSettings = {};
+  try {
+    const raw = localStorage.getItem('screenlady_magazine_settings');
+    if (raw) currentSettings = JSON.parse(raw);
+  } catch (err) {}
+
+  let issues = Array.isArray(currentSettings.availableIssues) ? [...currentSettings.availableIssues] : [];
+
+  const id = issueId || (month.toLowerCase().replace(/[^a-z0-9]+/g, '-') + '-' + Date.now());
+
+  const newIssue = {
+    id,
+    monthYear: month,
+    title,
+    cover,
+    price: isNaN(price) ? 220 : price
+  };
+
+  const existIdx = issues.findIndex(i => i.id === id);
+  if (existIdx >= 0) {
+    issues[existIdx] = newIssue;
+  } else {
+    issues.push(newIssue);
+  }
+
+  currentSettings.availableIssues = issues;
+
+  localStorage.setItem('screenlady_magazine_settings', JSON.stringify(currentSettings));
+
+  const pin = getSavedPin();
+  if (window.ScreenladyAPI && typeof window.ScreenladyAPI.updateMagazineSettings === 'function') {
+    try {
+      await window.ScreenladyAPI.updateMagazineSettings(currentSettings, pin);
+    } catch (err) {
+      console.warn('Backend magazine settings sync notice:', err);
+    }
+  }
+
+  cancelMagazineEditionEdit();
+  renderMagazineEditionsList(issues);
+  showToast(issueId ? '✓ Magazine edition updated in slideshow!' : '✓ Magazine edition added to homepage slideshow!');
+};
+
+window.editMagazineEdition = function(id) {
+  const issues = getAvailableMagazineIssues();
+  const item = issues.find(i => i.id === id);
+  if (!item) return;
+
+  const idField = document.getElementById('edIssueId');
+  if (idField) idField.value = item.id;
+  const monthField = document.getElementById('edIssueMonth');
+  if (monthField) monthField.value = item.monthYear || (item.title ? item.title.split('—')[0].trim() : '');
+  const titleField = document.getElementById('edIssueTitle');
+  if (titleField) titleField.value = item.title || '';
+  const coverField = document.getElementById('edIssueCover');
+  if (coverField) coverField.value = item.cover || '';
+  const priceField = document.getElementById('edIssuePrice');
+  if (priceField) priceField.value = item.price || 220;
+
+  updateEdCoverPreview(item.cover || '');
+
+  const formTitle = document.getElementById('edIssueFormTitle');
+  if (formTitle) formTitle.textContent = 'Edit Monthly Edition in Slideshow';
+  const subBtn = document.getElementById('edIssueSubmitBtn');
+  if (subBtn) subBtn.innerHTML = 'Update Edition &rarr;';
+  const cancelBtn = document.getElementById('edIssueCancelBtn');
+  if (cancelBtn) cancelBtn.style.display = 'inline-block';
+
+  const form = document.getElementById('magEditionForm');
+  if (form) form.scrollIntoView({ behavior: 'smooth' });
+};
+
+window.cancelMagazineEditionEdit = function() {
+  const form = document.getElementById('magEditionForm');
+  if (form) form.reset();
+  const idField = document.getElementById('edIssueId');
+  if (idField) idField.value = '';
+  updateEdCoverPreview('');
+  const formTitle = document.getElementById('edIssueFormTitle');
+  if (formTitle) formTitle.textContent = '+ Add New Monthly Edition to Slideshow';
+  const subBtn = document.getElementById('edIssueSubmitBtn');
+  if (subBtn) subBtn.innerHTML = '+ Add Edition to Homepage Slideshow';
+  const cancelBtn = document.getElementById('edIssueCancelBtn');
+  if (cancelBtn) cancelBtn.style.display = 'none';
+  const status = document.getElementById('edIssueUploadStatus');
+  if (status) status.textContent = '';
+};
+
+window.deleteMagazineEdition = async function(id) {
+  if (!confirm('Are you sure you want to remove this edition from the homepage slideshow?')) return;
+
+  let currentSettings = {};
+  try {
+    const raw = localStorage.getItem('screenlady_magazine_settings');
+    if (raw) currentSettings = JSON.parse(raw);
+  } catch (err) {}
+
+  let issues = Array.isArray(currentSettings.availableIssues) ? [...currentSettings.availableIssues] : [];
+  issues = issues.filter(i => i.id !== id);
+  currentSettings.availableIssues = issues;
+
+  localStorage.setItem('screenlady_magazine_settings', JSON.stringify(currentSettings));
+
+  const pin = getSavedPin();
+  if (window.ScreenladyAPI && typeof window.ScreenladyAPI.updateMagazineSettings === 'function') {
+    try {
+      await window.ScreenladyAPI.updateMagazineSettings(currentSettings, pin);
+    } catch (err) {
+      console.warn('Backend magazine settings sync notice:', err);
+    }
+  }
+
+  renderMagazineEditionsList(issues);
+  showToast('✓ Edition removed from homepage slideshow.');
+};

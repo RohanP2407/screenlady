@@ -10,37 +10,8 @@
 (function () {
   'use strict';
 
-  // Master Registry of all Magazine Photos for Lightbox
-  const MAGAZINE_GALLERY = [
-    { src: 'assets/images/magazine-photos/1.jpg', title: 'A Celebration of Sovereign Grace', theme: 'Hero Portrait' },
-    { src: 'assets/images/magazine-photos/random2.jpg', title: 'Chronicles of Distinction', theme: 'Editorial Spread' },
-    { src: 'assets/images/magazine-photos/3.1.jpg', title: 'Celluloid Glamour & Stardom', theme: 'Glamour & Entertainment' },
-    { src: 'assets/images/magazine-photos/3.2.jpg', title: 'Women of Cultural Distinction', theme: 'Women Who Inspire' },
-    { src: 'assets/images/magazine-photos/3.3.jpg', title: 'Unfiltered Memoirs Beyond the Lens', theme: 'Stories Beyond the Spotlight' },
-    { src: 'assets/images/magazine-photos/3.4.jpg', title: 'Executive Eminence & Enterprise', theme: 'Business & Lifestyle' },
-    { src: 'assets/images/magazine-photos/random.jpg', title: 'Haute Aesthetics & Red Carpet', theme: 'Glamour & Entertainment' },
-    { src: 'assets/images/magazine-photos/random1.jpg', title: 'Pioneering Voices of India', theme: 'Women Who Inspire' },
-    { src: 'assets/images/magazine-photos/random4.jpg', title: 'Leadership Across Boardrooms', theme: 'Business & Lifestyle' },
-    { src: 'assets/images/magazine-photos/random5.jpg', title: 'Cinematic Majesty & Art', theme: 'Glamour & Entertainment' },
-    { src: 'assets/images/magazine-photos/4.1.jpg', title: 'The Unyielding Genesis', theme: 'Her Journey' },
-    { src: 'assets/images/magazine-photos/4.2.jpg', title: 'Architect of Lasting Impact', theme: 'Her Achievements' },
-    { src: 'assets/images/magazine-photos/4.3.jpg', title: 'Lighting the Sovereign Torch', theme: 'Her Inspiration' },
-    { src: 'assets/images/magazine-photos/4.4.jpg', title: 'The Triumph of Courage', theme: 'Stories Beyond the Spotlight' },
-    { src: 'assets/images/magazine-photos/5.1.jpg', title: 'Haute Couture & Fine Tailoring', theme: 'Fashion & Glamour' },
-    { src: 'assets/images/magazine-photos/5.2.jpg', title: 'Royal Heritage Jewellery', theme: 'Luxury Lifestyle' },
-    { src: 'assets/images/magazine-photos/5.3.jpg', title: 'Contemporary Elegance Spread', theme: 'Beauty & Couture' },
-    { src: 'assets/images/magazine-photos/6.1.jpg', title: 'Corporate Brand Collaboration', theme: 'Brand Platform' },
-    { src: 'assets/images/magazine-photos/6.2.jpg', title: 'Executive Brand Feature', theme: 'Brand Platform' },
-    { src: 'assets/images/magazine-photos/6.3.jpg', title: 'Prestige Media Showcase', theme: 'Brand Platform' },
-    { src: 'assets/images/magazine-photos/6.4.jpg', title: 'Luxury Brand Partnership', theme: 'Brand Platform' },
-    { src: 'assets/images/magazine-photos/7.1.jpg', title: 'Editorial Leadership & Vision', theme: 'Visionary Spread' },
-    { src: 'assets/images/team/prashant-sagvekar.jpeg', title: 'Mr. Prashant Sagvekar - Founder & Publisher', theme: 'Executive Leadership' },
-    { src: 'assets/images/team/amruta-rao.jpeg', title: 'Mrs. Amruta Rao - Editor In Chief', theme: 'Editorial Board' },
-    { src: 'assets/images/team/mansi-ingle.jpeg', title: 'Mrs. Manasi Ingle - Board Member', theme: 'Board of Directors' },
-    { src: 'assets/images/team/supriya-vinod.jpeg', title: 'Mrs. Supriya Vinod - Board Member', theme: 'Board of Directors' },
-    { src: 'assets/images/team/sakshi-sagvekar.jpeg', title: 'Mrs. Sakshi Sagvekar - Managing Director', theme: 'Executive Leadership' },
-    { src: 'assets/images/team/vedang-sagvekar.jpeg', title: 'Mr. Vedang Sagvekar - Marketing Director', theme: 'Executive Leadership' }
-  ];
+  // Master Registry of all Magazine Photos for Lightbox (Dynamically populated from page content)
+  let MAGAZINE_GALLERY = [];
 
   let activePhotoIndex = 0;
 
@@ -163,8 +134,18 @@
       if (e.key === 'ArrowRight') changeLightboxPhoto(1);
     });
 
+    // Populate gallery dynamically from document items
+    const lightboxEls = Array.from(document.querySelectorAll('[data-lightbox-src]'));
+    if (lightboxEls.length > 0) {
+      MAGAZINE_GALLERY = lightboxEls.map(el => ({
+        src: el.getAttribute('data-lightbox-src') || '',
+        title: el.getAttribute('data-lightbox-title') || 'Accolade Screenlady Feature',
+        theme: el.getAttribute('data-lightbox-theme') || 'Editorial Spread'
+      }));
+    }
+
     // Attach click listeners to all elements with data-lightbox-src
-    document.querySelectorAll('[data-lightbox-src]').forEach(el => {
+    lightboxEls.forEach(el => {
       el.addEventListener('click', (e) => {
         e.preventDefault();
         const src = el.getAttribute('data-lightbox-src');

@@ -123,52 +123,7 @@
      3. RETRIEVE HOMEPAGE BRAND SPOTLIGHT / BUSINESS SHOWCASE (NO 'ads' word)
      (Loaded from business_ads table & admin portal - completely separate from Gallery!)
      ========================================================================== */
-  const DEFAULT_BUSINESS_SPOTLIGHT = [
-    {
-      id: 'ad-tantuh-couture',
-      brandName: 'Tantuh Haute Couture',
-      headline: 'Bespoke Handwoven Silks & Sovereign Bridal Heritage',
-      tagline: 'Timeless Indian Craftsmanship Refined for the Global Stage',
-      summary: 'Tantuh curates exclusive handloom silks, zardozi embroidery, and regal heirloom weaves celebrating India’s ancestral artisans.',
-      photo: 'https://ik.imagekit.io/acooladescreenlady/assets/images/articles/article-1.jpg',
-      category: 'Luxury Fashion',
-      badge: 'Brand Spotlight',
-      destinationUrl: 'https://instagram.com'
-    },
-    {
-      id: 'ad-regal-jewels',
-      brandName: 'Regal Heritage Fine Jewels',
-      headline: 'Uncut Polki & Certified Natural Diamond Masterpieces',
-      tagline: 'Elegance Forged Through Generations of Royal Goldsmithing',
-      summary: 'Specializing in royal polki necklaces, heritage temple chokers, and certified solitaire jewelry with private salon consultations.',
-      photo: 'https://ik.imagekit.io/acooladescreenlady/assets/images/magazine-photos/4.2.jpg',
-      category: 'Fine Jewellery',
-      badge: 'Featured Partner',
-      destinationUrl: 'https://instagram.com'
-    },
-    {
-      id: 'ad-aura-wellness',
-      brandName: 'Aura Executive Wellness Suites',
-      headline: 'Restorative Holistic Dermatology & Luxury Vitality Therapies',
-      tagline: 'Holistic Balance Designed for High-Performance Women Leaders',
-      summary: 'Pioneering non-invasive longevity treatments, revitalizing cellular therapies, and private aesthetic wellness suites in Mumbai & Pune.',
-      photo: 'https://ik.imagekit.io/acooladescreenlady/assets/images/magazine-photos/4.1.jpg',
-      category: 'Aesthetic Vitality',
-      badge: 'Brand Spotlight',
-      destinationUrl: 'https://instagram.com'
-    },
-    {
-      id: 'ad-screenlady-studios',
-      brandName: 'Screenlady Broadcast & Creative Studio',
-      headline: 'Full-Scale 4K Multi-Camera Audio-Visual Production',
-      tagline: 'Where Cinematic Storytelling Meets Executive Vision',
-      summary: 'State-of-the-art studio facilities offering professional acoustic podcast recordings, documentary cinematography, and executive media coaching.',
-      photo: 'https://ik.imagekit.io/acooladescreenlady/assets/images/magazine-photos/3.1.jpg',
-      category: 'Media Ventures',
-      badge: 'Executive Partner',
-      destinationUrl: 'https://instagram.com'
-    }
-  ];
+  const DEFAULT_BUSINESS_SPOTLIGHT = [];
 
   function getBusinessShowcase() {
     try {
