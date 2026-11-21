@@ -120,63 +120,109 @@
   }
 
   /* ==========================================================================
-     3. RETRIEVE CURATED HOMEPAGE SLIDESHOW PHOTOS (Strictly Gallery & Photo Archives)
+     3. RETRIEVE HOMEPAGE BRAND SPOTLIGHT / BUSINESS SHOWCASE (NO 'ads' word)
+     (Loaded from business_ads table & admin portal - completely separate from Gallery!)
      ========================================================================== */
-  function getSlideshowPhotos() {
+  const DEFAULT_BUSINESS_SPOTLIGHT = [
+    {
+      id: 'ad-tantuh-couture',
+      brandName: 'Tantuh Haute Couture',
+      headline: 'Bespoke Handwoven Silks & Sovereign Bridal Heritage',
+      tagline: 'Timeless Indian Craftsmanship Refined for the Global Stage',
+      summary: 'Tantuh curates exclusive handloom silks, zardozi embroidery, and regal heirloom weaves celebrating India’s ancestral artisans.',
+      photo: 'https://ik.imagekit.io/acooladescreenlady/assets/images/articles/article-1.jpg',
+      category: 'Luxury Fashion',
+      badge: 'Brand Spotlight',
+      destinationUrl: 'https://instagram.com'
+    },
+    {
+      id: 'ad-regal-jewels',
+      brandName: 'Regal Heritage Fine Jewels',
+      headline: 'Uncut Polki & Certified Natural Diamond Masterpieces',
+      tagline: 'Elegance Forged Through Generations of Royal Goldsmithing',
+      summary: 'Specializing in royal polki necklaces, heritage temple chokers, and certified solitaire jewelry with private salon consultations.',
+      photo: 'https://ik.imagekit.io/acooladescreenlady/assets/images/magazine-photos/4.2.jpg',
+      category: 'Fine Jewellery',
+      badge: 'Featured Partner',
+      destinationUrl: 'https://instagram.com'
+    },
+    {
+      id: 'ad-aura-wellness',
+      brandName: 'Aura Executive Wellness Suites',
+      headline: 'Restorative Holistic Dermatology & Luxury Vitality Therapies',
+      tagline: 'Holistic Balance Designed for High-Performance Women Leaders',
+      summary: 'Pioneering non-invasive longevity treatments, revitalizing cellular therapies, and private aesthetic wellness suites in Mumbai & Pune.',
+      photo: 'https://ik.imagekit.io/acooladescreenlady/assets/images/magazine-photos/4.1.jpg',
+      category: 'Aesthetic Vitality',
+      badge: 'Brand Spotlight',
+      destinationUrl: 'https://instagram.com'
+    },
+    {
+      id: 'ad-screenlady-studios',
+      brandName: 'Screenlady Broadcast & Creative Studio',
+      headline: 'Full-Scale 4K Multi-Camera Audio-Visual Production',
+      tagline: 'Where Cinematic Storytelling Meets Executive Vision',
+      summary: 'State-of-the-art studio facilities offering professional acoustic podcast recordings, documentary cinematography, and executive media coaching.',
+      photo: 'https://ik.imagekit.io/acooladescreenlady/assets/images/magazine-photos/3.1.jpg',
+      category: 'Media Ventures',
+      badge: 'Executive Partner',
+      destinationUrl: 'https://instagram.com'
+    }
+  ];
+
+  function getBusinessShowcase() {
     try {
       const deletedIds = (typeof window.getScreenladyDeletedIds === 'function') 
         ? window.getScreenladyDeletedIds() 
         : (() => { try { const r = localStorage.getItem('screenlady_deleted_ids'); return r ? JSON.parse(r) : []; } catch(e){ return []; } })();
 
-      // Dedicated Gallery & Home Photos from Editorial Desk
-      let customHomePhotos = [];
+      let customAds = [];
       try {
-        const rawHome = localStorage.getItem('screenlady_custom_home_photos');
-        if (rawHome) customHomePhotos = JSON.parse(rawHome);
-      } catch (e) { customHomePhotos = []; }
+        const rawAds = localStorage.getItem('screenlady_custom_business_ads') || localStorage.getItem('screenlady_custom_home_photos');
+        if (rawAds) customAds = JSON.parse(rawAds);
+      } catch (e) { customAds = []; }
 
-      let customPhotos = [];
-      try {
-        const rawCustom = localStorage.getItem('screenlady_custom_photos');
-        if (rawCustom) customPhotos = JSON.parse(rawCustom);
-      } catch (e) { customPhotos = []; }
+      const backendAds = window.backendLiveBusinessAds || [];
 
-      const backendPhotos = window.backendLivePhotos || [];
-
-      // Combine ONLY gallery / photo showcase items — completely separate from Live News!
+      // Combine ONLY business showcase items — strictly separate from Gallery Photography!
       const combined = [
-        ...customHomePhotos,
-        ...customPhotos,
-        ...backendPhotos
-      ].filter(item => item && item.photo && !deletedIds.includes(item.id));
+        ...customAds,
+        ...backendAds,
+        ...DEFAULT_BUSINESS_SPOTLIGHT
+      ].filter(item => item && (item.photo || item.image) && !deletedIds.includes(item.id));
 
-      // Dedup by photo src / ID
       const seen = new Set();
       const deduped = [];
       for (const p of combined) {
-        if (!p.photo) continue;
-        const key = p.id || p.photo;
+        const photoUrl = p.photo || p.image;
+        if (!photoUrl) continue;
+        const key = p.id || photoUrl;
         if (!seen.has(key)) {
           seen.add(key);
           deduped.push({
-            id: p.id || 'photo-' + deduped.length,
-            isNews: false,
-            category: p.category || 'Gallery',
-            badge: p.categoryBadge || (p.category ? `✦ ${p.category}` : '✦ Gallery Showcase'),
-            title: p.title || p.caption || 'Accolade Screenlady Photograph',
-            location: p.venue || p.location || 'Screenlady Archives',
-            date: p.displayDate || p.date || 'Recent',
-            photo: p.photo,
-            link: '/photos'
+            id: p.id || 'brand-' + deduped.length,
+            brandName: p.brandName || p.title || 'Executive Partner',
+            headline: p.headline || p.tagline || p.title || 'Brand Spotlight',
+            tagline: p.tagline || p.headline || '',
+            summary: p.summary || p.infoSummary || p.description || '',
+            category: p.category || 'Featured Partner',
+            badge: p.categoryBadge || p.badge || 'Brand Spotlight',
+            destinationUrl: p.destinationUrl || p.link || '',
+            photo: photoUrl,
+            date: p.displayDate || p.date || 'Active'
           });
         }
       }
 
-      return deduped.slice(0, 16);
+      return deduped.slice(0, 12);
     } catch (e) {
-      console.warn('Error loading slideshow photos:', e);
-      return [];
+      console.warn('Error loading brand spotlights:', e);
+      return DEFAULT_BUSINESS_SPOTLIGHT;
     }
+  }
+
+  function getSlideshowPhotos() {
+    return getBusinessShowcase();
   }
 
   /* ==========================================================================
@@ -379,41 +425,50 @@
     const theaterWrap = document.getElementById('homePhotoSlideshowWrap');
     if (!stage || !theaterWrap) return;
 
-    activePhotosList = getSlideshowPhotos();
+    activePhotosList = getBusinessShowcase();
     if (activePhotosList.length === 0) {
       stage.innerHTML = `
         <div class="home-photo-slide active" style="position:relative;display:flex;align-items:center;justify-content:center;height:100%;min-height:440px;background:#0d0c0a;text-align:center;padding:2.5rem 1.5rem;">
           <div>
-            <div style="font-size:2rem;margin-bottom:0.75rem;opacity:0.5;">📷</div>
-            <h3 style="font-family:var(--font-serif,'Cinzel',serif);font-size:1.3rem;color:var(--gold-bright,#FFE894);margin-bottom:0.5rem;letter-spacing:0.04em;">Photo Gallery Archives</h3>
-            <p style="font-size:0.85rem;color:var(--text-muted,#A3A09A);max-width:320px;margin:0 auto 1.25rem;line-height:1.6;">High-resolution event photographs published to the Gallery will be showcased here.</p>
-            <a href="/photos" class="btn-editorial-gold" style="display:inline-flex;align-items:center;gap:0.5rem;padding:0.5rem 1.25rem;font-size:0.78rem;">
-              <span>Explore All Galleries</span>
-              <span>→</span>
-            </a>
+            <h3 style="font-family:var(--font-serif,'Cinzel',serif);font-size:1.3rem;color:var(--gold-bright,#FFE894);margin-bottom:0.5rem;letter-spacing:0.04em;">Executive Brand Spotlight</h3>
+            <p style="font-size:0.85rem;color:var(--text-muted,#A3A09A);max-width:320px;margin:0 auto 1.25rem;line-height:1.6;">Featured business partners and enterprise spotlights published from the Editorial Desk are displayed here.</p>
           </div>
         </div>
       `;
       return;
     }
 
-    // Render Gallery Slides (Strictly Gallery Photography, linking to /photos)
+    // Render Brand Spotlight Slides (Corporate & Enterprise - NO 'ads' word)
     stage.innerHTML = activePhotosList.map((item, index) => {
       const isActive = index === 0 ? 'active' : '';
 
       return `
-        <a href="${escapeHtml(item.link || '/photos')}" class="home-photo-slide ${isActive}" data-slide-index="${index}" id="homePhotoSlide-${index}" title="${escapeHtml(item.title)}">
-          <img src="${escapeHtml(item.photo)}" alt="${escapeHtml(item.title)}" class="home-photo-slide-img" loading="lazy">
-          <div class="home-photo-slide-kicker">${escapeHtml(item.badge || item.category || 'Gallery')}</div>
+        <div class="home-photo-slide ${isActive}" data-slide-index="${index}" id="homePhotoSlide-${index}" title="${escapeHtml(item.brandName || item.headline)}">
+          <img src="${escapeHtml(item.photo)}" alt="${escapeHtml(item.brandName || item.headline)}" class="home-photo-slide-img" loading="lazy">
+          <div class="home-photo-slide-kicker">${escapeHtml(item.badge || 'Brand Spotlight')}</div>
           <div class="home-photo-caption-bar">
-            <h3 class="home-photo-caption-title">${escapeHtml(item.title)}</h3>
-            <div class="home-photo-caption-meta">
-              <span>📍 ${escapeHtml(item.location || 'Mumbai')}</span>
-              <span>•</span>
-              <span>📅 ${escapeHtml(item.date || 'Recent')}</span>
+            <div style="display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; margin-bottom: 0.2rem;">
+              <span style="font-size: 0.76rem; text-transform: uppercase; letter-spacing: 0.12em; color: var(--gold-light, #D4AF37); font-weight: 700;">
+                ${escapeHtml(item.brandName)}
+              </span>
+              <span style="font-size: 0.70rem; color: #9CA3AF; letter-spacing: 0.05em;">
+                ${escapeHtml(item.category || 'Featured Partner')}
+              </span>
             </div>
+            <h3 class="home-photo-caption-title" style="font-size: 1.05rem; margin-bottom: 0.35rem; line-height: 1.35;">
+              ${escapeHtml(item.headline || item.brandName)}
+            </h3>
+            ${item.summary ? `<p style="font-size: 0.80rem; color: #D1D5DB; margin: 0 0 0.5rem 0; line-height: 1.45; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">${escapeHtml(item.summary)}</p>` : ''}
+            ${item.destinationUrl && item.destinationUrl !== '#' && item.destinationUrl !== 'javascript:void(0)' ? `
+              <div style="margin-top: 0.35rem;">
+                <a href="${escapeHtml(item.destinationUrl)}" target="_blank" rel="noopener noreferrer" class="btn-editorial-gold" style="display: inline-flex; align-items: center; gap: 0.35rem; padding: 0.3rem 0.85rem; font-size: 0.72rem; text-decoration: none; border-radius: 3px;" onclick="event.stopPropagation();">
+                  <span>Explore Partner</span>
+                  <span>→</span>
+                </a>
+              </div>
+            ` : ''}
           </div>
-        </a>
+        </div>
       `;
     }).join('');
 
@@ -502,17 +557,20 @@
   async function syncFromBackend() {
     if (!window.ScreenladyAPI) return;
     try {
-      const [liveUpdates, livePhotos] = await Promise.all([
-        typeof window.ScreenladyAPI.getUpdates === 'function' ? window.ScreenladyAPI.getUpdates() : Promise.resolve([]),
-        typeof window.ScreenladyAPI.getPhotos === 'function' ? window.ScreenladyAPI.getPhotos() : Promise.resolve([])
+      const [liveNews, liveBusinessAds, liveUpdates] = await Promise.all([
+        typeof window.ScreenladyAPI.getNews === 'function' ? window.ScreenladyAPI.getNews() : Promise.resolve([]),
+        typeof window.ScreenladyAPI.getBusinessAds === 'function' ? window.ScreenladyAPI.getBusinessAds() : Promise.resolve([]),
+        typeof window.ScreenladyAPI.getUpdates === 'function' ? window.ScreenladyAPI.getUpdates() : Promise.resolve([])
       ]);
 
+      if (liveNews && Array.isArray(liveNews)) {
+        window.backendLiveNews = liveNews;
+      }
       if (liveUpdates && Array.isArray(liveUpdates)) {
         window.backendLiveUpdates = liveUpdates;
-        window.backendLiveNews = liveUpdates;
       }
-      if (livePhotos && Array.isArray(livePhotos) && livePhotos.length > 0) {
-        window.backendLivePhotos = livePhotos;
+      if (liveBusinessAds && Array.isArray(liveBusinessAds) && liveBusinessAds.length > 0) {
+        window.backendLiveBusinessAds = liveBusinessAds;
         renderPhotoSlideshow();
       }
 
@@ -531,13 +589,13 @@
     // Fetch once on page load
     syncFromBackend();
 
-    // Re-render when Editorial Desk publishes or modifies news, updates, fashion, or home photos
+    // Re-render when Editorial Desk publishes or modifies news, updates, fashion, or business spotlight
     window.addEventListener('storage', (e) => {
       if (e.key === 'screenlady_custom_news' || e.key === 'screenlady_custom_updates' || e.key === 'screenlady_custom_fashion' || e.key === 'screenlady_last_updated') {
         renderNewsPage(currentNewsPage);
         renderCuratedSections();
       }
-      if (e.key === 'screenlady_custom_home_photos') {
+      if (e.key === 'screenlady_custom_business_ads' || e.key === 'screenlady_custom_home_photos') {
         renderPhotoSlideshow();
       }
     });

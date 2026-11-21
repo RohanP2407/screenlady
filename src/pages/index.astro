@@ -51,24 +51,24 @@ const extraScripts = [
             </div>
           </div>
 
-          <!-- RIGHT COLUMN: Photo Showcase Slideshow -->
+          <!-- RIGHT COLUMN: Executive Brand Spotlight (NO 'ads' word) -->
           <div class="home-split-photos-col">
             <div class="home-split-col-header">
               <div class="home-split-header-left">
-                <span class="home-split-kicker-pill">Photo Archives</span>
-                <h2 class="home-split-title">Gallery Showcase</h2>
+                <span class="home-split-kicker-pill">Corporate & Enterprise</span>
+                <h2 class="home-split-title">Brand Spotlight</h2>
               </div>
-              <a href="/photos" class="home-split-view-all-btn" title="View all photo galleries">
-                <span>All Photos</span>
-                <span class="btn-arrow">→</span>
-              </a>
+              <div class="home-split-view-all-btn" style="cursor: default; pointer-events: none;">
+                <span>Featured Partners</span>
+                <span class="btn-arrow">✦</span>
+              </div>
             </div>
             <div class="home-photo-slideshow-wrap" id="homePhotoSlideshowWrap">
               <div class="home-photo-slides-stage" id="homePhotoSlidesStage">
-                <!-- Dynamically populated by assets/js/home-news-photos.js -->
+                <!-- Dynamically populated by assets/js/home-news-photos.js from business_ads table -->
               </div>
-              <button type="button" class="home-photo-arrow prev" id="homePhotoPrevBtn" aria-label="Previous Photograph">‹</button>
-              <button type="button" class="home-photo-arrow next" id="homePhotoNextBtn" aria-label="Next Photograph">›</button>
+              <button type="button" class="home-photo-arrow prev" id="homePhotoPrevBtn" aria-label="Previous Spotlight">‹</button>
+              <button type="button" class="home-photo-arrow next" id="homePhotoNextBtn" aria-label="Next Spotlight">›</button>
             </div>
           </div>
         </div>

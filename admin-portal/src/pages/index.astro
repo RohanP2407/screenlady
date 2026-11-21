@@ -422,10 +422,10 @@
               </div>
             </div>
 
-            <div class="admin-kpi-card" onclick="filterManageSection('home_photos')" style="cursor: pointer;" title="View Homepage Photos">
+            <div class="admin-kpi-card" onclick="filterManageSection('business_ads')" style="cursor: pointer;" title="View Brand Spotlight Partners">
               <div>
-                <div class="admin-kpi-value" id="statTotalHomePhotos" style="color: #C084FC;">4</div>
-                <div class="admin-kpi-label">Homepage Slideshow</div>
+                <div class="admin-kpi-value" id="statTotalBusinessAds" style="color: #C084FC;">4</div>
+                <div class="admin-kpi-label">Brand Spotlight</div>
               </div>
               <div class="admin-kpi-icon">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
@@ -545,16 +545,15 @@
               </div>
 
               <select id="postSectionSelect" class="post-input-field section-select-box" onchange="handleSectionChange(this.value)">
-                <option value="news">Live News (Screenlady Updates) &mdash; Daily Live News on Homepage</option>
-                <option value="filmy_adda">Filmy Adda &mdash; Movies, Cinema & Film Photos/Information (Homepage + Updates)</option>
-                <option value="bizz_world">Bizz World &mdash; Business, Startups & Corporate Pioneers (Homepage + Updates)</option>
-                <option value="women_inspiration">Women of Inspiration &mdash; Struggle to Success Honorees (Homepage + Updates)</option>
-                <option value="fashion_lifestyle">Fashion and Lifestyle &mdash; Haute Couture, Trends & Living (Homepage + Updates)</option>
-                <option value="home_photos">Homepage Photos &mdash; Photos for Homepage Slideshow Showcase</option>
-                <option value="photos">Screenlady Gallery &mdash; Photos Page (photos.html)</option>
-                <option value="updates">Screenlady Updates &mdash; Official Updates Page (updates.html)</option>
-                <option value="editorials">Editorials &mdash; Writings, Articles & In-Depth Columns (editorials.html)</option>
-                <option value="podcast">Podcast &mdash; Social Media Streaming Episodes with 10s Preview (podcast.html)</option>
+                <option value="news">Live News (Homepage Left Column) &mdash; realtime_updates table</option>
+                <option value="business_ads">Brand Spotlight (Homepage Right Column) &mdash; business_ads table</option>
+                <option value="filmy_adda">Filmy Adda (Updates Page) &mdash; filmy_adda table</option>
+                <option value="bizz_world">Bizz World (Updates Page) &mdash; bizz_world table</option>
+                <option value="women_inspiration">Women of Inspiration (Updates Page) &mdash; women_inspiration table</option>
+                <option value="fashion_lifestyle">Fashion & Lifestyle (Updates Page) &mdash; fashion_lifestyle table</option>
+                <option value="photos">Photo Gallery (Exclusively for /photos page) &mdash; gallery_photos table</option>
+                <option value="editorials">Editorials & Articles &mdash; editorials table</option>
+                <option value="podcast">Podcast Episodes &mdash; podcasts table</option>
               </select>
               <p style="font-size: 0.78rem; color: var(--admin-text-muted); margin: 0.45rem 0 0;">
                 Choose where this entry will appear. Form fields below automatically adapt to match your selection.
@@ -724,6 +723,56 @@
                 </div>
 
                 <!-- ==============================================
+                     SECTION C-2: BRAND SPOTLIGHT / BUSINESS SHOWCASE (NO 'ads' word)
+                ============================================== -->
+                <div id="sectionFieldsBrandAds" class="form-group-full" style="display: none;">
+                  <div class="admin-photo-standard-note" style="background: rgba(212, 175, 55, 0.08); border: 1px solid var(--admin-gold); border-left: 4px solid var(--admin-gold); border-radius: 6px; padding: 0.9rem 1.25rem; margin-bottom: 1.25rem;">
+                    <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 0.35rem;">
+                      <strong style="color: var(--admin-gold-light); font-size: 0.88rem;">Homepage Brand Spotlight Showcase</strong>
+                      <span class="admin-badge admin-badge-gold" style="font-size: 0.65rem;">business_ads table</span>
+                    </div>
+                    <p style="font-size: 0.82rem; color: #E5E7EB; line-height: 1.55; margin: 0;">
+                      Displays in the Homepage Hero Split section (Right Column) featuring verified corporate partners, luxury designers, and business enterprises.
+                    </p>
+                  </div>
+
+                  <div class="post-form-grid" style="padding: 0;">
+                    <div>
+                      <label class="post-input-label" for="postBrandName">Brand / Enterprise Name *</label>
+                      <input type="text" id="postBrandName" class="post-input-field" placeholder="e.g. Tantuh Haute Couture / Regal Heritage Fine Jewels">
+                    </div>
+
+                    <div>
+                      <label class="post-input-label" for="postBrandCategory">Business / Industry Category</label>
+                      <input type="text" id="postBrandCategory" class="post-input-field" placeholder="e.g. Luxury Fashion / Fine Jewellery / Corporate Services">
+                    </div>
+
+                    <div class="form-group-full">
+                      <label class="post-input-label" for="postBrandHeadline">Spotlight Headline / Key Offering *</label>
+                      <input type="text" id="postBrandHeadline" class="post-input-field" placeholder="e.g. Bespoke Handwoven Silks & Sovereign Bridal Heritage">
+                    </div>
+
+                    <div class="form-group-full">
+                      <label class="post-input-label" for="postBrandTagline">Brand Tagline (Optional)</label>
+                      <input type="text" id="postBrandTagline" class="post-input-field" placeholder="e.g. Timeless Indian Craftsmanship Refined for the Global Stage">
+                    </div>
+
+                    <div class="form-group-full">
+                      <label class="post-input-label" for="postBrandSummary">Brand Summary & Description</label>
+                      <textarea id="postBrandSummary" class="post-input-field" rows="3" placeholder="Brief summary of the brand, services, or heritage..."></textarea>
+                    </div>
+
+                    <div class="form-group-full">
+                      <label class="post-input-label" for="postBrandDestUrl">Destination Website / Social Profile URL</label>
+                      <input type="url" id="postBrandDestUrl" class="post-input-field" placeholder="https://brandwebsite.com or https://instagram.com/brand">
+                      <p style="font-size: 0.76rem; color: var(--admin-gold-light); margin: 0.35rem 0 0;">
+                        Visitors will click 'Explore Partner' on the homepage to open this link.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- ==============================================
                      SECTION D: UPDATES & CURATED FIELDS
                 ============================================== -->
                 <div id="sectionFieldsUpdates" class="form-group-full" style="display: none;">
@@ -884,8 +933,8 @@
                 <button type="button" class="admin-type-tab-btn" data-manage-filter="fashion_lifestyle" onclick="setManageFilter('fashion_lifestyle')">
                   <span>Fashion & Lifestyle</span>
                 </button>
-                <button type="button" class="admin-type-tab-btn" data-manage-filter="home_photos" onclick="setManageFilter('home_photos')">
-                  <span>Home Photos</span>
+                <button type="button" class="admin-type-tab-btn" data-manage-filter="business_ads" onclick="setManageFilter('business_ads')">
+                  <span>Brand Spotlight</span>
                 </button>
                 <button type="button" class="admin-type-tab-btn" data-manage-filter="photos" onclick="setManageFilter('photos')">
                   <span>Gallery</span>

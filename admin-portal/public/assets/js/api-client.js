@@ -75,6 +75,20 @@ window.ScreenladyAPI = {
     }
   },
 
+  // Fetch Homepage Brand Spotlights / Business Showcase (NO 'ads' word in frontend)
+  async getBusinessAds() {
+    try {
+      const json = await cachedGet('/api/business-ads');
+      return json.data || [];
+    } catch (err) {
+      console.warn('[Screenlady API] Notice fetching business spotlight:', err.message);
+      return [];
+    }
+  },
+  async getBusinessShowcase() {
+    return this.getBusinessAds();
+  },
+
   // Fetch globally deleted item IDs
   async getDeletedIds() {
     try {

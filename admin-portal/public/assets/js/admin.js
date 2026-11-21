@@ -440,6 +440,7 @@ window.handleSectionChange = function(section) {
   const fPodcast = document.getElementById('sectionFieldsPodcast');
   const fPhotos = document.getElementById('sectionFieldsPhotos');
   const fUpdates = document.getElementById('sectionFieldsUpdates');
+  const fBrandAds = document.getElementById('sectionFieldsBrandAds');
   const updatesSubtypes = document.getElementById('updatesTypeSelectorRow');
   const photoLabel = document.getElementById('photoPickerLabel');
   const dateLabel = document.getElementById('dateInputLabel');
@@ -447,12 +448,13 @@ window.handleSectionChange = function(section) {
   const groupCategory = document.getElementById('groupCommonCategory');
   const groupTags = document.getElementById('groupCommonTags');
   if (groupCategory) groupCategory.style.display = (section === 'photos') ? 'none' : 'block';
-  if (groupTags) groupTags.style.display = (section === 'photos' || section === 'home_photos') ? 'none' : 'block';
+  if (groupTags) groupTags.style.display = (section === 'photos' || section === 'business_ads' || section === 'home_photos') ? 'none' : 'block';
 
   const isCuratedHomepageSection = ['filmy_adda', 'bizz_world', 'women_inspiration', 'fashion_lifestyle'].includes(section);
   if (fEditorials) fEditorials.style.display = section === 'editorials' ? 'block' : 'none';
   if (fPodcast) fPodcast.style.display = section === 'podcast' ? 'block' : 'none';
-  if (fPhotos) fPhotos.style.display = (section === 'photos' || section === 'home_photos') ? 'block' : 'none';
+  if (fPhotos) fPhotos.style.display = (section === 'photos') ? 'block' : 'none';
+  if (fBrandAds) fBrandAds.style.display = (section === 'business_ads' || section === 'home_photos') ? 'block' : 'none';
   if (fUpdates) fUpdates.style.display = (section === 'updates' || section === 'news' || isCuratedHomepageSection) ? 'block' : 'none';
   if (updatesSubtypes) updatesSubtypes.style.display = (section === 'updates' || section === 'news') ? 'block' : 'none';
 
@@ -635,15 +637,24 @@ window.handleSectionChange = function(section) {
       const fullInput = document.getElementById('postFullBody');
       if (fullInput) fullInput.placeholder = 'Write full feature story, artisanal details, and extended fashion chronicle...';
     }
-  } else if (section === 'home_photos') {
+  } else if (section === 'business_ads' || section === 'home_photos') {
     if (badge) {
-      badge.textContent = 'Publishing to Homepage Photo Slideshow (Independent from Photos Gallery)';
+      badge.textContent = 'Publishing to Brand Spotlight (Homepage Right Column - business_ads table)';
       badge.className = 'section-pill-badge badge-photos';
     }
-    if (submitBtn && !editingItem) submitBtn.textContent = '✦ Publish Homepage Photo (Displays in Homepage Slideshow)';
-    if (formTitle && !editingItem) formTitle.textContent = 'Upload / Publish Homepage Slideshow Photograph';
-    if (photoLabel) photoLabel.textContent = 'Select / Upload Photo for Homepage Slideshow';
-    if (dateLabel) dateLabel.textContent = 'Photograph Date';
+    if (submitBtn && !editingItem) submitBtn.textContent = '✦ Publish Brand Spotlight Showcase';
+    if (formTitle && !editingItem) formTitle.textContent = 'Publish Brand Partner Spotlight (Homepage)';
+    if (photoLabel) photoLabel.textContent = 'Brand Banner / Product Showcase Visual (ImageKit CDN)';
+    if (dateLabel) dateLabel.textContent = 'Spotlight Release Date';
+  } else if (section === 'photos') {
+    if (badge) {
+      badge.textContent = 'Publishing to Photo Gallery (Strictly /photos Page - gallery_photos table)';
+      badge.className = 'section-pill-badge badge-photos';
+    }
+    if (submitBtn && !editingItem) submitBtn.textContent = '✦ Publish Gallery Photograph';
+    if (formTitle && !editingItem) formTitle.textContent = 'Publish Visual Gallery Photograph (/photos only)';
+    if (photoLabel) photoLabel.textContent = 'Event / Studio Photograph (ImageKit CDN)';
+    if (dateLabel) dateLabel.textContent = 'Photo Date';
   } else if (section === 'editorials') {
     if (badge) {
       badge.textContent = 'Publishing to Editorials Page (editorials.html)';
@@ -1014,31 +1025,38 @@ function handlePostSubmit(e) {
   }
 
   // -------------------------------------------------------------
-  // SECTION: HOMEPAGE PHOTOS (SLIDESHOW SHOWCASE)
+  // SECTION: BUSINESS ADS / BRAND SPOTLIGHT (HOMEPAGE RIGHT COLUMN - business_ads table)
   // -------------------------------------------------------------
-  else if (section === 'home_photos') {
-    const venue = (document.getElementById('postPhotoVenue')?.value || '').trim() || 'Screenlady Studios, Mumbai';
-    const caption = (document.getElementById('postPhotoCaption')?.value || '').trim() || 'Accolade Screenlady Visual Showcase';
+  else if (section === 'business_ads' || section === 'home_photos') {
+    const brandName = (document.getElementById('postBrandName')?.value || document.getElementById('postHeadline')?.value || '').trim() || 'Featured Brand Partner';
+    const headline = (document.getElementById('postBrandHeadline')?.value || document.getElementById('postHeadline')?.value || '').trim() || brandName;
+    const tagline = (document.getElementById('postBrandTagline')?.value || '').trim();
+    const summary = (document.getElementById('postBrandSummary')?.value || document.getElementById('postSummary')?.value || '').trim();
+    const destUrl = (document.getElementById('postBrandDestUrl')?.value || '').trim() || 'https://instagram.com';
+    const brandCat = (document.getElementById('postBrandCategory')?.value || category || 'Enterprise').trim();
 
-    const newHomePhoto = {
-      id: (editingItem && editingItem.section === 'home_photos') ? editingItem.id : `homephoto-custom-${Date.now()}`,
-      category: category,
-      badge: `✦ ${category}`,
-      title: caption,
-      venue: venue,
-      location: venue,
-      caption: caption,
-      description: caption,
-      summary: caption,
+    const newAd = {
+      id: (editingItem && (editingItem.section === 'business_ads' || editingItem.section === 'home_photos')) ? editingItem.id : `ad-custom-${Date.now()}`,
+      section: 'business_ads',
+      brandName: brandName,
+      title: headline,
+      headline: headline,
+      tagline: tagline,
+      summary: summary,
+      infoSummary: summary,
+      category: brandCat,
+      categoryBadge: 'Brand Spotlight',
+      photo: photo,
+      image: photo,
+      destinationUrl: destUrl,
+      link: destUrl,
       date: dateStr,
       displayDate: displayDate,
-      photo: photo,
-      link: 'photos.html',
       timestamp: Date.now()
     };
 
-    saveCustomItem('screenlady_custom_home_photos', newHomePhoto);
-    showToast('✦ Homepage photo published! It now displays in the Homepage photo showcase slideshow.');
+    saveCustomItem('screenlady_custom_business_ads', newAd, 'business_ads');
+    showToast('✦ Brand Spotlight published! It now displays in the Homepage Brand Spotlight showcase.');
   }
 
   // -------------------------------------------------------------
@@ -1324,9 +1342,10 @@ async function loadAdminDashboard() {
   // Live Backend Synchronization across ALL content feeds
   if (window.ScreenladyAPI) {
     try {
-      const [backendUpdates, backendNews, backendEditorials, backendPhotos, backendPodcasts, backendOrders, deletedIds, backendMagazine] = await Promise.all([
+      const [backendUpdates, backendNews, backendAds, backendEditorials, backendPhotos, backendPodcasts, backendOrders, deletedIds, backendMagazine] = await Promise.all([
         typeof window.ScreenladyAPI.getUpdates === 'function' ? window.ScreenladyAPI.getUpdates() : Promise.resolve([]),
         typeof window.ScreenladyAPI.getNews === 'function' ? window.ScreenladyAPI.getNews() : Promise.resolve([]),
+        typeof window.ScreenladyAPI.getBusinessAds === 'function' ? window.ScreenladyAPI.getBusinessAds() : Promise.resolve([]),
         typeof window.ScreenladyAPI.getEditorials === 'function' ? window.ScreenladyAPI.getEditorials() : Promise.resolve([]),
         typeof window.ScreenladyAPI.getPhotos === 'function' ? window.ScreenladyAPI.getPhotos() : Promise.resolve([]),
         typeof window.ScreenladyAPI.getPodcasts === 'function' ? window.ScreenladyAPI.getPodcasts() : Promise.resolve([]),
@@ -1334,6 +1353,10 @@ async function loadAdminDashboard() {
         typeof window.ScreenladyAPI.getDeletedIds === 'function' ? window.ScreenladyAPI.getDeletedIds() : Promise.resolve([]),
         typeof window.ScreenladyAPI.getMagazineSettings === 'function' ? window.ScreenladyAPI.getMagazineSettings() : Promise.resolve(null)
       ]);
+
+      if (backendAds && Array.isArray(backendAds)) {
+        window.backendLiveBusinessAds = backendAds;
+      }
 
       if (backendMagazine) {
         if (typeof populateMagazineSettingsForm === 'function') {
@@ -1393,7 +1416,7 @@ function updateStatCounters() {
   const elBizz = document.getElementById('statTotalBizzWorld');
   const elInspiration = document.getElementById('statTotalInspiration');
   const elFashion = document.getElementById('statTotalFashion');
-  const elHomePhotos = document.getElementById('statTotalHomePhotos');
+  const elHomePhotos = document.getElementById('statTotalBusinessAds') || document.getElementById('statTotalHomePhotos');
   const elEditorials = document.getElementById('statTotalEditorials');
   const elPodcasts = document.getElementById('statTotalPodcasts');
   const elPhotos = document.getElementById('statTotalPhotos');
@@ -1470,7 +1493,7 @@ function renderManageTable() {
 
   // Tag items with their section and target live URL
   const taggedNews = newsItems.map(i => ({ ...i, _section: 'news', _targetUrl: 'http://localhost:4321/#homeHeroSplitSection', _storageKey: 'screenlady_custom_news' }));
-  const taggedHomePhotos = homePhotos.map(i => ({ ...i, _section: 'home_photos', _targetUrl: 'http://localhost:4321/#homePhotoSlideshowWrap', _storageKey: 'screenlady_custom_home_photos' }));
+  const taggedHomePhotos = homePhotos.map(i => ({ ...i, _section: 'business_ads', _targetUrl: 'http://localhost:4321/#homePhotoSlideshowWrap', _storageKey: 'screenlady_custom_business_ads' }));
   const taggedEditorials = editorials.map(i => ({ ...i, _section: 'editorials', _targetUrl: `http://localhost:4321/editorials#${i.id}`, _storageKey: 'screenlady_custom_editorials' }));
   const taggedPodcasts = podcasts.map(i => ({ ...i, _section: 'podcast', _targetUrl: `http://localhost:4321/podcast#${i.id}`, _storageKey: 'screenlady_custom_podcasts' }));
   const taggedPhotos = photos.map(i => ({ ...i, _section: 'photos', _targetUrl: `http://localhost:4321/photos#${i.id}`, _storageKey: 'screenlady_custom_photos' }));
@@ -1507,7 +1530,7 @@ function renderManageTable() {
   else if (activeManageFilter === 'bizz_world') allItems = taggedUpdates.filter(i => i._section === 'bizz_world');
   else if (activeManageFilter === 'women_inspiration') allItems = taggedUpdates.filter(i => i._section === 'women_inspiration');
   else if (activeManageFilter === 'fashion_lifestyle') allItems = taggedUpdates.filter(i => i._section === 'fashion_lifestyle');
-  else if (activeManageFilter === 'home_photos') allItems = taggedHomePhotos;
+  else if (activeManageFilter === 'business_ads' || activeManageFilter === 'home_photos') allItems = taggedHomePhotos;
   else if (activeManageFilter === 'editorials') allItems = taggedEditorials;
   else if (activeManageFilter === 'podcast') allItems = taggedPodcasts;
   else if (activeManageFilter === 'photos') allItems = taggedPhotos;
@@ -1633,8 +1656,15 @@ window.editItem = function(id, section) {
   let item = null;
   if (section === 'news') {
     item = (typeof getAllHomeNews === 'function' ? getAllHomeNews() : []).find(i => i.id === id);
-  } else if (section === 'home_photos') {
+  } else if (section === 'business_ads' || section === 'home_photos') {
     item = (typeof getAllHomePhotos === 'function' ? getAllHomePhotos() : []).find(i => i.id === id);
+    if (!item && window.backendLiveBusinessAds) item = window.backendLiveBusinessAds.find(i => i.id === id);
+    if (!item) {
+      try {
+        const raw = localStorage.getItem('screenlady_custom_business_ads') || localStorage.getItem('screenlady_custom_home_photos');
+        if (raw) item = JSON.parse(raw).find(i => i.id === id);
+      } catch(e) {}
+    }
   } else if (section === 'editorials') {
     item = (typeof getAllEditorials === 'function' ? getAllEditorials() : []).find(i => i.id === id);
   } else if (section === 'podcast') {
@@ -1720,7 +1750,13 @@ window.editItem = function(id, section) {
     if (document.getElementById('postHeadline')) document.getElementById('postHeadline').value = item.headline || item.title || '';
     if (document.getElementById('postSummary')) document.getElementById('postSummary').value = item.summary || item.infoSummary || '';
     if (document.getElementById('postFullBody')) document.getElementById('postFullBody').value = stripParagraphTags(item.fullBody || item.fullInfo || '');
-  } else if (section === 'home_photos') {
+  } else if (section === 'business_ads' || section === 'home_photos') {
+    if (document.getElementById('postBrandName')) document.getElementById('postBrandName').value = item.brandName || item.title || '';
+    if (document.getElementById('postBrandHeadline')) document.getElementById('postBrandHeadline').value = item.headline || item.title || '';
+    if (document.getElementById('postBrandTagline')) document.getElementById('postBrandTagline').value = item.tagline || '';
+    if (document.getElementById('postBrandSummary')) document.getElementById('postBrandSummary').value = item.summary || item.infoSummary || '';
+    if (document.getElementById('postBrandDestUrl')) document.getElementById('postBrandDestUrl').value = item.destinationUrl || item.link || '';
+    if (document.getElementById('postBrandCategory')) document.getElementById('postBrandCategory').value = item.category || 'Enterprise';
     if (document.getElementById('postPhotoVenue')) document.getElementById('postPhotoVenue').value = item.venue || item.location || '';
     if (document.getElementById('postPhotoCaption')) document.getElementById('postPhotoCaption').value = item.caption || item.description || item.title || '';
   } else if (section === 'editorials') {
