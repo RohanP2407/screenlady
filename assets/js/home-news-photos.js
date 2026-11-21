@@ -120,7 +120,7 @@
   }
 
   /* ==========================================================================
-     3. RETRIEVE CURATED HOMEPAGE SLIDESHOW PHOTOS (Independent from Photos Section)
+     3. RETRIEVE CURATED HOMEPAGE SLIDESHOW PHOTOS (Strictly Gallery & Photo Archives)
      ========================================================================== */
   function getSlideshowPhotos() {
     try {
@@ -128,63 +128,54 @@
         ? window.getScreenladyDeletedIds() 
         : (() => { try { const r = localStorage.getItem('screenlady_deleted_ids'); return r ? JSON.parse(r) : []; } catch(e){ return []; } })();
 
-      // Dedicated Homepage Photos from Editorial Desk
+      // Dedicated Gallery & Home Photos from Editorial Desk
       let customHomePhotos = [];
-      const rawHomePhotos = localStorage.getItem('screenlady_custom_home_photos');
-      if (rawHomePhotos) {
-        customHomePhotos = JSON.parse(rawHomePhotos);
-      }
+      try {
+        const rawHome = localStorage.getItem('screenlady_custom_home_photos');
+        if (rawHome) customHomePhotos = JSON.parse(rawHome);
+      } catch (e) { customHomePhotos = []; }
+
+      let customPhotos = [];
+      try {
+        const rawCustom = localStorage.getItem('screenlady_custom_photos');
+        if (rawCustom) customPhotos = JSON.parse(rawCustom);
+      } catch (e) { customPhotos = []; }
 
       const backendPhotos = window.backendLivePhotos || [];
 
-      // Preload current news items into the slideshow so every news story has an instant slide
-      const allNews = (typeof getAllNews === 'function') ? getAllNews() : [];
-      const newsSlides = allNews.map(n => ({
-        id: `slide-news-${n.id}`,
-        newsId: n.id,
-        isNews: true,
-        category: n.category || 'Live News',
-        badge: n.categoryBadge || (n.category ? `${n.category}` : 'Live News'),
-        title: n.title || 'Screenlady Update',
-        location: n.venue || 'Screenlady News Desk, Mumbai',
-        date: n.date || 'Recent',
-        photo: n.photo,
-        link: 'javascript:void(0)'
-      }));
-
+      // Combine ONLY gallery / photo showcase items — completely separate from Live News!
       const combined = [
-        ...newsSlides,
         ...customHomePhotos,
-        ...backendPhotos,
-        ...DEFAULT_SLIDESHOW_PHOTOS
-      ].filter(item => item && item.photo && !deletedIds.includes(item.id) && !deletedIds.includes(item.newsId));
+        ...customPhotos,
+        ...backendPhotos
+      ].filter(item => item && item.photo && !deletedIds.includes(item.id));
 
-      // Dedup by photo src
+      // Dedup by photo src / ID
       const seen = new Set();
       const deduped = [];
       for (const p of combined) {
         if (!p.photo) continue;
-        if (!seen.has(p.photo)) {
-          seen.add(p.photo);
+        const key = p.id || p.photo;
+        if (!seen.has(key)) {
+          seen.add(key);
           deduped.push({
             id: p.id || 'photo-' + deduped.length,
-            newsId: p.newsId || null,
-            isNews: Boolean(p.isNews),
+            isNews: false,
             category: p.category || 'Gallery',
-            badge: p.badge || `✦ ${p.category || 'Featured'}`,
+            badge: p.categoryBadge || (p.category ? `✦ ${p.category}` : '✦ Gallery Showcase'),
             title: p.title || p.caption || 'Accolade Screenlady Photograph',
-            location: p.venue || p.location || 'Mumbai, India',
-            date: p.displayDate || p.date || '2026',
+            location: p.venue || p.location || 'Screenlady Archives',
+            date: p.displayDate || p.date || 'Recent',
             photo: p.photo,
-            link: p.isNews ? 'javascript:void(0)' : (p.link || `/photos#${p.id || ''}`)
+            link: '/photos'
           });
         }
       }
 
-      return deduped.length > 0 ? deduped.slice(0, 16) : DEFAULT_SLIDESHOW_PHOTOS;
+      return deduped.slice(0, 16);
     } catch (e) {
       console.warn('Error loading slideshow photos:', e);
-      return DEFAULT_SLIDESHOW_PHOTOS;
+      return [];
     }
   }
 
@@ -245,7 +236,6 @@
       card.addEventListener('mouseenter', () => {
         newsIsPaused = true;
         setHighlightedNewsCard(idx);
-        syncSlideshowWithNewsItem(pageItems[idx]);
       });
       card.addEventListener('mouseleave', () => {
         newsIsPaused = false;
@@ -261,9 +251,6 @@
     renderNewsPaginationControls(totalPages);
     activeNewsCardIndex = 0;
     setHighlightedNewsCard(0);
-    if (pageItems[0]) {
-      syncSlideshowWithNewsItem(pageItems[0]);
-    }
     startNewsCycleTimer(pageItems.length);
   }
 
@@ -374,20 +361,6 @@
         if (activeProg) activeProg.style.width = '0%';
         activeNewsCardIndex = (activeNewsCardIndex + 1) % itemsOnPage;
         setHighlightedNewsCard(activeNewsCardIndex);
-
-        // Also sync slideshow
-        const cards = document.querySelectorAll('.home-news-h-card');
-        if (cards[activeNewsCardIndex]) {
-          const currentNewsId = cards[activeNewsCardIndex].getAttribute('data-news-id');
-          const allNewsList = getAllNews();
-          const activeItem = allNewsList.find(n => n && n.id === currentNewsId);
-          if (activeItem) {
-            syncSlideshowWithNewsItem(activeItem);
-          } else {
-            const photoUrl = cards[activeNewsCardIndex].getAttribute('data-photo');
-            if (photoUrl) syncSlideshowWithPhotoUrl(photoUrl);
-          }
-        }
       }
     }, tick);
   }
@@ -407,27 +380,37 @@
     if (!stage || !theaterWrap) return;
 
     activePhotosList = getSlideshowPhotos();
-    if (activePhotosList.length === 0) return;
+    if (activePhotosList.length === 0) {
+      stage.innerHTML = `
+        <div class="home-photo-slide active" style="position:relative;display:flex;align-items:center;justify-content:center;height:100%;min-height:440px;background:#0d0c0a;text-align:center;padding:2.5rem 1.5rem;">
+          <div>
+            <div style="font-size:2rem;margin-bottom:0.75rem;opacity:0.5;">📷</div>
+            <h3 style="font-family:var(--font-serif,'Cinzel',serif);font-size:1.3rem;color:var(--gold-bright,#FFE894);margin-bottom:0.5rem;letter-spacing:0.04em;">Photo Gallery Archives</h3>
+            <p style="font-size:0.85rem;color:var(--text-muted,#A3A09A);max-width:320px;margin:0 auto 1.25rem;line-height:1.6;">High-resolution event photographs published to the Gallery will be showcased here.</p>
+            <a href="/photos" class="btn-editorial-gold" style="display:inline-flex;align-items:center;gap:0.5rem;padding:0.5rem 1.25rem;font-size:0.78rem;">
+              <span>Explore All Galleries</span>
+              <span>→</span>
+            </a>
+          </div>
+        </div>
+      `;
+      return;
+    }
 
-    // Render Slides
+    // Render Gallery Slides (Strictly Gallery Photography, linking to /photos)
     stage.innerHTML = activePhotosList.map((item, index) => {
       const isActive = index === 0 ? 'active' : '';
-      const isNews = Boolean(item.isNews || item.newsId);
-      const clickAttr = isNews
-        ? `onclick="if(window.openHomeNewsReader && '${item.newsId || ''}'){ window.openHomeNewsReader('${item.newsId || ''}'); return false; }"`
-        : '';
-      const slideHref = isNews ? 'javascript:void(0)' : (item.link || '/photos');
 
       return `
-        <a href="${slideHref}" class="home-photo-slide ${isActive}" data-slide-index="${index}" id="homePhotoSlide-${index}" title="${escapeHtml(item.title)}" ${clickAttr}>
-          <img src="${item.photo}" alt="${escapeHtml(item.title)}" class="home-photo-slide-img" loading="lazy">
-          <div class="home-photo-slide-kicker">${escapeHtml(item.badge || item.category)}</div>
+        <a href="${escapeHtml(item.link || '/photos')}" class="home-photo-slide ${isActive}" data-slide-index="${index}" id="homePhotoSlide-${index}" title="${escapeHtml(item.title)}">
+          <img src="${escapeHtml(item.photo)}" alt="${escapeHtml(item.title)}" class="home-photo-slide-img" loading="lazy">
+          <div class="home-photo-slide-kicker">${escapeHtml(item.badge || item.category || 'Gallery')}</div>
           <div class="home-photo-caption-bar">
             <h3 class="home-photo-caption-title">${escapeHtml(item.title)}</h3>
             <div class="home-photo-caption-meta">
-              <span>${escapeHtml(item.location)}</span>
+              <span>📍 ${escapeHtml(item.location || 'Mumbai')}</span>
               <span>•</span>
-              <span>${escapeHtml(item.date)}</span>
+              <span>📅 ${escapeHtml(item.date || 'Recent')}</span>
             </div>
           </div>
         </a>
@@ -497,82 +480,11 @@
     });
   }
 
-  function syncSlideshowWithNewsPhoto(newsItem) {
-    syncSlideshowWithNewsItem(newsItem);
-  }
-
-  function syncSlideshowWithNewsItem(newsItem) {
-    if (!newsItem) return;
-    const photoUrl = newsItem.photo;
-    if (!photoUrl) return;
-
-    if (!activePhotosList || activePhotosList.length === 0) {
-      activePhotosList = getSlideshowPhotos();
-    }
-
-    // Try finding by exact photo or newsId or id
-    let matchIdx = activePhotosList.findIndex(p => 
-      p && (p.photo === photoUrl || (p.newsId && p.newsId === newsItem.id) || p.id === newsItem.id)
-    );
-
-    // If not found in current slides list, dynamically inject this slide into activePhotosList & DOM!
-    if (matchIdx === -1) {
-      const dynamicSlide = {
-        id: `slide-news-${newsItem.id}`,
-        newsId: newsItem.id,
-        isNews: true,
-        category: newsItem.category || 'Live News',
-        badge: newsItem.categoryBadge || (newsItem.category ? `${newsItem.category}` : 'Live News'),
-        title: newsItem.title || newsItem.headline || 'Accolade Screenlady Dispatch',
-        location: newsItem.venue || 'Screenlady News Desk, Mumbai',
-        date: newsItem.date || newsItem.displayDate || 'Recent',
-        photo: newsItem.photo,
-        link: 'javascript:void(0)'
-      };
-      activePhotosList.push(dynamicSlide);
-      matchIdx = activePhotosList.length - 1;
-
-      const stage = document.getElementById('homePhotoSlidesStage');
-      if (stage) {
-        const slideEl = document.createElement('a');
-        slideEl.href = 'javascript:void(0)';
-        slideEl.className = 'home-photo-slide';
-        slideEl.setAttribute('data-slide-index', matchIdx);
-        slideEl.id = `homePhotoSlide-${matchIdx}`;
-        slideEl.title = dynamicSlide.title;
-        slideEl.onclick = (e) => {
-          e.preventDefault();
-          if (window.openHomeNewsReader) window.openHomeNewsReader(newsItem.id);
-        };
-        slideEl.innerHTML = `
-          <img src="${escapeHtml(dynamicSlide.photo)}" alt="${escapeHtml(dynamicSlide.title)}" class="home-photo-slide-img" loading="lazy">
-          <div class="home-photo-slide-kicker">${escapeHtml(dynamicSlide.badge)}</div>
-          <div class="home-photo-caption-bar">
-            <h3 class="home-photo-caption-title">${escapeHtml(dynamicSlide.title)}</h3>
-            <div class="home-photo-caption-meta">
-              <span>${escapeHtml(dynamicSlide.location)}</span>
-              <span>•</span>
-              <span>${escapeHtml(dynamicSlide.date)}</span>
-            </div>
-          </div>
-        `;
-        stage.appendChild(slideEl);
-      }
-    }
-
-    if (matchIdx !== -1 && matchIdx !== currentPhotoIndex) {
-      changePhotoSlide(matchIdx);
-    }
-  }
-
-  function syncSlideshowWithPhotoUrl(photoUrl) {
-    if (!photoUrl) return;
-    if (!activePhotosList || activePhotosList.length === 0) return;
-    const matchIdx = activePhotosList.findIndex(p => p && p.photo === photoUrl);
-    if (matchIdx !== -1 && matchIdx !== currentPhotoIndex) {
-      changePhotoSlide(matchIdx);
-    }
-  }
+  // The photo gallery slideshow is completely independent from Live News.
+  // News items never inject into or overwrite the right-side Gallery Showcase.
+  function syncSlideshowWithNewsPhoto() {}
+  function syncSlideshowWithNewsItem() {}
+  function syncSlideshowWithPhotoUrl() {}
 
   function startPhotoSlideshowTimer() {
     if (photoSlideshowTimer) clearInterval(photoSlideshowTimer);

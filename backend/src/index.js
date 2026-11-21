@@ -420,7 +420,7 @@ app.get('/api/editorials', async (c) => {
     const db = getDb(c);
     const rows = await db.prepare(`
       SELECT * FROM content_items
-      WHERE id NOT IN (SELECT id FROM deleted_records)
+      WHERE NOT EXISTS (SELECT 1 FROM deleted_records WHERE deleted_records.id = content_items.id)
         AND section = 'editorials'
       ORDER BY timestamp DESC
     `).all();
@@ -442,7 +442,7 @@ app.get('/api/photos', async (c) => {
     const db = getDb(c);
     const rows = await db.prepare(`
       SELECT * FROM content_items
-      WHERE id NOT IN (SELECT id FROM deleted_records)
+      WHERE NOT EXISTS (SELECT 1 FROM deleted_records WHERE deleted_records.id = content_items.id)
         AND section IN ('photos', 'home_photos')
       ORDER BY timestamp DESC
     `).all();
@@ -464,7 +464,7 @@ app.get('/api/podcast', async (c) => {
     const db = getDb(c);
     const rows = await db.prepare(`
       SELECT * FROM content_items
-      WHERE id NOT IN (SELECT id FROM deleted_records)
+      WHERE NOT EXISTS (SELECT 1 FROM deleted_records WHERE deleted_records.id = content_items.id)
         AND section = 'podcast'
       ORDER BY timestamp DESC
     `).all();

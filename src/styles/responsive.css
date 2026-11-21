@@ -298,25 +298,143 @@ img, video {
   .podcast-feed {
     grid-template-columns: 1fr !important;
     gap: 1.5rem !important;
+    width: 100% !important;
   }
 
   .editorial-side-card {
     padding: 1.35rem 1.15rem !important;
   }
 
-  .editorial-card-photo-box,
-  .podcast-artwork-wrap {
+  .editorial-card-photo-box {
     height: 220px !important;
     min-height: 220px !important;
   }
 
+  .podcast-card {
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+  }
+
+  .podcast-artwork-wrap {
+    height: 200px !important;
+    min-height: 200px !important;
+    width: 100% !important;
+  }
+
+  .podcast-artwork-img {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important;
+  }
+
+  .podcast-body-wrap,
+  .podcast-card-content {
+    padding: 1.25rem 1rem !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+  }
+
+  .podcast-title {
+    font-size: 1.15rem !important;
+    line-height: 1.35 !important;
+  }
+
+  .podcast-summary-text,
+  .podcast-desc {
+    font-size: 0.85rem !important;
+    line-height: 1.6 !important;
+  }
+
+  .podcast-preview-box {
+    padding: 0.75rem 0.85rem !important;
+    box-sizing: border-box !important;
+  }
+
+  .preview-controls-row {
+    flex-wrap: wrap !important;
+    gap: 0.5rem !important;
+  }
+
+  .podcast-social-links-row {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    gap: 0.5rem !important;
+    width: 100% !important;
+  }
+
+  .podcast-social-links-row span {
+    width: 100% !important;
+    font-size: 0.7rem !important;
+  }
+
+  .podcast-platform-btn {
+    flex: 1 1 auto !important;
+    justify-content: center !important;
+    font-size: 0.7rem !important;
+    padding: 0.35rem 0.6rem !important;
+  }
+
+  .podcast-social-links-row .btn {
+    margin-left: 0 !important;
+    width: 100% !important;
+    margin-top: 0.25rem !important;
+    justify-content: center !important;
+  }
+
+  /* Podcast Coming Soon Mobile */
   .podcast-coming-soon-card {
-    padding: 2rem 1.25rem !important;
+    padding: 2.25rem 1.15rem !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+    overflow: hidden !important;
+  }
+
+  .podcast-coming-soon-title {
+    font-size: 1.45rem !important;
+    line-height: 1.25 !important;
+    margin-bottom: 0.85rem !important;
+  }
+
+  .podcast-coming-soon-desc {
+    font-size: 0.88rem !important;
+    line-height: 1.65 !important;
+    margin-bottom: 1.75rem !important;
   }
 
   .podcast-pillars-grid {
     grid-template-columns: 1fr !important;
-    gap: 1rem !important;
+    gap: 0.85rem !important;
+    margin-bottom: 1.75rem !important;
+    width: 100% !important;
+  }
+
+  .podcast-pillar-box {
+    padding: 1.15rem !important;
+    box-sizing: border-box !important;
+  }
+
+  .podcast-channels-box {
+    width: 100% !important;
+    overflow: hidden !important;
+  }
+
+  .podcast-channels-btns {
+    display: flex !important;
+    flex-direction: column !important;
+    width: 100% !important;
+    gap: 0.75rem !important;
+  }
+
+  .podcast-channels-btns .btn {
+    width: 100% !important;
+    white-space: normal !important;
+    word-break: break-word !important;
+    text-align: center !important;
+    font-size: 0.78rem !important;
+    padding: 0.7rem 1rem !important;
+    box-sizing: border-box !important;
   }
 
   .btn-text-desktop {
