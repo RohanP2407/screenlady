@@ -138,11 +138,25 @@ function renderPhotosFeed() {
   }
 
   if (filtered.length === 0) {
+    const isTotalEmpty = photos.length === 0;
     container.innerHTML = `
-      <div style="grid-column: 1 / -1; text-align: center; padding: 4rem 2rem; background: rgba(16,16,23,0.6); border: 1px dashed var(--border-gold-subtle); border-radius: var(--radius-md);">
-        <p style="color: var(--gold-light); font-size: 1.1rem; margin-bottom: 0.5rem; font-family: var(--font-serif-display);">No photographs found</p>
-        <p style="color: var(--text-muted); font-size: 0.88rem;">No photos match the selected filter.</p>
-        <button class="btn btn-outline-gold btn-sm" onclick="resetPhotoFilters()" style="margin-top: 1rem;">View All Photos</button>
+      <div class="editorial-empty-state" style="grid-column: 1 / -1;">
+        <div class="empty-state-crest">
+          <img src="/assets/images/logo-2.png" alt="Accolade Screenlady" style="height: 48px; width: auto; opacity: 0.85; margin-bottom: 1.25rem;">
+        </div>
+        <span class="editorial-kicker-pill" style="margin-bottom: 0.75rem;">Visual Archives</span>
+        <h3 style="font-family: var(--font-serif); font-size: clamp(1.4rem, 2.5vw, 1.85rem); color: var(--gold-light); margin-bottom: 0.6rem;">
+          ${isTotalEmpty ? 'Visual Spreads Forthcoming' : 'No Photographs in This Collection'}
+        </h3>
+        <p style="color: var(--text-secondary); font-size: 0.92rem; max-width: 520px; margin: 0 auto 1.5rem; line-height: 1.6;">
+          ${isTotalEmpty 
+            ? 'New studio portraits, ceremonial felicitations, and high-fashion spreads are currently in curation.' 
+            : 'No photographs match the chosen category. View all published photo galleries.'}
+        </p>
+        <div style="display: flex; gap: 0.75rem; justify-content: center; flex-wrap: wrap;">
+          ${!isTotalEmpty ? `<button type="button" class="btn btn-gold btn-sm" onclick="resetPhotoFilters()"><span>View All Photographs</span></button>` : ''}
+          <a href="/updates" class="btn-editorial-gold"><span>Read Updates</span></a>
+        </div>
       </div>
     `;
     return;

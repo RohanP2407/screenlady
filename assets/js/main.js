@@ -64,6 +64,9 @@ function initHeader() {
    Mobile Navigation Drawer
 ------------------------------------------------------------- */
 function initMobileNav() {
+  window.openMobileNav = () => {};
+  window.closeMobileNav = () => {};
+
   const hamburger = document.getElementById('hamburgerBtn');
   const mobileNav = document.getElementById('mobileNav');
   const backdrop = document.getElementById('mobileNavBackdrop');
@@ -311,9 +314,9 @@ function showArticleModal(title, author, date) {
       <div style="border-top: 1px solid rgba(212, 175, 55, 0.2); padding-top: 1.5rem; margin-top: 2rem; display: flex; align-items: center; justify-content: space-between;">
         <span style="color: var(--text-muted); font-size: 0.85rem;">Share this perspective:</span>
         <div class="social-icon-row">
-          <button class="social-icon-btn" onclick="showToast('Link copied to clipboard!')">🔗</button>
-          <button class="social-icon-btn" onclick="showToast('Shared to Twitter/X')">𝕏</button>
-          <button class="social-icon-btn" onclick="showToast('Shared via WhatsApp')">💬</button>
+          <button class="social-icon-btn" onclick="showToast('Link copied to clipboard!')" title="Copy Link" aria-label="Copy Link"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg></button>
+          <button class="social-icon-btn" onclick="showToast('Shared to Twitter/X')" title="Share to X" aria-label="Share to X"><span style="font-weight: 700; font-size: 0.9rem;">X</span></button>
+          <button class="social-icon-btn" onclick="showToast('Shared via WhatsApp')" title="Share via WhatsApp" aria-label="Share via WhatsApp"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></button>
         </div>
       </div>
     </div>

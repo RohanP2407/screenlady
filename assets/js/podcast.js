@@ -223,12 +223,12 @@ function renderPodcasts(filter = 'all') {
       <div class="podcast-coming-soon-card">
         
         <div class="podcast-coming-soon-icon">
-          🎙️
+          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="color: var(--gold-primary);"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" x2="12" y1="19" y2="22"/></svg>
         </div>
 
         <div style="margin-bottom: 0.85rem;">
           <span class="editorial-kicker-pill" style="font-size: 0.82rem; padding: 0.35rem 1.1rem;">
-            ✦ ACCOLADE SCREENLADY BROADCAST STUDIO ✦
+            ACCOLADE SCREENLADY BROADCAST STUDIO
           </span>
         </div>
 
@@ -242,19 +242,25 @@ function renderPodcasts(filter = 'all') {
 
         <div class="podcast-pillars-grid">
           <div class="podcast-pillar-box">
-            <div class="podcast-pillar-icon">🎬</div>
+            <div class="podcast-pillar-icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M7 3v18M17 3v18M3 8h4M3 16h4M17 8h4M17 16h4M3 12h18"/></svg>
+            </div>
             <h4 class="podcast-pillar-title">Cinema & Artistry</h4>
             <p class="podcast-pillar-text">Unvarnished journeys, artistic struggles, and the craft behind iconic performances.</p>
           </div>
 
           <div class="podcast-pillar-box">
-            <div class="podcast-pillar-icon">👑</div>
+            <div class="podcast-pillar-icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="m2 4 3 12h14l3-12-6 7-4-7-4 7-6-7zm3 16h14"/></svg>
+            </div>
             <h4 class="podcast-pillar-title">Women in Leadership</h4>
             <p class="podcast-pillar-text">Boardroom triumphs and courageous vision in business, politics & medicine.</p>
           </div>
 
           <div class="podcast-pillar-box">
-            <div class="podcast-pillar-icon">✨</div>
+            <div class="podcast-pillar-icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+            </div>
             <h4 class="podcast-pillar-title">Culture & Empowerment</h4>
             <p class="podcast-pillar-text">Inspiring stories of perseverance, financial independence, and social impact.</p>
           </div>
@@ -262,14 +268,14 @@ function renderPodcasts(filter = 'all') {
 
         <div class="podcast-channels-box">
           <span class="podcast-channels-label">
-            🔔 Stay Tuned — Official Broadcast Channels:
+            Official Broadcast Channels:
           </span>
           <div class="podcast-channels-btns">
             <a href="https://www.youtube.com/@AccoladeScreenlady" target="_blank" rel="noopener" class="btn btn-gold">
-              <span>▶️ YouTube (@AccoladeScreenlady)</span>
+              <span>YouTube (@AccoladeScreenlady)</span>
             </a>
             <a href="https://www.instagram.com/accoladescreenlady_official?obrf=M2plNzAza252NWlu" target="_blank" rel="noopener" class="btn btn-outline-gold">
-              <span>📸 Instagram (@accoladescreenlady_official)</span>
+              <span>Instagram (@accoladescreenlady_official)</span>
             </a>
           </div>
         </div>
@@ -297,12 +303,12 @@ function renderPodcasts(filter = 'all') {
 
         <div class="podcast-body-wrap">
           <div class="podcast-meta-row">
-            <span>📅 ${item.displayDate || item.date}</span>
-            <span>⏱️ ${item.duration || '35 Mins'}</span>
+            <span><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" style="vertical-align: -2px; margin-right: 4px;"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/></svg>${item.displayDate || item.date}</span>
+            <span><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" style="vertical-align: -2px; margin-right: 4px;"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>${item.duration || '35 Mins'}</span>
           </div>
 
           <div class="podcast-guest-badge">
-            🎙️ Guest: ${item.guest || item.host || 'Featured Luminary'}
+            Guest: ${item.guest || item.host || 'Featured Luminary'}
           </div>
 
           <h3 class="podcast-title" onclick="openPodcastNotesModal('${item.id}')" style="cursor: pointer;">${item.title}</h3>
@@ -315,7 +321,7 @@ function renderPodcasts(filter = 'all') {
           <div class="podcast-preview-box" id="preview-box-${item.id}">
             <div class="preview-controls-row">
               <button type="button" class="btn-preview-toggle" id="preview-btn-${item.id}" onclick="togglePreviewPlayback('${item.id}')">
-                <span>▶ Play 10s Preview</span>
+                <span>Play 10s Preview</span>
               </button>
 
               <div class="preview-timer-display">
@@ -332,9 +338,9 @@ function renderPodcasts(filter = 'all') {
 
             <!-- Complete Alert Banner -->
             <div class="preview-complete-alert" id="preview-alert-${item.id}">
-              ✦ <strong>10-Second Sample Complete!</strong> Listen to the full episode on 
+              <strong>Sample Complete.</strong> Stream the full episode on 
               <a href="${item.podcastLink || 'https://youtube.com'}" target="_blank" rel="noopener" style="color: var(--gold-light); text-decoration: underline; font-weight: 700;">
-                ${item.socialPlatform || 'YouTube / Spotify'} →
+                ${item.socialPlatform || 'YouTube / Spotify'} &rarr;
               </a>
             </div>
           </div>
@@ -343,13 +349,13 @@ function renderPodcasts(filter = 'all') {
           <div class="podcast-social-links-row">
             <span style="font-size: 0.72rem; color: var(--text-muted); font-weight: 600;">Stream Full Episode:</span>
             <a href="${item.podcastLink || 'https://youtube.com'}" target="_blank" rel="noopener" class="podcast-platform-btn youtube" title="Watch on YouTube">
-              <span>▶</span> YouTube
+              YouTube
             </a>
             <a href="${item.spotifyLink || 'https://spotify.com'}" target="_blank" rel="noopener" class="podcast-platform-btn spotify" title="Listen on Spotify">
-              <span>🎧</span> Spotify
+              Spotify
             </a>
             <button class="btn btn-outline-gold btn-sm" onclick="openPodcastModal('${item.id}')" style="margin-left: auto; font-size: 0.72rem; padding: 0.28rem 0.65rem;">
-              Show Notes →
+              Show Notes &rarr;
             </button>
           </div>
         </div>
@@ -374,7 +380,11 @@ function openPodcastModal(id) {
     <div style="max-width: 780px; margin: 0 auto;">
       <div style="display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin-bottom: 1.25rem; flex-wrap: wrap;">
         <span class="badge-gold">${item.episodeNumber || 'Broadcast Episode'} • ${item.category || 'Interview'}</span>
-        <span style="font-size: 0.8rem; color: var(--gold-light);">📅 ${item.displayDate || item.date} • ⏱️ ${item.duration || '35 Mins'}</span>
+        <span style="font-size: 0.8rem; color: var(--gold-light); display: inline-flex; align-items: center; gap: 0.5rem;">
+          <span><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" style="vertical-align: -2px; margin-right: 4px;"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/></svg>${item.displayDate || item.date}</span>
+          <span>•</span>
+          <span><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" style="vertical-align: -2px; margin-right: 4px;"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>${item.duration || '35 Mins'}</span>
+        </span>
       </div>
 
       <h1 style="font-family: var(--font-serif-display); font-size: 1.85rem; line-height: 1.3; color: var(--text-ivory); margin-bottom: 1rem;">
@@ -406,7 +416,7 @@ function openPodcastModal(id) {
             </div>
           </div>
           <button type="button" class="btn-preview-toggle" onclick="togglePreviewPlayback('${item.id}')">
-            <span>▶ Play 10s Sample</span>
+            <span>Play 10s Sample</span>
           </button>
         </div>
       </div>
@@ -416,13 +426,13 @@ function openPodcastModal(id) {
         <h4 style="font-size: 0.95rem; color: var(--gold-light); margin-bottom: 0.5rem;">Stream Complete Episode on Social Channels:</h4>
         <div style="display: flex; gap: 0.75rem; flex-wrap: wrap; margin-top: 0.75rem;">
           <a href="${item.podcastLink || 'https://youtube.com'}" target="_blank" rel="noopener" class="btn btn-gold btn-sm" style="display: inline-flex; align-items: center; gap: 0.4rem;">
-            <span>▶</span> Watch Full on YouTube
+            Watch Full on YouTube
           </a>
           <a href="${item.spotifyLink || 'https://spotify.com'}" target="_blank" rel="noopener" class="btn btn-outline-gold btn-sm" style="display: inline-flex; align-items: center; gap: 0.4rem;">
-            <span>🎧</span> Listen on Spotify
+            Listen on Spotify
           </a>
           <a href="https://www.instagram.com/accoladescreenlady_official?obrf=M2plNzAza252NWlu" target="_blank" rel="noopener" class="btn btn-outline-gold btn-sm">
-            <span>📸</span> Instagram Highlights
+            Instagram Highlights
           </a>
         </div>
       </div>
@@ -455,17 +465,31 @@ function openPodcastModal(id) {
 
 function initPodcastPage() {
   purgeLegacyMockPodcasts();
-  renderPodcasts('all');
+  const container = document.getElementById('podcastFeedContainer');
+  if (!container) return;
+
+  container.innerHTML = `
+    <div style="grid-column: 1 / -1; text-align: center; padding: 4.5rem 1rem;">
+      <p style="color: var(--gold-light); font-size: 0.85rem; letter-spacing: 0.1em; text-transform: uppercase;">Loading Broadcasts...</p>
+    </div>
+  `;
 
   // Async sync with Cloudflare Worker Backend:
-  if (window.ScreenladyAPI && typeof window.ScreenladyAPI.getPodcasts === 'function') {
-    window.ScreenladyAPI.getPodcasts().then(liveData => {
-      if (liveData && liveData.length > 0) {
-        window.backendLivePodcasts = liveData;
-        renderPodcasts('all');
+  async function fetchPodcasts() {
+    if (window.ScreenladyAPI && typeof window.ScreenladyAPI.getPodcasts === 'function') {
+      try {
+        const liveData = await window.ScreenladyAPI.getPodcasts();
+        if (Array.isArray(liveData)) {
+          window.backendLivePodcasts = liveData;
+        }
+      } catch (e) {
+        console.warn('[Screenlady Podcast] API notice:', e.message);
       }
-    });
+    }
+    renderPodcasts(window.activePodcastFilter || 'all');
   }
+
+  fetchPodcasts();
 
   // Filter Buttons
   const filterBtns = document.querySelectorAll('.podcast-filter-btn');
@@ -474,6 +498,7 @@ function initPodcastPage() {
       filterBtns.forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
       const cat = btn.getAttribute('data-filter') || 'all';
+      window.activePodcastFilter = cat;
       renderPodcasts(cat);
     });
   });
@@ -491,6 +516,10 @@ function initPodcastPage() {
   }
 }
 
-document.addEventListener('DOMContentLoaded', () => {
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', () => {
+    initPodcastPage();
+  });
+} else {
   initPodcastPage();
-});
+}

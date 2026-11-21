@@ -64,6 +64,9 @@ function initHeader() {
    Mobile Navigation Drawer
 ------------------------------------------------------------- */
 function initMobileNav() {
+  window.openMobileNav = () => {};
+  window.closeMobileNav = () => {};
+
   const hamburger = document.getElementById('hamburgerBtn');
   const mobileNav = document.getElementById('mobileNav');
   const backdrop = document.getElementById('mobileNavBackdrop');

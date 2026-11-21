@@ -1,5 +1,5 @@
 ---
-// MobileNav.astro - Mobile Sub-Header Strip & Drawer Menu
+// MobileNav.astro - Sticky Mobile & Tablet Quick Navigation Strip (1-tap access)
 interface Props {
   activeNav?: string;
 }
@@ -7,53 +7,13 @@ interface Props {
 const { activeNav = 'home' } = Astro.props;
 ---
 
-<!-- Mobile Sub-Header Quick Navigation Strip (1-tap access on phones) -->
+<!-- Mobile Sub-Header Quick Navigation Strip (1-tap access on phones & tablets) -->
 <nav class="mobile-sub-nav" aria-label="Mobile Quick Navigation">
   <a href="/" class={`mobile-sub-nav-pill ${activeNav === 'home' ? 'active' : ''}`}>Home</a>
+  <a href="/updates" class={`mobile-sub-nav-pill ${activeNav === 'updates' ? 'active' : ''}`}>Updates</a>
+  <a href="/editorials" class={`mobile-sub-nav-pill ${activeNav === 'editorials' ? 'active' : ''}`}>Editorials</a>
+  <a href="/podcast" class={`mobile-sub-nav-pill ${activeNav === 'podcast' ? 'active' : ''}`}>Podcast</a>
   <a href="/photos" class={`mobile-sub-nav-pill ${activeNav === 'photos' ? 'active' : ''}`}>Gallery</a>
   <a href="/about-us" class={`mobile-sub-nav-pill ${activeNav === 'about-us' ? 'active' : ''}`}>About Us</a>
-  <a href="/editorials" class={`mobile-sub-nav-pill ${activeNav === 'editorials' ? 'active' : ''}`}>Editorials</a>
-  <a href="/updates" class={`mobile-sub-nav-pill ${activeNav === 'updates' ? 'active' : ''}`}>Updates</a>
-  <a href="/podcast" class={`mobile-sub-nav-pill ${activeNav === 'podcast' ? 'active' : ''}`}>Podcast</a>
+  <a href="/social-media" class={`mobile-sub-nav-pill ${activeNav === 'social-media' ? 'active' : ''}`}>Social Media</a>
 </nav>
-
-<!-- Mobile Navigation Drawer & Backdrop -->
-<div class="mobile-nav-backdrop" id="mobileNavBackdrop"></div>
-<aside class="mobile-nav" id="mobileNav">
-  <div>
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
-      <a href="/" style="display: flex; align-items: center; gap: 0.5rem; text-decoration: none;">
-        <img src="/assets/images/logo-2.png" alt="Accolade Screenlady Emblem" style="height: 38px;" />
-        <img src="/assets/images/logo.png" alt="Accolade Screenlady" style="height: 30px;" />
-      </a>
-      <button id="mobileNavClose" style="background: none; border: none; color: var(--gold-primary); font-size: 1.5rem; cursor: pointer; padding: 0.5rem;" aria-label="Close Navigation">✕</button>
-    </div>
-    <nav class="mobile-nav-links">
-      <a href="/" class={`mobile-nav-link ${activeNav === 'home' ? 'active' : ''}`}>Home <span>→</span></a>
-      <a href="/updates" class={`mobile-nav-link ${activeNav === 'updates' ? 'active' : ''}`}>Updates <span>→</span></a>
-      <a href="/editorials" class={`mobile-nav-link ${activeNav === 'editorials' ? 'active' : ''}`}>Editorials <span>→</span></a>
-      <a href="/podcast" class={`mobile-nav-link ${activeNav === 'podcast' ? 'active' : ''}`}>Podcast <span>→</span></a>
-      <a href="/photos" class={`mobile-nav-link ${activeNav === 'photos' ? 'active' : ''}`}>Gallery <span>→</span></a>
-      <a href="/about-us" class={`mobile-nav-link ${activeNav === 'about-us' ? 'active' : ''}`}>About Us <span>→</span></a>
-      <a href="/social-media" class={`mobile-nav-link ${activeNav === 'social-media' ? 'active' : ''}`}>Social Media <span>→</span></a>
-    </nav>
-  </div>
-  <div class="mobile-nav-footer">
-    <button 
-      class="btn btn-gold" 
-      data-modal-trigger 
-      data-modal-type="magazine-preview"
-      data-issue="Latest Issue (Magazine)" 
-      style="width: 100%;"
-      onclick="window.openMagazinePreviewModal ? window.openMagazinePreviewModal('Latest Issue (Magazine)') : (window.handleAvailableInPrintClick ? window.handleAvailableInPrintClick() : null)"
-    >
-      Read Latest Issue (Magazine)
-    </button>
-    <div class="mobile-socials">
-      <a href="https://www.instagram.com/accoladescreenlady_official?obrf=M2plNzAza252NWlu" target="_blank" rel="noopener" aria-label="Instagram (@accoladescreenlady_official)">IG</a>
-      <a href="https://www.youtube.com/@AccoladeScreenlady" target="_blank" rel="noopener" aria-label="YouTube (@AccoladeScreenlady)">YT</a>
-      <a href="https://www.facebook.com/AccoladeScreenlady" target="_blank" rel="noopener" aria-label="Facebook (Accolade Screenlady)">FB</a>
-    </div>
-  </div>
-</aside>
-

@@ -90,16 +90,10 @@ const { activeNav = 'home' } = Astro.props;
         class="btn btn-gold btn-sm" 
         data-modal-trigger 
         data-modal-type="magazine-preview"
-        data-issue="Latest Issue (Magazine)"
-        onclick="window.openMagazinePreviewModal ? window.openMagazinePreviewModal('Latest Issue (Magazine)') : (window.handleAvailableInPrintClick ? window.handleAvailableInPrintClick() : null)"
+        data-issue="Latest Issue"
+        onclick="window.openMagazinePreviewModal ? window.openMagazinePreviewModal('Latest Issue') : (window.handleAvailableInPrintClick ? window.handleAvailableInPrintClick() : null)"
       >
-        Latest Issue (Magazine)
-      </button>
-
-      <button class="hamburger" id="hamburgerBtn" aria-label="Toggle navigation menu">
-        <span></span>
-        <span></span>
-        <span></span>
+        Latest Issue
       </button>
     </div>
   </div>

@@ -403,9 +403,8 @@
 
   function renderPhotoSlideshow() {
     const stage = document.getElementById('homePhotoSlidesStage');
-    const dotsContainer = document.getElementById('homePhotoDots');
     const theaterWrap = document.getElementById('homePhotoSlideshowWrap');
-    if (!stage || !dotsContainer || !theaterWrap) return;
+    if (!stage || !theaterWrap) return;
 
     activePhotosList = getSlideshowPhotos();
     if (activePhotosList.length === 0) return;
@@ -435,12 +434,6 @@
       `;
     }).join('');
 
-    // Render Dots
-    dotsContainer.innerHTML = activePhotosList.map((_, index) => {
-      const isActive = index === 0 ? 'active' : '';
-      return `<button type="button" class="home-photo-dot ${isActive}" data-dot-index="${index}" aria-label="Go to slide ${index + 1}"></button>`;
-    }).join('');
-
     // Event Listeners for Nav Arrows
     const prevBtn = document.getElementById('homePhotoPrevBtn');
     const nextBtn = document.getElementById('homePhotoNextBtn');
@@ -458,12 +451,6 @@
         changePhotoSlide(currentPhotoIndex + 1);
       };
     }
-
-    // Dot Clicks
-    const dots = dotsContainer.querySelectorAll('.home-photo-dot');
-    dots.forEach((dot, idx) => {
-      dot.onclick = () => changePhotoSlide(idx);
-    });
 
     // Pause on Hover
     theaterWrap.addEventListener('mouseenter', () => { photoIsPaused = true; });
@@ -500,21 +487,12 @@
     currentPhotoIndex = targetIndex;
 
     const slides = document.querySelectorAll('.home-photo-slide');
-    const dots = document.querySelectorAll('.home-photo-dot');
 
     slides.forEach((slide, i) => {
       if (i === currentPhotoIndex) {
         slide.classList.add('active');
       } else {
         slide.classList.remove('active');
-      }
-    });
-
-    dots.forEach((dot, i) => {
-      if (i === currentPhotoIndex) {
-        dot.classList.add('active');
-      } else {
-        dot.classList.remove('active');
       }
     });
   }
@@ -555,7 +533,6 @@
       matchIdx = activePhotosList.length - 1;
 
       const stage = document.getElementById('homePhotoSlidesStage');
-      const dotsContainer = document.getElementById('homePhotoDots');
       if (stage) {
         const slideEl = document.createElement('a');
         slideEl.href = 'javascript:void(0)';
@@ -580,17 +557,6 @@
           </div>
         `;
         stage.appendChild(slideEl);
-      }
-
-      if (dotsContainer) {
-        const dot = document.createElement('button');
-        dot.type = 'button';
-        dot.className = 'home-photo-dot';
-        dot.setAttribute('data-dot-index', matchIdx);
-        dot.setAttribute('aria-label', `Go to slide ${matchIdx + 1}`);
-        const thisIdx = matchIdx;
-        dot.onclick = () => changePhotoSlide(thisIdx);
-        dotsContainer.appendChild(dot);
       }
     }
 
@@ -959,28 +925,28 @@
     const photoSrc = item.photo || item.image || item.coverSrc || 'https://ik.imagekit.io/acooladescreenlady/screenlady/magazine-photos/4.1__HQ0nEUET8.jpg';
 
     const contentHtml = `
-      <div class="curated-modal-view" style="display: flex; flex-direction: column; font-family: var(--font-editorial-body, sans-serif); color: #F5F2EB;">
-        <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.75rem; margin-bottom: 1.25rem; border-bottom: 1px solid rgba(212,175,55,0.25); padding-bottom: 0.75rem;">
-          <span class="badge-gold" style="background: rgba(212,175,55,0.15); border: 1px solid var(--accent-gold); color: var(--accent-gold); font-size: 0.8rem; font-weight: 700; text-transform: uppercase; padding: 4px 14px; border-radius: 50px; letter-spacing: 0.05em;">
+      <div class="curated-modal-view" style="display: flex; flex-direction: column; font-family: var(--font-sans, sans-serif); color: var(--text-ivory-soft);">
+        <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.75rem; margin-bottom: 1.25rem; border-bottom: 1px solid var(--gold-border); padding-bottom: 0.75rem;">
+          <span class="badge-gold" style="background: rgba(197,160,89,0.12); border: 1px solid var(--gold-primary); color: var(--gold-bright); font-family: var(--font-display); font-size: 0.72rem; font-weight: 700; text-transform: uppercase; padding: 4px 12px; border-radius: var(--radius-xs); letter-spacing: 0.12em;">
             ${escapeHtml(badge)}
           </span>
-          <span style="font-size: 0.82rem; color: #9E9AA7;">${escapeHtml(dateStr)}</span>
+          <span style="font-size: 0.78rem; color: var(--text-muted);">${escapeHtml(dateStr)}</span>
         </div>
 
-        <div style="width: 100%; max-height: 520px; background: #07070B radial-gradient(circle, #161622 0%, #07070B 100%); border-radius: 8px; border: 1.5px solid rgba(212,175,55,0.4); box-shadow: 0 16px 45px rgba(0,0,0,0.95); overflow: hidden; display: flex; align-items: center; justify-content: center; margin-bottom: 1.5rem; padding: 0.75rem;">
-          <img src="${escapeHtml(photoSrc)}" alt="${escapeHtml(title)}" style="max-height: 490px; max-width: 100%; width: auto; height: auto; object-fit: contain; display: block; margin: 0 auto; border-radius: 4px; box-shadow: 0 8px 30px rgba(0,0,0,0.8);" />
+        <div style="width: 100%; max-height: 520px; background: #080705; border-radius: var(--radius-xs); border: 1px solid var(--gold-border-bright); box-shadow: var(--shadow-modal); overflow: hidden; display: flex; align-items: center; justify-content: center; margin-bottom: 1.5rem; padding: 0.75rem;">
+          <img src="${escapeHtml(photoSrc)}" alt="${escapeHtml(title)}" style="max-height: 490px; max-width: 100%; width: auto; height: auto; object-fit: contain; display: block; margin: 0 auto; border-radius: 2px;" />
         </div>
 
-        <h2 style="font-family: var(--font-editorial-heading, serif); font-size: clamp(1.4rem, 2.8vw, 2.1rem); font-weight: 700; color: #FFFFFF; line-height: 1.25; margin: 0 0 1.25rem;">
+        <h2 style="font-family: var(--font-serif, serif); font-size: clamp(1.6rem, 3vw, 2.4rem); font-weight: 500; color: var(--text-ivory); line-height: 1.25; margin: 0 0 1.25rem;">
           ${escapeHtml(title)}
         </h2>
 
-        <div style="font-size: 1.02rem; line-height: 1.85; color: #DDD8CE; margin-bottom: 2rem;">
+        <div style="font-size: 1.02rem; line-height: 1.85; color: var(--text-secondary); margin-bottom: 2rem;">
           ${rawText}
         </div>
 
-        <div style="display: flex; justify-content: flex-end; gap: 1rem; border-top: 1px solid rgba(212,175,55,0.2); padding-top: 1rem;">
-          <button type="button" class="btn-editorial-gold" onclick="if(window.closeModal) window.closeModal();" style="padding: 0.6rem 1.6rem; font-size: 0.88rem; cursor: pointer;">
+        <div style="display: flex; justify-content: flex-end; gap: 1rem; border-top: 1px solid var(--border-subtle); padding-top: 1rem;">
+          <button type="button" class="btn-editorial-gold" onclick="if(window.closeModal) window.closeModal();" style="padding: 0.65rem 1.75rem; font-size: 0.82rem; cursor: pointer;">
             <span>Close Story</span>
           </button>
         </div>
@@ -1063,34 +1029,34 @@
     }
 
     const modalHtml = `
-      <div class="home-news-reader-view" style="display: flex; flex-direction: column; font-family: var(--font-editorial-body, sans-serif); color: #F5F2EB;">
-        <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.75rem; margin-bottom: 1.25rem; border-bottom: 1px solid rgba(212,175,55,0.25); padding-bottom: 0.75rem;">
-          <span class="badge-gold" style="background: rgba(212,175,55,0.18); border: 1px solid var(--accent-gold); color: var(--accent-gold); font-size: 0.82rem; font-weight: 700; text-transform: uppercase; padding: 4px 14px; border-radius: 50px; letter-spacing: 0.05em;">
+      <div class="home-news-reader-view" style="display: flex; flex-direction: column; font-family: var(--font-sans, sans-serif); color: var(--text-ivory-soft);">
+        <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.75rem; margin-bottom: 1.25rem; border-bottom: 1px solid var(--gold-border); padding-bottom: 0.75rem;">
+          <span class="badge-gold" style="background: rgba(197,160,89,0.12); border: 1px solid var(--gold-primary); color: var(--gold-bright); font-family: var(--font-display); font-size: 0.72rem; font-weight: 700; text-transform: uppercase; padding: 4px 12px; border-radius: var(--radius-xs); letter-spacing: 0.12em;">
             ${escapeHtml(badge)}
           </span>
-          <span style="font-size: 0.85rem; color: #9E9AA7; font-weight: 500;">${escapeHtml(dateStr)}</span>
+          <span style="font-size: 0.78rem; color: var(--text-muted); font-weight: 500;">${escapeHtml(dateStr)}</span>
         </div>
 
-        <div style="width: 100%; max-height: 520px; background: #07070B radial-gradient(circle, #161622 0%, #07070B 100%); border-radius: 8px; border: 1.5px solid rgba(212,175,55,0.4); box-shadow: 0 16px 45px rgba(0,0,0,0.95); overflow: hidden; display: flex; align-items: center; justify-content: center; margin-bottom: 1.5rem; padding: 0.75rem;">
-          <img src="${escapeHtml(photoSrc)}" alt="${escapeHtml(title)}" style="max-height: 490px; max-width: 100%; width: auto; height: auto; object-fit: contain; display: block; margin: 0 auto; border-radius: 4px; box-shadow: 0 8px 30px rgba(0,0,0,0.8);" />
+        <div style="width: 100%; max-height: 520px; background: #080705; border-radius: var(--radius-xs); border: 1px solid var(--gold-border-bright); box-shadow: var(--shadow-modal); overflow: hidden; display: flex; align-items: center; justify-content: center; margin-bottom: 1.5rem; padding: 0.75rem;">
+          <img src="${escapeHtml(photoSrc)}" alt="${escapeHtml(title)}" style="max-height: 490px; max-width: 100%; width: auto; height: auto; object-fit: contain; display: block; margin: 0 auto; border-radius: 2px;" />
         </div>
 
-        <h2 style="font-family: var(--font-editorial-heading, serif); font-size: clamp(1.4rem, 2.8vw, 2.2rem); font-weight: 700; color: #FFFFFF; line-height: 1.25; margin: 0 0 1.25rem;">
+        <h2 style="font-family: var(--font-serif, serif); font-size: clamp(1.6rem, 3vw, 2.4rem); font-weight: 500; color: var(--text-ivory); line-height: 1.25; margin: 0 0 1.25rem;">
           ${escapeHtml(title)}
         </h2>
 
         ${item.summary && item.summary !== title ? `
-          <div style="font-size: 1.1rem; line-height: 1.6; color: var(--gold-light, #F7E7A9); font-weight: 500; font-style: italic; margin-bottom: 1.5rem; padding-left: 1rem; border-left: 3px solid var(--accent-gold, #D4AF37);">
+          <div style="font-family: var(--font-serif); font-size: 1.15rem; line-height: 1.6; color: var(--gold-light); font-style: italic; margin-bottom: 1.5rem; padding-left: 1.25rem; border-left: 2px solid var(--gold-primary);">
             ${escapeHtml(item.summary)}
           </div>
         ` : ''}
 
-        <div style="font-size: 1.05rem; line-height: 1.85; color: #DDD8CE; margin-bottom: 2rem;">
+        <div style="font-size: 1.02rem; line-height: 1.85; color: var(--text-secondary); margin-bottom: 2rem;">
           ${rawBody}
         </div>
 
-        <div style="display: flex; justify-content: flex-end; gap: 1rem; border-top: 1px solid rgba(212,175,55,0.2); padding-top: 1rem;">
-          <button type="button" class="btn-editorial-gold" onclick="if(window.closeModal) window.closeModal();" style="padding: 0.65rem 1.8rem; font-size: 0.9rem; cursor: pointer; border-radius: 4px; background: linear-gradient(135deg, #d4af37, #aa820a); color: #000; font-weight: 700; border: none;">
+        <div style="display: flex; justify-content: flex-end; gap: 1rem; border-top: 1px solid var(--border-subtle); padding-top: 1rem;">
+          <button type="button" class="btn-editorial-gold" onclick="if(window.closeModal) window.closeModal();" style="padding: 0.65rem 1.75rem; font-size: 0.82rem; cursor: pointer;">
             <span>Close Article</span>
           </button>
         </div>
