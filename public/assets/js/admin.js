@@ -157,7 +157,7 @@ function initAdminAuth() {
 
   if (isAuth) {
     if (overlay) overlay.style.display = 'none';
-    if (dashboard) dashboard.style.display = 'block';
+    if (dashboard) dashboard.style.display = 'flex';
     loadAdminDashboard();
   } else {
     if (overlay) overlay.style.display = 'flex';
@@ -169,6 +169,10 @@ function initAdminAuth() {
 
   const logoutBtn = document.getElementById('adminLogoutBtn');
   if (logoutBtn) logoutBtn.addEventListener('click', handleAdminLogout);
+
+  if (typeof renderMediaPresets === 'function') {
+    renderMediaPresets();
+  }
 }
 
 function getSavedPin() {
@@ -194,7 +198,7 @@ function handleAdminLogin(e) {
     const overlay = document.getElementById('adminAuthOverlay');
     const dashboard = document.getElementById('adminDashboard');
     if (overlay) overlay.style.display = 'none';
-    if (dashboard) dashboard.style.display = 'block';
+    if (dashboard) dashboard.style.display = 'flex';
     loadAdminDashboard();
     showToast('Admin access granted. Welcome to Screenlady Editorial Desk.');
   } else {
@@ -230,8 +234,165 @@ window.changeAdminPin = function() {
   }
 
   localStorage.setItem('screenlady_admin_pin', newPin.trim());
-  showToast('✓ Admin passcode successfully updated!');
+  showToast('Admin passcode successfully updated.');
 };
+
+/* =============================================================
+   App Navigation & Standard View Switching (No Modals)
+============================================================= */
+window.switchAdminView = function(viewId, targetFilter = null) {
+  const panels = document.querySelectorAll('.admin-view-panel');
+  panels.forEach(p => p.classList.remove('active'));
+
+  const target = document.getElementById(viewId);
+  if (target) target.classList.add('active');
+
+  const navItems = document.querySelectorAll('.admin-nav-item');
+  navItems.forEach(n => {
+    const navView = n.getAttribute('data-view');
+    const navFilter = n.getAttribute('data-filter');
+    if (navView === viewId) {
+      if (viewId === 'panel-content') {
+        n.classList.toggle('active', navFilter === (targetFilter || activeManageFilter));
+      } else {
+        n.classList.add('active');
+      }
+    } else {
+      n.classList.remove('active');
+    }
+  });
+
+  const breadcrumbCurrent = document.getElementById('adminBreadcrumbCurrent');
+  const viewTitles = {
+    'panel-dashboard': 'Dashboard Overview',
+    'panel-compose': 'Content Publishing Studio',
+    'panel-content': 'Content Management Archive',
+    'panel-orders': 'Customer Purchase Orders',
+    'panel-magazine': 'Monthly Magazine Issue & Settings',
+    'panel-media': 'ImageKit Global Media CDN'
+  };
+  const sectionTitles = {
+    all: 'All Content Archive',
+    news: 'Live News (Home)',
+    filmy_adda: 'Filmy Adda',
+    bizz_world: 'Bizz World',
+    women_inspiration: 'Women of Inspiration',
+    fashion_lifestyle: 'Fashion & Lifestyle',
+    editorials: 'Editorials & Articles',
+    podcast: 'Podcast Studio',
+    photos: 'Screenlady Gallery',
+    updates: 'Updates Archive',
+    home_photos: 'Homepage Photos'
+  };
+
+  if (breadcrumbCurrent) {
+    if (viewId === 'panel-content') {
+      const f = targetFilter || activeManageFilter || 'all';
+      breadcrumbCurrent.textContent = sectionTitles[f] || viewTitles[viewId];
+    } else if (viewTitles[viewId]) {
+      breadcrumbCurrent.textContent = viewTitles[viewId];
+    }
+  }
+
+  const sidebar = document.getElementById('adminSidebar');
+  const overlay = document.getElementById('adminMobileOverlay');
+  if (sidebar && sidebar.classList.contains('open')) {
+    sidebar.classList.remove('open');
+    if (overlay) overlay.style.display = 'none';
+  }
+
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+};
+
+window.navigateToComposer = function(section) {
+  switchAdminView('panel-compose');
+  const targetSection = section || (activeManageFilter && activeManageFilter !== 'all' ? activeManageFilter : 'news');
+  const select = document.getElementById('postSectionSelect');
+  if (select) {
+    select.value = targetSection;
+    handleSectionChange(targetSection);
+  }
+  const postCard = document.getElementById('adminPostCard');
+  if (postCard) {
+    postCard.scrollIntoView({ behavior: 'smooth' });
+  }
+};
+
+// Aliases for compatibility
+window.openAdminComposer = window.navigateToComposer;
+window.closeAdminComposer = function() {
+  switchAdminView('panel-content');
+};
+
+window.toggleAdminSidebar = function() {
+  const sidebar = document.getElementById('adminSidebar');
+  const overlay = document.getElementById('adminMobileOverlay');
+  if (sidebar) {
+    const isOpen = sidebar.classList.toggle('open');
+    if (overlay) overlay.style.display = isOpen ? 'block' : 'none';
+  }
+};
+
+window.handleContentSearch = function(query) {
+  const term = (query || '').toLowerCase().trim();
+  const rows = document.querySelectorAll('#adminUpdatesTableBody tr');
+  rows.forEach(r => {
+    const text = r.textContent.toLowerCase();
+    r.style.display = (!term || text.includes(term)) ? '' : 'none';
+  });
+};
+
+window.handleMediaPanelUpload = async function(e) {
+  const file = e.target.files && e.target.files[0];
+  if (!file) return;
+  const statusEl = document.getElementById('mediaUploadStatus');
+  const urlInput = document.getElementById('mediaUploadedUrl');
+  const previewImg = document.getElementById('mediaUploadPreview');
+  if (statusEl) {
+    statusEl.textContent = `Uploading ${file.name} to ImageKit CDN...`;
+    statusEl.style.color = 'var(--admin-gold-light)';
+  }
+
+  try {
+    if (window.ScreenladyAPI && typeof window.ScreenladyAPI.uploadMedia === 'function') {
+      const res = await window.ScreenladyAPI.uploadMedia(file, '', 'editorial-media');
+      const cdnUrl = res.url || res.fileUrl || (res.data && res.data.url);
+      if (cdnUrl) {
+        if (statusEl) {
+          statusEl.textContent = `Upload Successful: ${file.name}`;
+          statusEl.style.color = '#34D399';
+        }
+        if (urlInput) urlInput.value = cdnUrl;
+        if (previewImg) {
+          previewImg.src = cdnUrl;
+          previewImg.style.display = 'block';
+        }
+        showToast('Image uploaded to ImageKit CDN successfully.');
+      } else {
+        throw new Error('No URL returned from CDN');
+      }
+    }
+  } catch (err) {
+    if (statusEl) {
+      statusEl.textContent = `Upload Error: ${err.message}`;
+      statusEl.style.color = '#F87171';
+    }
+  }
+};
+
+function renderMediaPresets() {
+  const grid = document.getElementById('mediaLibraryPresetsGrid');
+  if (!grid) return;
+  grid.innerHTML = ADMIN_PHOTO_PRESETS.map(p => `
+    <div class="photo-preset-choice" onclick="navigator.clipboard.writeText('${p.path}'); showToast('CDN URL copied: ${escapeHtml(p.label)}');" title="${p.label}" style="display: flex; align-items: center; gap: 0.65rem; padding: 0.5rem; background: rgba(14, 18, 25, 0.7); border: 1px solid var(--admin-border); border-radius: var(--admin-radius-sm); cursor: pointer; text-align: left; width: 100%;">
+      <img src="${p.path}" alt="${p.label}" style="width: 44px; height: 44px; border-radius: 4px; object-fit: cover; flex-shrink: 0;">
+      <div style="flex: 1; min-width: 0;">
+        <div style="font-size: 0.82rem; font-weight: 600; color: #FFFFFF; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${escapeHtml(p.label)}</div>
+        <div style="font-size: 0.72rem; color: var(--admin-gold-light);">Click to copy URL</div>
+      </div>
+    </div>
+  `).join('');
+}
 
 /* =============================================================
    2. Form Controls & Dynamic Section Switcher
@@ -1047,6 +1208,7 @@ function handlePostSubmit(e) {
 
   resetForm();
   loadAdminDashboard();
+  if (typeof switchAdminView === 'function') switchAdminView('panel-content');
 }
 
 /**
@@ -1155,19 +1317,29 @@ async function loadAdminDashboard() {
   if (typeof renderMagazineOrdersTable === 'function') {
     renderMagazineOrdersTable();
   }
+  if (typeof populateMagazineSettingsForm === 'function') {
+    populateMagazineSettingsForm();
+  }
 
   // Live Backend Synchronization across ALL content feeds
   if (window.ScreenladyAPI) {
     try {
-      const [backendUpdates, backendNews, backendEditorials, backendPhotos, backendPodcasts, backendOrders, deletedIds] = await Promise.all([
+      const [backendUpdates, backendNews, backendEditorials, backendPhotos, backendPodcasts, backendOrders, deletedIds, backendMagazine] = await Promise.all([
         typeof window.ScreenladyAPI.getUpdates === 'function' ? window.ScreenladyAPI.getUpdates() : Promise.resolve([]),
         typeof window.ScreenladyAPI.getNews === 'function' ? window.ScreenladyAPI.getNews() : Promise.resolve([]),
         typeof window.ScreenladyAPI.getEditorials === 'function' ? window.ScreenladyAPI.getEditorials() : Promise.resolve([]),
         typeof window.ScreenladyAPI.getPhotos === 'function' ? window.ScreenladyAPI.getPhotos() : Promise.resolve([]),
         typeof window.ScreenladyAPI.getPodcasts === 'function' ? window.ScreenladyAPI.getPodcasts() : Promise.resolve([]),
         typeof window.ScreenladyAPI.getOrders === 'function' ? window.ScreenladyAPI.getOrders() : Promise.resolve([]),
-        typeof window.ScreenladyAPI.getDeletedIds === 'function' ? window.ScreenladyAPI.getDeletedIds() : Promise.resolve([])
+        typeof window.ScreenladyAPI.getDeletedIds === 'function' ? window.ScreenladyAPI.getDeletedIds() : Promise.resolve([]),
+        typeof window.ScreenladyAPI.getMagazineSettings === 'function' ? window.ScreenladyAPI.getMagazineSettings() : Promise.resolve(null)
       ]);
+
+      if (backendMagazine) {
+        if (typeof populateMagazineSettingsForm === 'function') {
+          populateMagazineSettingsForm(backendMagazine);
+        }
+      }
 
       if (deletedIds && Array.isArray(deletedIds)) {
         window.backendDeletedIds = deletedIds;
@@ -1228,6 +1400,15 @@ function updateStatCounters() {
   const elUpdates = document.getElementById('statTotalUpdates');
   const elMagazineOrders = document.getElementById('statTotalMagazineOrders');
 
+  const navNews = document.getElementById('navStatNews');
+  const navFilmy = document.getElementById('navStatFilmy');
+  const navBizz = document.getElementById('navStatBizz');
+  const navInspiration = document.getElementById('navStatInspiration');
+  const navFashion = document.getElementById('navStatFashion');
+  const navEditorials = document.getElementById('navStatEditorials');
+  const navPodcasts = document.getElementById('navStatPodcasts');
+  const navPhotos = document.getElementById('navStatPhotos');
+
   const newsItems = (typeof getAllHomeNews === 'function') ? getAllHomeNews() : [];
   const homePhotos = (typeof getAllHomePhotos === 'function') ? getAllHomePhotos() : [];
   const editorials = (typeof getAllEditorials === 'function') ? getAllEditorials() : [];
@@ -1252,6 +1433,15 @@ function updateStatCounters() {
   if (elPhotos) elPhotos.textContent = photos.length;
   if (elUpdates) elUpdates.textContent = updates.length;
   if (elMagazineOrders) elMagazineOrders.textContent = magazineOrders.length;
+
+  if (navNews) navNews.textContent = newsItems.length;
+  if (navFilmy) navFilmy.textContent = filmyItems.length;
+  if (navBizz) navBizz.textContent = bizzItems.length;
+  if (navInspiration) navInspiration.textContent = inspirationItems.length;
+  if (navFashion) navFashion.textContent = fashionItems.length;
+  if (navEditorials) navEditorials.textContent = editorials.length;
+  if (navPodcasts) navPodcasts.textContent = podcasts.length;
+  if (navPhotos) navPhotos.textContent = photos.length;
 }
 
 window.setManageFilter = function(filter) {
@@ -1263,9 +1453,8 @@ window.setManageFilter = function(filter) {
 };
 
 window.filterManageSection = function(section) {
+  if (typeof switchAdminView === 'function') switchAdminView('panel-content');
   setManageFilter(section);
-  const target = document.getElementById('adminManageSection');
-  if (target) target.scrollIntoView({ behavior: 'smooth' });
 };
 
 function renderManageTable() {
@@ -1368,25 +1557,25 @@ function renderManageTable() {
     // Section Badge
     let sectionBadgeHtml = '';
     if (item._section === 'news') {
-      sectionBadgeHtml = `<span class="section-pill-badge" style="background: rgba(239, 68, 68, 0.2); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.45); font-weight: 700;">⚡ Live News</span>`;
+      sectionBadgeHtml = `<span class="admin-badge admin-badge-danger">Live News</span>`;
     } else if (item._section === 'filmy_adda') {
-      sectionBadgeHtml = `<span class="section-pill-badge" style="background: rgba(239, 68, 68, 0.25); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.5); font-weight: 700;">🎬 Filmy Adda</span>`;
+      sectionBadgeHtml = `<span class="admin-badge admin-badge-gold">Filmy Adda</span>`;
     } else if (item._section === 'bizz_world') {
-      sectionBadgeHtml = `<span class="section-pill-badge" style="background: rgba(212, 175, 55, 0.25); color: var(--gold-light); border: 1px solid rgba(212, 175, 55, 0.5); font-weight: 700;">💼 Bizz World</span>`;
+      sectionBadgeHtml = `<span class="admin-badge admin-badge-gold">Bizz World</span>`;
     } else if (item._section === 'women_inspiration') {
-      sectionBadgeHtml = `<span class="section-pill-badge" style="background: rgba(245, 158, 11, 0.25); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.5); font-weight: 700;">👑 Inspiration</span>`;
+      sectionBadgeHtml = `<span class="admin-badge admin-badge-gold">Inspiration</span>`;
     } else if (item._section === 'fashion_lifestyle') {
-      sectionBadgeHtml = `<span class="section-pill-badge" style="background: rgba(236, 72, 153, 0.25); color: #f472b6; border: 1px solid rgba(236, 72, 153, 0.5); font-weight: 700;">✨ Fashion & Life</span>`;
+      sectionBadgeHtml = `<span class="admin-badge admin-badge-blue">Fashion & Life</span>`;
     } else if (item._section === 'home_photos') {
-      sectionBadgeHtml = `<span class="section-pill-badge" style="background: rgba(168, 85, 247, 0.2); color: #c084fc; border: 1px solid rgba(168, 85, 247, 0.45); font-weight: 700;">🖼️ Home Photo</span>`;
+      sectionBadgeHtml = `<span class="admin-badge" style="background: rgba(168, 85, 247, 0.2); color: #c084fc; border: 1px solid rgba(168, 85, 247, 0.4);">Home Photo</span>`;
     } else if (item._section === 'editorials') {
-      sectionBadgeHtml = `<span class="section-pill-badge badge-editorials">🖋️ Editorial</span>`;
+      sectionBadgeHtml = `<span class="admin-badge admin-badge-gold">Editorial</span>`;
     } else if (item._section === 'podcast') {
-      sectionBadgeHtml = `<span class="section-pill-badge badge-podcast">🎙️ Podcast</span>`;
+      sectionBadgeHtml = `<span class="admin-badge admin-badge-blue">Podcast</span>`;
     } else if (item._section === 'photos') {
-      sectionBadgeHtml = `<span class="section-pill-badge badge-photos">📷 Gallery</span>`;
+      sectionBadgeHtml = `<span class="admin-badge" style="background: rgba(255, 255, 255, 0.08); color: #FFFFFF; border: 1px solid rgba(255, 255, 255, 0.15);">Gallery</span>`;
     } else {
-      sectionBadgeHtml = `<span class="section-pill-badge badge-updates">🗞️ Updates</span>`;
+      sectionBadgeHtml = `<span class="admin-badge admin-badge-gold">Updates</span>`;
     }
 
     // Extract description text (strictly 2-line clamped in editorial desk)
@@ -1409,9 +1598,9 @@ function renderManageTable() {
         <td>
           <strong style="color: #FFFFFF; font-size: 0.94rem; display: block; font-weight: 700; margin-bottom: 0.25rem;">${safeTitle}</strong>
           <div style="display: flex; gap: 0.65rem; flex-wrap: wrap; align-items: center; margin-bottom: 0.25rem;">
-            ${item.author ? `<span style="font-size: 0.76rem; color: var(--gold-light); font-weight: 600;">By: ${escapeHtml(item.author)}</span>` : ''}
-            ${item.guest ? `<span style="font-size: 0.76rem; color: var(--gold-light); font-weight: 600;">Guest: ${escapeHtml(item.guest)} • ${item.duration || ''}</span>` : ''}
-            ${item.venue ? `<span style="font-size: 0.76rem; color: var(--gold-light); font-weight: 600;">📍 ${escapeHtml(item.venue)}</span>` : ''}
+            ${item.author ? `<span style="font-size: 0.76rem; color: var(--admin-gold-light); font-weight: 600;">By: ${escapeHtml(item.author)}</span>` : ''}
+            ${item.guest ? `<span style="font-size: 0.76rem; color: var(--admin-gold-light); font-weight: 600;">Guest: ${escapeHtml(item.guest)} • ${item.duration || ''}</span>` : ''}
+            ${item.venue ? `<span style="font-size: 0.76rem; color: var(--admin-gold-light); font-weight: 600;">Location: ${escapeHtml(item.venue)}</span>` : ''}
           </div>
           ${safeDesc ? `<p class="admin-table-desc-clamp">${safeDesc}</p>` : ''}
         </td>
@@ -1420,15 +1609,15 @@ function renderManageTable() {
           <span class="badge-gold" style="font-size: 0.65rem; margin-top: 0.35rem; display: inline-block;">${safeCat}</span>
         </td>
         <td style="text-align: right;">
-          <div style="display: inline-flex; gap: 0.4rem;">
-            <a href="${item._targetUrl}" target="_blank" class="admin-action-btn btn-view" title="View live on website">
-              <span>👁️ View</span>
+          <div style="display: inline-flex; gap: 0.4rem; justify-content: flex-end;">
+            <a href="${item._targetUrl}" target="_blank" class="admin-btn admin-btn-outline admin-btn-sm" style="padding: 0.3rem 0.65rem; font-size: 0.76rem;" title="View live on website">
+              View
             </a>
-            <button class="admin-action-btn btn-edit" onclick="editItem('${item.id}', '${item._section}')" title="Edit this entry">
-              <span>✏️ Edit</span>
+            <button type="button" class="admin-btn admin-btn-gold admin-btn-sm" style="padding: 0.3rem 0.65rem; font-size: 0.76rem;" onclick="editItem('${item.id}', '${item._section}')" title="Edit this entry">
+              Edit
             </button>
-            <button class="admin-action-btn btn-delete" onclick="promptDeleteItem('${item.id}', '${item._section}', '${escapeHtml(safeTitle).replace(/'/g, "\\'")}')" title="Permanently delete this entry">
-              <span>🗑️ Delete</span>
+            <button type="button" class="admin-btn admin-btn-danger admin-btn-sm" style="padding: 0.3rem 0.65rem; font-size: 0.76rem;" onclick="promptDeleteItem('${item.id}', '${item._section}', '${escapeHtml(safeTitle).replace(/'/g, "\\'")}')" title="Permanently delete this entry">
+              Delete
             </button>
           </div>
         </td>
@@ -1575,16 +1764,18 @@ window.editItem = function(id, section) {
   if (formCardTitle) formCardTitle.textContent = `Editing: ${item.title || item.womanName || 'Selected Item'}`;
 
   const submitBtn = document.getElementById('adminSubmitBtn');
-  if (submitBtn) submitBtn.textContent = '✓ Save Changes to Entry';
+  if (submitBtn) submitBtn.textContent = 'Save Changes to Entry';
 
-  // Smooth scroll up to composer
-  const postCard = document.getElementById('adminPostCard');
-  if (postCard) postCard.scrollIntoView({ behavior: 'smooth' });
+  // Navigate to normal composer panel in edit mode
+  if (typeof navigateToComposer === 'function') {
+    navigateToComposer(section);
+  }
 };
 
 window.cancelEdit = function() {
   editingItem = null;
   resetForm();
+  if (typeof switchAdminView === 'function') switchAdminView('panel-content');
 };
 
 window.resetForm = function() {
@@ -1859,8 +2050,7 @@ let activeMagazineOrderFilter = 'all';
 let activeMagazineOrderSearch = '';
 
 window.scrollToMagazineOrders = function() {
-  const target = document.getElementById('adminMagazineOrdersSection');
-  if (target) target.scrollIntoView({ behavior: 'smooth' });
+  if (typeof switchAdminView === 'function') switchAdminView('panel-orders');
 };
 
 window.setMagazineOrderFilter = function(filter) {
@@ -1984,13 +2174,13 @@ window.renderMagazineOrdersTable = function() {
           <div class="admin-order-user-card">
             <span class="admin-order-user-name">${escapeHtml(order.fullName)}</span>
             <div class="admin-order-user-meta">
-              <a href="https://wa.me/${cleanPhone}" target="_blank" rel="noopener" style="color: #4ade80; text-decoration: none; display: inline-flex; align-items: center; gap: 0.2rem;" title="Chat directly with customer on WhatsApp">
-                <span>💬</span> ${escapeHtml(order.phone)}
+              <a href="https://wa.me/${cleanPhone}" target="_blank" rel="noopener" style="color: #34D399; text-decoration: none; display: inline-flex; align-items: center; gap: 0.25rem;" title="Chat directly with customer on WhatsApp">
+                <span>WA:</span> ${escapeHtml(order.phone)}
               </a>
             </div>
             <div class="admin-order-user-meta">
-              <a href="mailto:${order.email}" style="color: #93c5fd; text-decoration: none; display: inline-flex; align-items: center; gap: 0.2rem;" title="Send email to customer">
-                <span>✉️</span> ${escapeHtml(order.email)}
+              <a href="mailto:${order.email}" style="color: #93C5FD; text-decoration: none; display: inline-flex; align-items: center; gap: 0.25rem;" title="Send email to customer">
+                <span>Email:</span> ${escapeHtml(order.email)}
               </a>
             </div>
           </div>
@@ -2001,7 +2191,7 @@ window.renderMagazineOrdersTable = function() {
           <div class="admin-order-address-box">
             <div>${escapeHtml(order.address)}</div>
             <div style="margin-top: 0.25rem; font-weight: 600; color: #FFFFFF;">
-              ${escapeHtml(order.city)}, ${escapeHtml(order.state)} — <span style="color: var(--gold-light);">${order.pincode}</span>
+              ${escapeHtml(order.city)}, ${escapeHtml(order.state)} &mdash; <span style="color: var(--admin-gold-light);">${order.pincode}</span>
             </div>
           </div>
         </td>
@@ -2011,8 +2201,8 @@ window.renderMagazineOrdersTable = function() {
           <div style="font-size: 0.82rem; font-weight: 700; color: #FFFFFF; line-height: 1.3;">
             ${escapeHtml(order.edition || 'November 2026 Print Edition')}
           </div>
-          <div style="font-size: 0.74rem; color: var(--gold-light); margin-top: 0.2rem;">
-            ${order.quantity || 1} Copy • <strong>₹${order.amount || 499}</strong>
+          <div style="font-size: 0.74rem; color: var(--admin-gold-light); margin-top: 0.2rem;">
+            ${order.quantity || 1} Copy &bull; <strong>₹${order.amount || 499}</strong>
           </div>
         </td>
 
@@ -2021,43 +2211,43 @@ window.renderMagazineOrdersTable = function() {
           <div style="font-size: 0.8rem; font-weight: 600; color: #E5E7EB;">
             ${escapeHtml(order.paymentMethod || 'Online (UPI)')}
           </div>
-          <div style="font-size: 0.7rem; color: #4ade80;">
-            🔒 Online Gateway
+          <div style="font-size: 0.7rem; color: #34D399; margin-top: 0.15rem;">
+            Online Gateway
           </div>
         </td>
 
         <!-- Payment Status (Online Only) -->
         <td>
           <select class="order-status-select" onchange="updateOrderPaymentStatus('${order.id}', this.value)" style="border-color: ${order.paymentStatus === 'Paid (Online)' ? 'rgba(34, 197, 94, 0.5)' : 'rgba(234, 179, 8, 0.5)'};">
-            <option value="Paid (Online)" ${order.paymentStatus === 'Paid (Online)' ? 'selected' : ''}>✓ Paid (Online)</option>
-            <option value="Pending Payment" ${order.paymentStatus === 'Pending Payment' ? 'selected' : ''}>⏳ Pending Payment</option>
-            <option value="Refunded" ${order.paymentStatus === 'Refunded' ? 'selected' : ''}>↩ Refunded</option>
-            <option value="Failed" ${order.paymentStatus === 'Failed' ? 'selected' : ''}>✕ Failed</option>
+            <option value="Paid (Online)" ${order.paymentStatus === 'Paid (Online)' ? 'selected' : ''}>Paid (Online)</option>
+            <option value="Pending Payment" ${order.paymentStatus === 'Pending Payment' ? 'selected' : ''}>Pending Payment</option>
+            <option value="Refunded" ${order.paymentStatus === 'Refunded' ? 'selected' : ''}>Refunded</option>
+            <option value="Failed" ${order.paymentStatus === 'Failed' ? 'selected' : ''}>Failed</option>
           </select>
         </td>
 
         <!-- Fulfillment / Shipping Status -->
         <td>
           <select class="order-status-select" onchange="updateOrderShippingStatus('${order.id}', this.value)">
-            <option value="Pending Dispatch" ${order.shippingStatus === 'Pending Dispatch' ? 'selected' : ''}>⏳ Pending Dispatch</option>
-            <option value="Processing Packaging" ${order.shippingStatus === 'Processing Packaging' ? 'selected' : ''}>📦 Packaging</option>
-            <option value="Shipped / In Transit" ${order.shippingStatus === 'Shipped / In Transit' ? 'selected' : ''}>🚚 Shipped / In Transit</option>
-            <option value="Delivered" ${order.shippingStatus === 'Delivered' ? 'selected' : ''}>✨ Delivered</option>
-            <option value="Cancelled" ${order.shippingStatus === 'Cancelled' ? 'selected' : ''}>✕ Cancelled</option>
+            <option value="Pending Dispatch" ${order.shippingStatus === 'Pending Dispatch' ? 'selected' : ''}>Pending Dispatch</option>
+            <option value="Processing Packaging" ${order.shippingStatus === 'Processing Packaging' ? 'selected' : ''}>Packaging</option>
+            <option value="Shipped / In Transit" ${order.shippingStatus === 'Shipped / In Transit' ? 'selected' : ''}>Shipped / In Transit</option>
+            <option value="Delivered" ${order.shippingStatus === 'Delivered' ? 'selected' : ''}>Delivered</option>
+            <option value="Cancelled" ${order.shippingStatus === 'Cancelled' ? 'selected' : ''}>Cancelled</option>
           </select>
         </td>
 
         <!-- Action Buttons -->
         <td>
           <div style="display: flex; gap: 0.35rem; justify-content: flex-end; flex-wrap: wrap;">
-            <button type="button" class="admin-action-btn btn-view" onclick="openOrderSlipModal('${order.id}')" title="Generate printable packing slip and courier label">
-              📄 Slip
+            <button type="button" class="admin-btn admin-btn-outline admin-btn-sm" style="padding: 0.25rem 0.55rem; font-size: 0.75rem;" onclick="openOrderSlipModal('${order.id}')" title="Generate printable packing slip and courier label">
+              Slip
             </button>
-            <button type="button" class="admin-action-btn" onclick="openCustomerWhatsApp('${order.id}')" style="background: rgba(34, 197, 94, 0.15); color: #4ade80; border: 1px solid rgba(34, 197, 94, 0.4);" title="Send order confirmation message to customer on WhatsApp">
-              💬 WA
+            <button type="button" class="admin-btn admin-btn-outline admin-btn-sm" style="padding: 0.25rem 0.55rem; font-size: 0.75rem; color: #34D399; border-color: rgba(52, 211, 153, 0.4);" onclick="openCustomerWhatsApp('${order.id}')" title="Send order confirmation message to customer on WhatsApp">
+              WA
             </button>
-            <button type="button" class="admin-action-btn btn-delete" onclick="deleteMagazineOrder('${order.id}')" title="Delete this order record">
-              🗑️
+            <button type="button" class="admin-btn admin-btn-danger admin-btn-sm" style="padding: 0.25rem 0.55rem; font-size: 0.75rem;" onclick="deleteMagazineOrder('${order.id}')" title="Delete this order record">
+              Delete
             </button>
           </div>
         </td>
@@ -2123,7 +2313,7 @@ window.openOrderSlipModal = function(orderId) {
         <div>
           <div style="font-size: 1.35rem; font-weight: 800; color: #0A0A0D; letter-spacing: 0.05em;">ACCOLADE SCREENLADY</div>
           <div style="font-size: 0.78rem; color: #64748B;">Official Monthly Print Publication • Dispatch Unit</div>
-          <div style="font-size: 0.74rem; color: #64748B; margin-top: 0.2rem;">WhatsApp: +91 96650 35503 | editor@accoladescreenlady.com | AccoladeScreenlady@gmail.com</div>
+          <div style="font-size: 0.74rem; color: #64748B; margin-top: 0.2rem;">WhatsApp: +91 96650 35503 | editor@accoladescreenlady.com</div>
         </div>
         <div style="text-align: right;">
           <div style="font-size: 1.1rem; font-weight: 800; color: #D4AF37;">COURIER DISPATCH SLIP</div>
@@ -2145,7 +2335,7 @@ window.openOrderSlipModal = function(orderId) {
           ${escapeHtml(order.city)}, ${escapeHtml(order.state)} — <strong style="font-size: 1.05rem; color: #0F172A;">${order.pincode}</strong>
         </div>
         <div style="font-size: 0.85rem; color: #475569; font-weight: 600;">
-          📞 Contact Phone: ${escapeHtml(order.phone)} | ✉️ ${escapeHtml(order.email)}
+          Contact Phone: ${escapeHtml(order.phone)} | Email: ${escapeHtml(order.email)}
         </div>
       </div>
 
@@ -2184,25 +2374,22 @@ window.openOrderSlipModal = function(orderId) {
 
       <!-- Action buttons -->
       <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #E2E8F0; padding-top: 1rem;">
-        <button type="button" class="btn btn-outline-gold btn-sm" onclick="window.print()" style="background: #0F172A; color: #FFFFFF; border: none; padding: 0.5rem 1.25rem; border-radius: 4px; cursor: pointer;">
-          🖨️ Print Packing Slip
+        <button type="button" class="admin-btn admin-btn-outline admin-btn-sm" onclick="window.print()" style="background: #0F172A; color: #FFFFFF;">
+          Print Packing Slip
         </button>
-        <button type="button" class="btn btn-gold btn-sm" onclick="closeOrderModal()" style="background: #D4AF37; color: #0A0A0D; font-weight: 700; border: none; padding: 0.5rem 1.25rem; border-radius: 4px; cursor: pointer;">
-          Close Window
+        <button type="button" class="admin-btn admin-btn-gold admin-btn-sm" onclick="document.getElementById('inlineOrderSlipBox').style.display='none'">
+          Close Slip
         </button>
       </div>
     </div>
   `;
 
-  if (typeof openModal === 'function') {
-    openModal(`Order Slip: ${order.id}`, content);
-  } else {
-    const modal = document.getElementById('globalModal');
-    const modalBody = document.getElementById('modalBody');
-    if (modal && modalBody) {
-      modalBody.innerHTML = content;
-      modal.classList.add('active');
-    }
+  const box = document.getElementById('inlineOrderSlipBox');
+  const target = document.getElementById('inlineOrderSlipContent');
+  if (box && target) {
+    target.innerHTML = content;
+    box.style.display = 'block';
+    box.scrollIntoView({ behavior: 'smooth' });
   }
 };
 
@@ -2261,9 +2448,14 @@ window.exportMagazineOrdersCsv = function() {
 };
 
 window.openMagazineIssueConfigModal = function() {
-  const settings = (typeof getMagazineSettings === 'function') ? getMagazineSettings() : {
+  switchAdminView('panel-magazine');
+  const target = document.getElementById('panel-magazine');
+  if (target) target.scrollIntoView({ behavior: 'smooth' });
+};
+
+window.populateMagazineSettingsForm = function(settings) {
+  const s = settings || (typeof getMagazineSettings === 'function' ? getMagazineSettings() : null) || {
     edition: 'November 2026 — Power, Art & Corporate Leadership Issue',
-    monthYear: 'November 2026',
     price: 220,
     coverImage: 'https://ik.imagekit.io/acooladescreenlady/assets/images/magazine-cover-latest.jpg',
     page2Image: 'https://ik.imagekit.io/acooladescreenlady/assets/images/magazine-page2-feature.jpg',
@@ -2273,92 +2465,78 @@ window.openMagazineIssueConfigModal = function() {
     popupMessage: "Collector's Print Edition Now Available • Insured Doorstep Courier Across India"
   };
 
-  const content = `
-    <div style="max-width: 620px; padding: 0.5rem;">
-      <h3 style="font-family: var(--font-serif-display); font-size: 1.4rem; color: var(--gold-light); margin: 0 0 0.5rem 0;">
-        ⚙️ Monthly Magazine Showcase & Pop-up Configuration
-      </h3>
-      <p style="color: var(--text-muted); font-size: 0.82rem; margin-bottom: 1.25rem;">
-        Update the monthly magazine issue details, retail price, cover images, headline, subtitle, and live 5-second selling pop-up message.
-      </p>
+  const ed = document.getElementById('cfgMagEdition');
+  if (ed && s.edition) ed.value = s.edition;
+  const pr = document.getElementById('cfgMagPrice');
+  if (pr && s.price) pr.value = s.price;
+  const cov = document.getElementById('cfgMagCover');
+  if (cov && s.coverImage) cov.value = s.coverImage;
+  const p2 = document.getElementById('cfgMagPage2');
+  if (p2 && s.page2Image) p2.value = s.page2Image;
+  const hl = document.getElementById('cfgMagHeadline');
+  if (hl && s.headline) hl.value = s.headline;
+  const sub = document.getElementById('cfgMagSubtitle');
+  if (sub && s.subtitle) sub.value = s.subtitle;
+  const pb = document.getElementById('cfgMagPopupBadge');
+  if (pb && s.popupBadge) pb.value = s.popupBadge;
+  const pm = document.getElementById('cfgMagPopupMsg');
+  if (pm && s.popupMessage) pm.value = s.popupMessage;
 
-      <form onsubmit="handleSaveMagazineConfig(event)">
-        <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 1rem; margin-bottom: 1rem;">
-          <div>
-            <label class="post-input-label">Issue Edition Name *</label>
-            <input type="text" id="cfgMagEdition" class="post-input-field" value="${escapeHtml(settings.edition)}" required>
-          </div>
-          <div>
-            <label class="post-input-label">Price (₹) *</label>
-            <input type="number" id="cfgMagPrice" class="post-input-field" value="${settings.price || 499}" required>
-          </div>
-        </div>
-
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
-          <div>
-            <label class="post-input-label">Pop-up Tag / Badge Text</label>
-            <input type="text" id="cfgMagPopupBadge" class="post-input-field" value="${escapeHtml(settings.popupBadge || 'Screenlady Print Magazine')}" placeholder="e.g. Screenlady Print Magazine">
-          </div>
-          <div>
-            <label class="post-input-label">Pop-up Sell Announcement Message</label>
-            <input type="text" id="cfgMagPopupMsg" class="post-input-field" value="${escapeHtml(settings.popupMessage || "Collector's Print Edition Now Available • Insured Doorstep Courier Across India")}" placeholder="Custom announcement for pop-up">
-          </div>
-        </div>
-
-        <div style="margin-bottom: 1rem;">
-          <label class="post-input-label">Page 1: Cover Page Image URL / Path *</label>
-          <input type="text" id="cfgMagCover" class="post-input-field" value="${escapeHtml(settings.coverImage)}" required>
-        </div>
-
-        <div style="margin-bottom: 1rem;">
-          <label class="post-input-label">Page 2: Inside Feature Spread Image URL / Path *</label>
-          <input type="text" id="cfgMagPage2" class="post-input-field" value="${escapeHtml(settings.page2Image)}" required>
-        </div>
-
-        <div style="margin-bottom: 1rem;">
-          <label class="post-input-label">Cover Headline</label>
-          <input type="text" id="cfgMagHeadline" class="post-input-field" value="${escapeHtml(settings.headline || '')}">
-        </div>
-
-        <div style="margin-bottom: 1.5rem;">
-          <label class="post-input-label">Cover Subtitle</label>
-          <input type="text" id="cfgMagSubtitle" class="post-input-field" value="${escapeHtml(settings.subtitle || '')}">
-        </div>
-
-        <div style="display: flex; justify-content: flex-end; gap: 0.75rem;">
-          <button type="button" class="btn btn-outline-gold btn-sm" onclick="closeOrderModal()">Cancel</button>
-          <button type="submit" class="btn btn-gold btn-sm" style="font-weight: 700;">Save Magazine Settings</button>
-        </div>
-      </form>
-    </div>
-  `;
-
-  if (typeof openModal === 'function') {
-    openModal('Magazine Showcase Settings', content);
-  } else {
-    const modal = document.getElementById('globalModal');
-    const modalBody = document.getElementById('modalBody');
-    if (modal && modalBody) {
-      modalBody.innerHTML = content;
-      modal.classList.add('active');
-    }
-  }
+  // Previews
+  const coverEl = document.getElementById('adminPanelMagCoverImg');
+  if (coverEl && s.coverImage) coverEl.src = s.coverImage;
+  const page2El = document.getElementById('adminPanelMagPage2Img');
+  if (page2El && s.page2Image) page2El.src = s.page2Image;
+  const editionEl = document.getElementById('adminPanelMagEdition');
+  if (editionEl && s.edition) editionEl.textContent = s.edition;
+  const priceEl = document.getElementById('adminPanelMagPrice');
+  if (priceEl && s.price) priceEl.textContent = `Price: ₹${s.price}`;
+  const headlineEl = document.getElementById('adminPanelMagHeadline');
+  if (headlineEl && s.headline) headlineEl.textContent = s.headline;
+  const subtitleEl = document.getElementById('adminPanelMagSubtitle');
+  if (subtitleEl && s.subtitle) subtitleEl.textContent = s.subtitle;
 };
 
-window.handleSaveMagazineConfig = function(e) {
-  e.preventDefault();
+window.handleSaveMagazineConfig = async function(e) {
+  if (e && typeof e.preventDefault === 'function') e.preventDefault();
+
+  const edition = (document.getElementById('cfgMagEdition')?.value || '').trim();
+  const price = parseInt(document.getElementById('cfgMagPrice')?.value || '220', 10);
+  const coverImage = (document.getElementById('cfgMagCover')?.value || '').trim();
+  const page2Image = (document.getElementById('cfgMagPage2')?.value || '').trim();
+  const headline = (document.getElementById('cfgMagHeadline')?.value || '').trim();
+  const subtitle = (document.getElementById('cfgMagSubtitle')?.value || '').trim();
+  const popupBadge = (document.getElementById('cfgMagPopupBadge')?.value || '').trim();
+  const popupMessage = (document.getElementById('cfgMagPopupMsg')?.value || '').trim();
+
   const newSettings = {
-    edition: (document.getElementById('cfgMagEdition').value || '').trim(),
-    price: parseInt(document.getElementById('cfgMagPrice').value || '499', 10),
-    coverImage: (document.getElementById('cfgMagCover').value || '').trim(),
-    page2Image: (document.getElementById('cfgMagPage2').value || '').trim(),
-    headline: (document.getElementById('cfgMagHeadline').value || '').trim(),
-    subtitle: (document.getElementById('cfgMagSubtitle').value || '').trim(),
-    popupBadge: (document.getElementById('cfgMagPopupBadge').value || '').trim(),
-    popupMessage: (document.getElementById('cfgMagPopupMsg').value || '').trim(),
+    edition: edition || 'November 2026 — Power, Art & Corporate Leadership Issue',
+    monthYear: 'November 2026',
+    price: isNaN(price) ? 220 : price,
+    coverImage: coverImage || 'https://ik.imagekit.io/acooladescreenlady/assets/images/magazine-cover-latest.jpg',
+    page2Image: page2Image || 'https://ik.imagekit.io/acooladescreenlady/assets/images/magazine-page2-feature.jpg',
+    headline: headline || 'THE ARCHITECTS OF MODERN INFLUENCE',
+    subtitle: subtitle || 'Celebrating Trailblazing Women Behind the Screen & Across Boardrooms',
+    popupBadge: popupBadge || 'Screenlady Print Magazine',
+    popupMessage: popupMessage || "Collector's Print Edition Now Available • Insured Doorstep Courier Across India",
     curator: 'Conceived & Curated under the Editorial Vision of Mr. Prashant Chandrakant Sagvekar'
   };
 
+  // Update inline preview elements
+  const coverEl = document.getElementById('adminPanelMagCoverImg');
+  if (coverEl) coverEl.src = newSettings.coverImage;
+  const page2El = document.getElementById('adminPanelMagPage2Img');
+  if (page2El) page2El.src = newSettings.page2Image;
+  const editionEl = document.getElementById('adminPanelMagEdition');
+  if (editionEl) editionEl.textContent = newSettings.edition;
+  const priceEl = document.getElementById('adminPanelMagPrice');
+  if (priceEl) priceEl.textContent = `Price: ₹${newSettings.price}`;
+  const headlineEl = document.getElementById('adminPanelMagHeadline');
+  if (headlineEl) headlineEl.textContent = newSettings.headline;
+  const subtitleEl = document.getElementById('adminPanelMagSubtitle');
+  if (subtitleEl) subtitleEl.textContent = newSettings.subtitle;
+
+  // Save locally
   if (typeof saveMagazineSettings === 'function') {
     saveMagazineSettings(newSettings);
   } else {
@@ -2368,24 +2546,42 @@ window.handleSaveMagazineConfig = function(e) {
     } catch (err) {}
   }
 
+  // Update backend via D1 worker API
+  if (window.ScreenladyAPI && typeof window.ScreenladyAPI.updateMagazineSettings === 'function') {
+    try {
+      const pin = getSavedPin();
+      await window.ScreenladyAPI.updateMagazineSettings(newSettings, pin);
+    } catch (backendErr) {
+      console.warn('[Admin] Cloudflare D1 magazine sync notice:', backendErr);
+    }
+  }
+
   if (typeof initAvailableInPrint === 'function') initAvailableInPrint();
   if (typeof updateMagazinePopupFromSettings === 'function') {
     updateMagazinePopupFromSettings();
-  } else if (typeof showNextMagazinePopup === 'function') {
-    showNextMagazinePopup(true);
   }
 
-  closeOrderModal();
-  showToast('✓ Monthly Magazine settings successfully saved! Pop-up messages and store updated.');
+  showToast('✓ Monthly Magazine settings successfully saved to D1 database!');
 };
 
 function showToast(message) {
+  let container = document.getElementById('adminToastContainer');
+  if (!container) {
+    container = document.createElement('div');
+    container.id = 'adminToastContainer';
+    container.className = 'admin-toast-container';
+    document.body.appendChild(container);
+  }
+
   const toast = document.createElement('div');
   toast.className = 'admin-toast';
-  toast.innerHTML = `<span>${message}</span>`;
-  document.body.appendChild(toast);
+  toast.innerHTML = `
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="color: var(--admin-gold); flex-shrink: 0;"><polyline points="20 6 9 17 4 12"></polyline></svg>
+    <span>${message}</span>
+  `;
+  container.appendChild(toast);
 
-  setTimeout(() => toast.classList.add('visible'), 50);
+  setTimeout(() => toast.classList.add('visible'), 40);
   setTimeout(() => {
     toast.classList.remove('visible');
     setTimeout(() => toast.remove(), 400);

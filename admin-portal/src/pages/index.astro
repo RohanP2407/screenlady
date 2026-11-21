@@ -1,774 +1,1232 @@
+---
+// Accolade Screenlady — Executive Editorial Studio CMS Portal (Standard Inline UI - No Modals)
+---
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Admin Editorial Desk — Accolade Screenlady</title>
-  <meta name="description" content="Accolade Screenlady Editorial Desk Admin Panel. Securely publish, edit, and organize Editorials, Podcasts, Event Photos, and Women Updates.">
+  <title>Executive Editorial Studio CMS — Accolade Screenlady</title>
+  <meta name="description" content="Accolade Screenlady Editorial Studio CMS. Securely manage, edit, and publish live news, editorials, podcasts, gallery photos, and print magazine orders.">
   <meta name="robots" content="noindex, nofollow">
 
-  <!-- Google Fonts -->
+  <!-- Typography & Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;800;900&family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700;800;900&family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
 
   <link rel="stylesheet" href="/assets/css/style.css">
+  <link rel="stylesheet" href="/assets/css/admin.css">
   <link rel="icon" type="image/png" href="/assets/images/logo-2.png">
 </head>
 <body class="admin-page-body">
 
-  <!-- 1. Password Protected Auth Gate (Shown when not authenticated) -->
+  <!-- =========================================================
+       1. AUTHENTICATION GATE (Passcode Protected Gate Overlay)
+       ========================================================= -->
   <div class="admin-auth-overlay" id="adminAuthOverlay">
     <div class="admin-auth-card">
-      <div class="admin-lock-icon">🔒</div>
-      <h1 class="admin-auth-title">Screenlady Editorial Desk</h1>
-      <p class="admin-auth-subtitle">
-        Restricted Administrator Access. Enter your passcode to directly publish and manage <strong>Editorials</strong>, <strong>Podcasts</strong>, <strong>Event Photos</strong>, and <strong>Updates</strong>.
+      <div class="admin-auth-logo">
+        <img src="/assets/images/logo-2.png" alt="Accolade Emblem" style="height: 48px; width: auto;">
+        <img src="/assets/images/logo.png" alt="Screenlady" style="height: 32px; width: auto;">
+      </div>
+
+      <span class="admin-auth-badge">CMS Executive Studio</span>
+      <h1 class="admin-auth-title">Editorial Desk</h1>
+      <p class="admin-auth-desc">
+        Restricted Administrator Access. Enter your executive passcode to publish and manage 
+        <strong>Live News</strong>, <strong>Editorials</strong>, <strong>Podcasts</strong>, <strong>Photos</strong>, and <strong>Orders</strong>.
       </p>
 
       <form id="adminAuthForm" onsubmit="if(typeof handleAdminLogin === 'function'){ handleAdminLogin(event); return false; }">
-        <div style="position: relative; margin-bottom: 1rem;">
+        <div class="admin-pin-group">
           <input 
             type="password" 
             id="adminPinInput" 
             class="admin-pin-input" 
-            placeholder="Enter passcode..." 
+            placeholder="Enter executive passcode..." 
             autocomplete="current-password"
             required 
             autofocus
-            style="padding-right: 2.8rem; margin-bottom: 0;"
           >
           <button 
             type="button" 
-            onclick="const p = document.getElementById('adminPinInput'); p.type = p.type === 'password' ? 'text' : 'password'; this.textContent = p.type === 'password' ? '👁️' : '🙈';" 
-            style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: transparent; border: none; color: var(--gold-primary); cursor: pointer; font-size: 1.15rem; padding: 4px;"
+            class="admin-pin-toggle-btn"
+            onclick="const p = document.getElementById('adminPinInput'); p.type = p.type === 'password' ? 'text' : 'password';" 
             title="Toggle visibility"
-          >👁️</button>
+          >
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+              <circle cx="12" cy="12" r="3"></circle>
+            </svg>
+          </button>
         </div>
-        <button type="submit" class="btn btn-gold" style="width: 100%; padding: 0.85rem; font-weight: 700; font-size: 0.95rem;">
-          Unlock Editorial Desk →
+
+        <button type="submit" class="admin-btn-unlock">
+          Unlock Editorial Studio &rarr;
         </button>
       </form>
 
       <p id="adminAuthErr" class="admin-auth-err"></p>
 
-      <div style="margin-top: 1.5rem; padding-top: 1.25rem; border-top: 1px solid rgba(255, 255, 255, 0.08); font-size: 0.82rem; color: var(--text-faint);">
-        <p style="margin-bottom: 0.5rem;">🔑 Default Admin Passcode: 
+      <div class="admin-auth-footer">
+        <div>
+          <span>Default Passcode: </span>
           <code 
             onclick="const p = document.getElementById('adminPinInput'); if(p){ p.value='screenlady2026'; p.focus(); }" 
-            style="color: var(--gold-light); background: rgba(212,175,55,0.15); border: 1px dashed rgba(212,175,55,0.4); padding: 0.25rem 0.6rem; border-radius: 4px; cursor: pointer; font-weight: 700;"
+            style="color: var(--admin-gold-light); background: rgba(212,175,55,0.15); border: 1px dashed rgba(212,175,55,0.4); padding: 0.2rem 0.5rem; border-radius: 4px; cursor: pointer; font-weight: 700;"
             title="Click to automatically fill passcode"
-          >screenlady2026 📋</code>
-        </p>
-        <p><a href="http://localhost:4321" style="color: var(--gold-primary); text-decoration: none;">← Return to Public Website</a></p>
+          >screenlady2026</code>
+        </div>
+        <a href="http://localhost:4321" target="_blank" style="color: var(--admin-gold); text-decoration: none; font-size: 0.8rem;">
+          Public Site &rarr;
+        </a>
       </div>
     </div>
   </div>
 
-  <!-- 2. Secure Admin Dashboard (Shown after successful login) -->
-  <div class="admin-dashboard-wrap" id="adminDashboard">
-    <div class="container" style="max-width: 1200px;">
+  <!-- Mobile Backdrop Overlay -->
+  <div id="adminMobileOverlay" class="admin-sidebar-overlay" onclick="toggleAdminSidebar()"></div>
 
-      <!-- Top Navigation & Session Bar -->
-      <header class="admin-topbar">
-        <div class="admin-brand-group">
-          <a href="http://localhost:4321" style="display: flex; align-items: center; gap: 0.75rem; text-decoration: none;">
-            <img src="/assets/images/logo-2.png" alt="Emblem" style="height: 38px; width: auto;">
-            <img src="/assets/images/logo.png" alt="Accolade Screenlady" style="height: 26px; width: auto;">
-          </a>
-          <span class="admin-badge-status">
-            <span>●</span> Editorial Desk Active
-          </span>
+  <!-- =========================================================
+       2. SECURE ADMIN DASHBOARD APPLICATION (Standard Layout)
+       ========================================================= -->
+  <div class="admin-app-layout" id="adminDashboard" style="display: none;">
+
+    <!-- 2.1 Fixed Left Sidebar Navigation -->
+    <aside class="admin-sidebar" id="adminSidebar">
+      <div class="admin-sidebar-header">
+        <a href="http://localhost:4321" target="_blank" class="admin-sidebar-brand" title="View Public Website">
+          <img src="/assets/images/logo-2.png" alt="Emblem" class="admin-sidebar-brand-emblem">
+          <div>
+            <div class="admin-sidebar-brand-title">Screenlady</div>
+            <span class="admin-sidebar-brand-badge">Editorial Studio</span>
+          </div>
+        </a>
+      </div>
+
+      <nav class="admin-sidebar-nav">
+        <!-- Main Actions -->
+        <div>
+          <div class="admin-nav-group-title">Studio</div>
+          <ul class="admin-nav-group-items">
+            <li>
+              <button type="button" class="admin-nav-item active" data-view="panel-dashboard" onclick="switchAdminView('panel-dashboard')">
+                <span class="admin-nav-item-content">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+                  <span>Dashboard</span>
+                </span>
+              </button>
+            </li>
+            <li>
+              <button type="button" class="admin-nav-item" data-view="panel-compose" onclick="navigateToComposer()" style="border-color: rgba(212, 175, 55, 0.35); background: rgba(212, 175, 55, 0.08); color: var(--admin-gold-light); font-weight: 700;">
+                <span class="admin-nav-item-content">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                  <span>+ Create New Post</span>
+                </span>
+              </button>
+            </li>
+          </ul>
         </div>
 
-        <div class="admin-top-actions">
-          <div style="display: flex; gap: 0.4rem; flex-wrap: wrap;">
-            <a href="http://localhost:4321/editorials" target="_blank" class="btn btn-outline-gold btn-sm" title="View Live Editorials Page">
-              <span>🖋️ Editorials</span>
-            </a>
-            <a href="http://localhost:4321/podcast" target="_blank" class="btn btn-outline-gold btn-sm" title="View Live Podcast Page">
-              <span>🎙️ Podcast</span>
-            </a>
-            <a href="http://localhost:4321/photos" target="_blank" class="btn btn-outline-gold btn-sm" title="View Live Accolade Screenlady Gallery">
-              <span>📷 Gallery</span>
-            </a>
-            <a href="http://localhost:4321/updates" target="_blank" class="btn btn-outline-gold btn-sm" title="View Live Screenlady Updates">
-              <span>🗞️ Screenlady Updates</span>
-            </a>
-            <a href="#adminMagazineOrdersSection" class="btn btn-gold btn-sm" style="font-weight: 700;" title="View Magazine Customer Orders & Payment Status">
-              <span>🛍️ Magazine Purchase Details</span>
-              <span id="adminOrdersCounterBadge" style="background: #0A0A0D; color: var(--gold-light); font-size: 0.7rem; padding: 0.15rem 0.5rem; border-radius: 999px; margin-left: 0.35rem; font-weight: 800;">3</span>
-            </a>
+        <!-- Editorial Content -->
+        <div>
+          <div class="admin-nav-group-title">Editorial Feeds</div>
+          <ul class="admin-nav-group-items">
+            <li>
+              <button type="button" class="admin-nav-item" data-view="panel-content" data-filter="all" onclick="filterManageSection('all')">
+                <span class="admin-nav-item-content">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg>
+                  <span>All Content Archive</span>
+                </span>
+              </button>
+            </li>
+            <li>
+              <button type="button" class="admin-nav-item" data-view="panel-content" data-filter="news" onclick="filterManageSection('news')">
+                <span class="admin-nav-item-content">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+                  <span>Live News (Home)</span>
+                </span>
+                <span class="admin-nav-badge" id="navStatNews">4</span>
+              </button>
+            </li>
+            <li>
+              <button type="button" class="admin-nav-item" data-view="panel-content" data-filter="filmy_adda" onclick="filterManageSection('filmy_adda')">
+                <span class="admin-nav-item-content">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="2.18" ry="2.18"></rect><line x1="7" y1="2" x2="7" y2="22"></line><line x1="17" y1="2" x2="17" y2="22"></line><line x1="2" y1="12" x2="22" y2="12"></line></svg>
+                  <span>Filmy Adda</span>
+                </span>
+                <span class="admin-nav-badge" id="navStatFilmy">4</span>
+              </button>
+            </li>
+            <li>
+              <button type="button" class="admin-nav-item" data-view="panel-content" data-filter="bizz_world" onclick="filterManageSection('bizz_world')">
+                <span class="admin-nav-item-content">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
+                  <span>Bizz World</span>
+                </span>
+                <span class="admin-nav-badge" id="navStatBizz">4</span>
+              </button>
+            </li>
+            <li>
+              <button type="button" class="admin-nav-item" data-view="panel-content" data-filter="women_inspiration" onclick="filterManageSection('women_inspiration')">
+                <span class="admin-nav-item-content">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="7"></circle><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"></polyline></svg>
+                  <span>Women of Inspiration</span>
+                </span>
+                <span class="admin-nav-badge" id="navStatInspiration">4</span>
+              </button>
+            </li>
+            <li>
+              <button type="button" class="admin-nav-item" data-view="panel-content" data-filter="fashion_lifestyle" onclick="filterManageSection('fashion_lifestyle')">
+                <span class="admin-nav-item-content">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path></svg>
+                  <span>Fashion & Lifestyle</span>
+                </span>
+                <span class="admin-nav-badge" id="navStatFashion">4</span>
+              </button>
+            </li>
+            <li>
+              <button type="button" class="admin-nav-item" data-view="panel-content" data-filter="editorials" onclick="filterManageSection('editorials')">
+                <span class="admin-nav-item-content">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.24 12.24a6 6 0 0 0-8.49-8.49L5 10.5V19h8.5z"></path><line x1="16" y1="8" x2="2" y2="22"></line></svg>
+                  <span>Editorials & Articles</span>
+                </span>
+                <span class="admin-nav-badge" id="navStatEditorials">3</span>
+              </button>
+            </li>
+            <li>
+              <button type="button" class="admin-nav-item" data-view="panel-content" data-filter="podcast" onclick="filterManageSection('podcast')">
+                <span class="admin-nav-item-content">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2"></path><line x1="12" y1="19" x2="12" y2="23"></line></svg>
+                  <span>Podcast Studio</span>
+                </span>
+                <span class="admin-nav-badge" id="navStatPodcasts">3</span>
+              </button>
+            </li>
+            <li>
+              <button type="button" class="admin-nav-item" data-view="panel-content" data-filter="photos" onclick="filterManageSection('photos')">
+                <span class="admin-nav-item-content">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg>
+                  <span>Screenlady Gallery</span>
+                </span>
+                <span class="admin-nav-badge" id="navStatPhotos">4</span>
+              </button>
+            </li>
+          </ul>
+        </div>
+
+        <!-- Store & Assets -->
+        <div>
+          <div class="admin-nav-group-title">Store & Assets</div>
+          <ul class="admin-nav-group-items">
+            <li>
+              <button type="button" class="admin-nav-item" data-view="panel-orders" onclick="switchAdminView('panel-orders')">
+                <span class="admin-nav-item-content">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path><line x1="3" y1="6" x2="21" y2="6"></line><path d="M16 10a4 4 0 0 1-8 0"></path></svg>
+                  <span>Customer Orders</span>
+                </span>
+                <span class="admin-nav-badge gold" id="adminOrdersCounterBadge">3</span>
+              </button>
+            </li>
+            <li>
+              <button type="button" class="admin-nav-item" data-view="panel-magazine" onclick="switchAdminView('panel-magazine')">
+                <span class="admin-nav-item-content">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
+                  <span>Magazine Spread & Settings</span>
+                </span>
+              </button>
+            </li>
+            <li>
+              <button type="button" class="admin-nav-item" data-view="panel-media" onclick="switchAdminView('panel-media')">
+                <span class="admin-nav-item-content">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+                  <span>ImageKit CDN Uploader</span>
+                </span>
+              </button>
+            </li>
+          </ul>
+        </div>
+      </nav>
+
+      <div class="admin-sidebar-footer">
+        <div class="admin-user-pill">
+          <div class="admin-user-avatar">PS</div>
+          <div class="admin-user-info">
+            <div class="admin-user-name">Prashant Sagvekar</div>
+            <div class="admin-user-role">Founder & Publisher</div>
+          </div>
+        </div>
+
+        <div style="display: flex; gap: 0.5rem; justify-content: space-between;">
+          <a href="http://localhost:4321" target="_blank" class="admin-btn admin-btn-outline admin-btn-sm" style="flex: 1; text-align: center;">
+            Live Site
+          </a>
+          <button type="button" class="admin-btn admin-btn-danger admin-btn-sm" onclick="handleAdminLogout()" title="Log out of Editorial Studio">
+            Log Out
+          </button>
+        </div>
+      </div>
+    </aside>
+
+    <!-- 2.2 Main App Wrapper -->
+    <div class="admin-main-wrap">
+
+      <!-- Sticky Top Header -->
+      <header class="admin-top-header">
+        <div class="admin-header-left">
+          <button type="button" class="admin-mobile-toggle" onclick="toggleAdminSidebar()" title="Toggle sidebar">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+          </button>
+
+          <div class="admin-breadcrumbs">
+            <span class="admin-breadcrumb-root">Admin Studio</span>
+            <span class="admin-breadcrumb-sep">/</span>
+            <span class="admin-breadcrumb-current" id="adminBreadcrumbCurrent">Dashboard Overview</span>
+          </div>
+        </div>
+
+        <div class="admin-header-right">
+          <!-- Backend Status Indicator -->
+          <div class="admin-status-indicator" title="Connected to Cloudflare Worker D1 Storage">
+            <span class="admin-status-dot"></span>
+            <span>Cloudflare D1 Online</span>
           </div>
 
-          <button class="btn btn-outline-gold btn-sm" onclick="changeAdminPin()" title="Change Admin Passcode">
-            ⚙️ PIN
+          <!-- Normal Fast Post Composer Button -->
+          <button type="button" class="admin-btn admin-btn-gold admin-btn-sm" onclick="navigateToComposer('news')">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+            <span>+ Create New Post</span>
           </button>
-          <button id="adminLogoutBtn" class="btn btn-gold btn-sm" style="font-weight: 700;">
-            Log Out
+
+          <!-- Settings & Pin -->
+          <button type="button" class="admin-btn admin-btn-outline admin-btn-sm" onclick="changeAdminPin()" title="Change Admin Passcode">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+            <span>PIN</span>
           </button>
         </div>
       </header>
 
-      <!-- Dashboard Intro Welcome Banner -->
-      <section style="background: rgba(16, 16, 23, 0.85); border: 1px solid var(--border-gold-subtle); border-radius: var(--radius-md); padding: 1.75rem 2rem; margin-bottom: 2rem;">
-        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
-          <div>
-            <span class="badge-gold" style="margin-bottom: 0.4rem; display: inline-block;">Accolade Screenlady Publishing Suite</span>
-            <h2 style="font-family: var(--font-serif-display); font-size: 1.85rem; color: var(--text-ivory); margin: 0 0 0.4rem;">
-              Editorial Desk — Multi-Section Publishing Hub
-            </h2>
-            <p style="color: var(--text-muted); font-size: 0.92rem; margin: 0; line-height: 1.6; max-width: 820px;">
-              Publish directly to any section of the website using the dropdown below: <strong>Editorials</strong> (writings, articles & information), <strong>Podcast</strong> (social media streaming link with 10-second playback preview), <strong>Photos</strong> (event photos chronologically by date), and <strong>Updates</strong>.
-              Whatever you post will <strong>automatically display first at the top</strong> of that page.
-            </p>
-          </div>
-          <a href="#adminPostCard" class="btn btn-gold btn-sm" style="font-weight: 700; white-space: nowrap;">
-            + Create New Post
-          </a>
-        </div>
-      </section>
+      <!-- Scrollable Admin Content Body -->
+      <main class="admin-content-body">
 
-      <!-- Multi-Section Statistics Bar -->
-      <section class="admin-stats-grid">
-        <div class="admin-stat-card" onclick="filterManageSection('news')" style="cursor: pointer; border-color: rgba(239, 68, 68, 0.4);" title="Click to view Live Homepage News">
-          <div>
-            <div class="admin-stat-num" id="statTotalNews" style="color: #f87171;">4</div>
-            <div class="admin-stat-label">⚡ Live News (Home)</div>
-          </div>
-          <div class="admin-stat-icon">📰</div>
-        </div>
-
-        <div class="admin-stat-card" onclick="filterManageSection('filmy_adda')" style="cursor: pointer; border-color: rgba(239, 68, 68, 0.5);" title="Click to view Filmy Adda Entries">
-          <div>
-            <div class="admin-stat-num" id="statTotalFilmyAdda" style="color: #f87171;">4</div>
-            <div class="admin-stat-label">🎬 Filmy Adda (Home)</div>
-          </div>
-          <div class="admin-stat-icon">🍿</div>
-        </div>
-
-        <div class="admin-stat-card" onclick="filterManageSection('bizz_world')" style="cursor: pointer; border-color: rgba(212, 175, 55, 0.5);" title="Click to view Bizz World Entries">
-          <div>
-            <div class="admin-stat-num" id="statTotalBizzWorld" style="color: var(--gold-light);">4</div>
-            <div class="admin-stat-label">💼 Bizz World (Home)</div>
-          </div>
-          <div class="admin-stat-icon">📈</div>
-        </div>
-
-        <div class="admin-stat-card" onclick="filterManageSection('women_inspiration')" style="cursor: pointer; border-color: rgba(245, 158, 11, 0.5);" title="Click to view Women of Inspiration">
-          <div>
-            <div class="admin-stat-num" id="statTotalInspiration" style="color: #fbbf24;">4</div>
-            <div class="admin-stat-label">👑 Women of Inspiration</div>
-          </div>
-          <div class="admin-stat-icon">🌟</div>
-        </div>
-
-        <div class="admin-stat-card" onclick="filterManageSection('fashion_lifestyle')" style="cursor: pointer; border-color: rgba(236, 72, 153, 0.5);" title="Click to view Fashion and Lifestyle">
-          <div>
-            <div class="admin-stat-num" id="statTotalFashion" style="color: #f472b6;">4</div>
-            <div class="admin-stat-label">✨ Fashion & Lifestyle</div>
-          </div>
-          <div class="admin-stat-icon">💎</div>
-        </div>
-
-        <div class="admin-stat-card" onclick="filterManageSection('home_photos')" style="cursor: pointer; border-color: rgba(168, 85, 247, 0.4);" title="Click to view Homepage Slideshow Photos">
-          <div>
-            <div class="admin-stat-num" id="statTotalHomePhotos" style="color: #c084fc;">4</div>
-            <div class="admin-stat-label">🖼️ Homepage Photos</div>
-          </div>
-          <div class="admin-stat-icon">📷</div>
-        </div>
-
-        <div class="admin-stat-card" onclick="filterManageSection('photos')" style="cursor: pointer;" title="Click to view Accolade Screenlady Gallery">
-          <div>
-            <div class="admin-stat-num" id="statTotalPhotos">4</div>
-            <div class="admin-stat-label">📷 Screenlady Gallery</div>
-          </div>
-          <div class="admin-stat-icon">📸</div>
-        </div>
-
-        <div class="admin-stat-card" onclick="filterManageSection('updates')" style="cursor: pointer;" title="Click to view All Screenlady Updates">
-          <div>
-            <div class="admin-stat-num" id="statTotalUpdates">5</div>
-            <div class="admin-stat-label">🗞️ Updates Archive</div>
-          </div>
-          <div class="admin-stat-icon">📑</div>
-        </div>
-
-        <div class="admin-stat-card" onclick="filterManageSection('editorials')" style="cursor: pointer;" title="Click to view Editorials">
-          <div>
-            <div class="admin-stat-num" id="statTotalEditorials">3</div>
-            <div class="admin-stat-label">🖋️ Editorials & Articles</div>
-          </div>
-          <div class="admin-stat-icon">✒️</div>
-        </div>
-
-        <div class="admin-stat-card" onclick="filterManageSection('podcast')" style="cursor: pointer;" title="Click to view Podcasts">
-          <div>
-            <div class="admin-stat-num" id="statTotalPodcasts">3</div>
-            <div class="admin-stat-label">🎙️ Podcast Episodes</div>
-          </div>
-          <div class="admin-stat-icon">📻</div>
-        </div>
-
-        <div class="admin-stat-card" onclick="scrollToMagazineOrders()" style="cursor: pointer; border-color: var(--border-gold-bright);" title="Click to view Magazine Orders & Purchase Details">
-          <div>
-            <div class="admin-stat-num" id="statTotalMagazineOrders" style="color: var(--gold-light);">3</div>
-            <div class="admin-stat-label">🛍️ Magazine Purchases</div>
-          </div>
-          <div class="admin-stat-icon">💳</div>
-        </div>
-      </section>
-
-      <!-- 3. Form Card: Create / Edit Content Post -->
-      <section class="admin-card" id="adminPostCard">
-        <div class="admin-card-header">
-          <div>
-            <span class="badge-gold" style="margin-bottom: 0.35rem; display: inline-block;">Content Composer</span>
-            <h2 class="admin-card-title" id="formCardTitle">Create New Post</h2>
-          </div>
-          <button id="adminCancelEditBtn" class="btn btn-outline-gold btn-sm" onclick="cancelEdit()" style="display: none;">
-            ✕ Cancel Edit Mode
-          </button>
-        </div>
-
-        <!-- 🌟 PRIMARY DESTINATION SECTION SELECTOR DROPDOWN 🌟 -->
-        <div class="section-destination-selector">
-          <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 0.5rem;">
-            <label class="post-input-label" for="postSectionSelect" style="font-size: 0.95rem; font-weight: 700; color: var(--gold-light);">
-              ✦ Select Page / Section to Publish To
-            </label>
-            <span id="sectionNoticeBadge" class="section-pill-badge badge-editorials">
-              Publishing to Live News (Homepage Screenlady Updates)
-            </span>
+        <!-- =========================================================
+             PANEL 1: DASHBOARD OVERVIEW
+             ========================================================= -->
+        <div class="admin-view-panel active" id="panel-dashboard">
+          <div class="admin-view-header">
+            <div class="admin-view-title-group">
+              <h1>Editorial Desk Dashboard</h1>
+              <p>Real-time publication telemetry, multi-section performance, and content management control.</p>
+            </div>
+            <div class="admin-card-toolbar">
+              <button type="button" class="admin-btn admin-btn-outline admin-btn-sm" onclick="loadAdminDashboard()">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"></polyline><polyline points="1 20 1 14 7 14"></polyline><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>
+                <span>Sync Cloudflare D1</span>
+              </button>
+              <button type="button" class="admin-btn admin-btn-gold admin-btn-sm" onclick="navigateToComposer()">
+                <span>+ Create New Post</span>
+              </button>
+            </div>
           </div>
 
-          <select id="postSectionSelect" class="post-input-field section-select-box" onchange="handleSectionChange(this.value)">
-            <option value="news">⚡ News (Screenlady Updates) — Daily Live News Displayed on Homepage</option>
-            <option value="filmy_adda">🎬 Filmy Adda — Movies, Cinema & Film Photos/Information (Homepage + Updates)</option>
-            <option value="bizz_world">💼 Bizz World — Business, Startups & Corporate Pioneers (Homepage + Updates)</option>
-            <option value="women_inspiration">👑 Women of Inspiration — Struggle to Success Honorees (Homepage + Updates)</option>
-            <option value="fashion_lifestyle">✨ Fashion and Lifestyle — Haute Couture, Trends & Living (Homepage + Updates)</option>
-            <option value="home_photos">🖼️ Homepage Photos — Photos for Homepage Slideshow Showcase</option>
-            <option value="photos">📷 Accolade Screenlady Gallery — Photos Page (photos.html)</option>
-            <option value="updates">🗞️ Screenlady Updates — Official Updates Page (updates.html)</option>
-            <option value="editorials">🖋️ Editorials — Writings, Articles, Information & In-Depth Columns (editorials.html)</option>
-            <option value="podcast">🎙️ Podcast — Social Media Streaming Episodes with 10-Second Playback Preview (podcast.html)</option>
-          </select>
-          <p style="font-size: 0.78rem; color: var(--text-muted); margin: 0.45rem 0 0;">
-            Choose where this entry will appear. Form fields below automatically adapt to match your selection. No fields are mandatory — fill whatever details you have.
-          </p>
-        </div>
-
-        <!-- Updates Format Selector (Only visible when Section = 'updates' or 'news') -->
-        <div id="updatesTypeSelectorRow" style="display: none; margin-bottom: 1.5rem;">
-          <label class="post-input-label" style="margin-bottom: 0.65rem;">Select Updates Format</label>
-          <div class="admin-type-tabs">
-            <button type="button" class="admin-type-tab-btn" data-type="news" onclick="switchUpdateSubtype('news')">
-              <span>⚡</span>
-              <span>Daily Live News (Homepage)</span>
-            </button>
-            <button type="button" class="admin-type-tab-btn active" data-type="photo-info" onclick="switchUpdateSubtype('photo-info')">
-              <span>📸</span>
-              <span>Photo with Information</span>
-            </button>
-            <button type="button" class="admin-type-tab-btn" data-type="article" onclick="switchUpdateSubtype('article')">
-              <span>📝</span>
-              <span>Article / Story</span>
-            </button>
-            <button type="button" class="admin-type-tab-btn" data-type="photo" onclick="switchUpdateSubtype('photo')">
-              <span>🖼️</span>
-              <span>Photo Showcase</span>
-            </button>
-          </div>
-        </div>
-
-        <form id="adminPostForm">
-          <div class="post-form-grid">
-
-            <!-- Common Row 1: Date & Category -->
-            <div id="groupCommonDate">
-              <label class="post-input-label" for="postDate" id="dateInputLabel">Publication Date</label>
-              <input type="date" id="postDate" class="post-input-field">
+          <!-- KPI Cards Grid -->
+          <div class="admin-kpi-grid">
+            <div class="admin-kpi-card" onclick="filterManageSection('news')" style="cursor: pointer;" title="View Live News">
+              <div>
+                <div class="admin-kpi-value" id="statTotalNews" style="color: #F87171;">4</div>
+                <div class="admin-kpi-label">Live News (Home)</div>
+              </div>
+              <div class="admin-kpi-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+              </div>
             </div>
 
-            <div id="groupCommonCategory">
-              <label class="post-input-label" for="postCategory">Category</label>
-              <select id="postCategory" class="post-input-field">
-                <!-- Populated dynamically per section -->
+            <div class="admin-kpi-card" onclick="filterManageSection('filmy_adda')" style="cursor: pointer;" title="View Filmy Adda">
+              <div>
+                <div class="admin-kpi-value" id="statTotalFilmyAdda" style="color: var(--admin-gold-light);">4</div>
+                <div class="admin-kpi-label">Filmy Adda</div>
+              </div>
+              <div class="admin-kpi-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="2.18" ry="2.18"></rect><line x1="7" y1="2" x2="7" y2="22"></line><line x1="17" y1="2" x2="17" y2="22"></line><line x1="2" y1="12" x2="22" y2="12"></line></svg>
+              </div>
+            </div>
+
+            <div class="admin-kpi-card" onclick="filterManageSection('bizz_world')" style="cursor: pointer;" title="View Bizz World">
+              <div>
+                <div class="admin-kpi-value" id="statTotalBizzWorld" style="color: var(--admin-gold-light);">4</div>
+                <div class="admin-kpi-label">Bizz World</div>
+              </div>
+              <div class="admin-kpi-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
+              </div>
+            </div>
+
+            <div class="admin-kpi-card" onclick="filterManageSection('women_inspiration')" style="cursor: pointer;" title="View Women of Inspiration">
+              <div>
+                <div class="admin-kpi-value" id="statTotalInspiration" style="color: #FBBF24;">4</div>
+                <div class="admin-kpi-label">Women of Inspiration</div>
+              </div>
+              <div class="admin-kpi-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="7"></circle><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"></polyline></svg>
+              </div>
+            </div>
+
+            <div class="admin-kpi-card" onclick="filterManageSection('fashion_lifestyle')" style="cursor: pointer;" title="View Fashion and Lifestyle">
+              <div>
+                <div class="admin-kpi-value" id="statTotalFashion" style="color: #F472B6;">4</div>
+                <div class="admin-kpi-label">Fashion & Lifestyle</div>
+              </div>
+              <div class="admin-kpi-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path></svg>
+              </div>
+            </div>
+
+            <div class="admin-kpi-card" onclick="filterManageSection('editorials')" style="cursor: pointer;" title="View Editorials">
+              <div>
+                <div class="admin-kpi-value" id="statTotalEditorials">3</div>
+                <div class="admin-kpi-label">Editorials & Articles</div>
+              </div>
+              <div class="admin-kpi-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.24 12.24a6 6 0 0 0-8.49-8.49L5 10.5V19h8.5z"></path></svg>
+              </div>
+            </div>
+
+            <div class="admin-kpi-card" onclick="filterManageSection('podcast')" style="cursor: pointer;" title="View Podcasts">
+              <div>
+                <div class="admin-kpi-value" id="statTotalPodcasts">3</div>
+                <div class="admin-kpi-label">Podcast Episodes</div>
+              </div>
+              <div class="admin-kpi-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path></svg>
+              </div>
+            </div>
+
+            <div class="admin-kpi-card" onclick="filterManageSection('photos')" style="cursor: pointer;" title="View Photos Gallery">
+              <div>
+                <div class="admin-kpi-value" id="statTotalPhotos">4</div>
+                <div class="admin-kpi-label">Gallery Photographs</div>
+              </div>
+              <div class="admin-kpi-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path></svg>
+              </div>
+            </div>
+
+            <div class="admin-kpi-card" onclick="switchAdminView('panel-orders')" style="cursor: pointer; border-color: var(--admin-border-gold);" title="View Magazine Orders">
+              <div>
+                <div class="admin-kpi-value" id="statTotalMagazineOrders" style="color: #34D399;">3</div>
+                <div class="admin-kpi-label">Magazine Purchases</div>
+              </div>
+              <div class="admin-kpi-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path></svg>
+              </div>
+            </div>
+
+            <div class="admin-kpi-card" onclick="filterManageSection('home_photos')" style="cursor: pointer;" title="View Homepage Photos">
+              <div>
+                <div class="admin-kpi-value" id="statTotalHomePhotos" style="color: #C084FC;">4</div>
+                <div class="admin-kpi-label">Homepage Slideshow</div>
+              </div>
+              <div class="admin-kpi-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+              </div>
+            </div>
+
+            <div class="admin-kpi-card" onclick="filterManageSection('updates')" style="cursor: pointer;" title="View Updates Archive">
+              <div>
+                <div class="admin-kpi-value" id="statTotalUpdates">5</div>
+                <div class="admin-kpi-label">Updates Archive</div>
+              </div>
+              <div class="admin-kpi-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path></svg>
+              </div>
+            </div>
+          </div>
+
+          <!-- Quick Action Cards -->
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1rem; margin-bottom: 2rem;">
+            <div style="background: var(--admin-card-bg); border: 1px solid var(--admin-border); border-radius: var(--admin-radius-md); padding: 1.25rem; display: flex; align-items: center; justify-content: space-between;">
+              <div>
+                <div style="font-weight: 600; color: #FFFFFF; font-size: 0.95rem;">Publish Live News</div>
+                <div style="font-size: 0.78rem; color: var(--admin-text-muted);">Instant homepage bulletin updates</div>
+              </div>
+              <button type="button" class="admin-btn admin-btn-outline admin-btn-sm" onclick="navigateToComposer('news')">Compose</button>
+            </div>
+
+            <div style="background: var(--admin-card-bg); border: 1px solid var(--admin-border); border-radius: var(--admin-radius-md); padding: 1.25rem; display: flex; align-items: center; justify-content: space-between;">
+              <div>
+                <div style="font-weight: 600; color: #FFFFFF; font-size: 0.95rem;">New Editorial Article</div>
+                <div style="font-size: 0.78rem; color: var(--admin-text-muted);">In-depth column and article writing</div>
+              </div>
+              <button type="button" class="admin-btn admin-btn-outline admin-btn-sm" onclick="navigateToComposer('editorials')">Write</button>
+            </div>
+
+            <div style="background: var(--admin-card-bg); border: 1px solid var(--admin-border); border-radius: var(--admin-radius-md); padding: 1.25rem; display: flex; align-items: center; justify-content: space-between;">
+              <div>
+                <div style="font-weight: 600; color: #FFFFFF; font-size: 0.95rem;">Add Podcast Episode</div>
+                <div style="font-size: 0.78rem; color: var(--admin-text-muted);">Audio stream with 10s preview</div>
+              </div>
+              <button type="button" class="admin-btn admin-btn-outline admin-btn-sm" onclick="navigateToComposer('podcast')">Upload</button>
+            </div>
+
+            <div style="background: var(--admin-card-bg); border: 1px solid var(--admin-border); border-radius: var(--admin-radius-md); padding: 1.25rem; display: flex; align-items: center; justify-content: space-between;">
+              <div>
+                <div style="font-weight: 600; color: #FFFFFF; font-size: 0.95rem;">Event Photographs</div>
+                <div style="font-size: 0.78rem; color: var(--admin-text-muted);">Gallery 4-column visual portraits</div>
+              </div>
+              <button type="button" class="admin-btn admin-btn-outline admin-btn-sm" onclick="navigateToComposer('photos')">Add Photo</button>
+            </div>
+          </div>
+
+          <!-- Cloudflare Worker Backend Telemetry Card -->
+          <div class="admin-card">
+            <div class="admin-card-header">
+              <div class="admin-card-title">Backend Architecture & Cloudflare Worker Synchronization</div>
+              <span class="admin-badge admin-badge-success">Active & Healthy</span>
+            </div>
+            <div style="padding: 1.5rem; display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1.25rem; font-size: 0.85rem;">
+              <div>
+                <div style="color: var(--admin-text-faint); margin-bottom: 0.25rem;">Cloudflare Worker API Endpoint</div>
+                <code style="color: var(--admin-gold-light); font-size: 0.82rem; word-break: break-all;">https://screenlady-backend.patilrohan2407.workers.dev</code>
+              </div>
+              <div>
+                <div style="color: var(--admin-text-faint); margin-bottom: 0.25rem;">Primary Storage Database</div>
+                <div style="color: #FFFFFF; font-weight: 600;">Cloudflare D1 SQL Database (Serverless Edge)</div>
+              </div>
+              <div>
+                <div style="color: var(--admin-text-faint); margin-bottom: 0.25rem;">Media CDN Engine</div>
+                <div style="color: #FFFFFF; font-weight: 600;">ImageKit Global CDN (ik.imagekit.io/acooladescreenlady)</div>
+              </div>
+              <div>
+                <div style="color: var(--admin-text-faint); margin-bottom: 0.25rem;">Data Persistence Guarantee</div>
+                <div style="color: #34D399; font-weight: 600;">Persistent Across All Devices & Sessions</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- =========================================================
+             PANEL 2: NORMAL INLINE CONTENT COMPOSER (NO MODALS)
+             ========================================================= -->
+        <div class="admin-view-panel" id="panel-compose">
+          <div class="admin-view-header">
+            <div class="admin-view-title-group">
+              <h1 id="composeHeaderTitle">Content Publishing Studio</h1>
+              <p>Direct publishing to any section of the website. Posts automatically display first on the live page.</p>
+            </div>
+            <div class="admin-card-toolbar">
+              <button type="button" class="admin-btn admin-btn-outline admin-btn-sm" onclick="switchAdminView('panel-content')">
+                <span>&larr; Back to Content Archive</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Main Post Form Card (Inline on page) -->
+          <div class="admin-card" id="adminPostCard" style="padding: 2rem;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; border-bottom: 1px solid var(--admin-border); padding-bottom: 1rem;">
+              <div>
+                <span class="admin-badge admin-badge-gold" style="margin-bottom: 0.35rem;">Universal Composer</span>
+                <h2 class="admin-card-title" id="formCardTitle">Create New Post</h2>
+              </div>
+              <button type="button" id="adminCancelEditBtn" class="admin-btn admin-btn-outline admin-btn-sm" onclick="cancelEdit()" style="display: none;">
+                Cancel Edit Mode
+              </button>
+            </div>
+
+            <!-- Primary Destination Section Selector -->
+            <div class="section-destination-selector">
+              <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 0.5rem;">
+                <label class="post-input-label" for="postSectionSelect" style="font-size: 0.95rem; font-weight: 700; color: var(--admin-gold-light); margin-bottom: 0;">
+                  Select Page / Section to Publish To
+                </label>
+                <span id="sectionNoticeBadge" class="section-pill-badge badge-editorials">
+                  Publishing to Live News (Homepage Screenlady Updates)
+                </span>
+              </div>
+
+              <select id="postSectionSelect" class="post-input-field section-select-box" onchange="handleSectionChange(this.value)">
+                <option value="news">Live News (Screenlady Updates) &mdash; Daily Live News on Homepage</option>
+                <option value="filmy_adda">Filmy Adda &mdash; Movies, Cinema & Film Photos/Information (Homepage + Updates)</option>
+                <option value="bizz_world">Bizz World &mdash; Business, Startups & Corporate Pioneers (Homepage + Updates)</option>
+                <option value="women_inspiration">Women of Inspiration &mdash; Struggle to Success Honorees (Homepage + Updates)</option>
+                <option value="fashion_lifestyle">Fashion and Lifestyle &mdash; Haute Couture, Trends & Living (Homepage + Updates)</option>
+                <option value="home_photos">Homepage Photos &mdash; Photos for Homepage Slideshow Showcase</option>
+                <option value="photos">Screenlady Gallery &mdash; Photos Page (photos.html)</option>
+                <option value="updates">Screenlady Updates &mdash; Official Updates Page (updates.html)</option>
+                <option value="editorials">Editorials &mdash; Writings, Articles & In-Depth Columns (editorials.html)</option>
+                <option value="podcast">Podcast &mdash; Social Media Streaming Episodes with 10s Preview (podcast.html)</option>
               </select>
+              <p style="font-size: 0.78rem; color: var(--admin-text-muted); margin: 0.45rem 0 0;">
+                Choose where this entry will appear. Form fields below automatically adapt to match your selection.
+              </p>
             </div>
 
-            <!-- ==============================================
-                 SECTION A: EDITORIALS FIELDS
-            ============================================== -->
-            <div id="sectionFieldsEditorials" class="form-group-full" style="display: block;">
-              <div class="post-form-grid" style="padding: 0;">
-                <div class="form-group-full">
-                  <label class="post-input-label" for="postEditorialTitle">Editorial Article Title / Headline</label>
-                  <input type="text" id="postEditorialTitle" class="post-input-field" placeholder="e.g. The Metamorphosis of Contemporary Cinema: Women Behind the Cinematic Camera">
-                </div>
-
-                <div>
-                  <label class="post-input-label" for="postEditorialAuthor">Author / Contributor Name</label>
-                  <input type="text" id="postEditorialAuthor" class="post-input-field" placeholder="e.g. Dr. Radhika Singhania">
-                </div>
-
-                <div>
-                  <label class="post-input-label" for="postEditorialDesignation">Author Designation / Title</label>
-                  <input type="text" id="postEditorialDesignation" class="post-input-field" placeholder="e.g. Senior Film Scholar & Guest Columnist">
-                </div>
-
-                <div>
-                  <label class="post-input-label" for="postEditorialReadTime">Estimated Read Time</label>
-                  <input type="text" id="postEditorialReadTime" class="post-input-field" placeholder="e.g. 5 Min Read" value="5 Min Read">
-                </div>
-
-                <div class="form-group-full">
-                  <label class="post-input-label" for="postEditorialQuote">Featured Pull Quote / Key Editorial Excerpt</label>
-                  <input type="text" id="postEditorialQuote" class="post-input-field" placeholder="e.g. 'True cinematic storytelling doesn’t simply capture reality; it reframes our collective conscience.'">
-                </div>
-
-                <div class="form-group-full">
-                  <label class="post-input-label" for="postEditorialBody">Editorial Writing, Articles & In-Depth Information</label>
-                  <textarea id="postEditorialBody" class="post-input-field" rows="8" placeholder="Write full article body paragraphs, critical analyses, thoughts, and background information here... (Separate paragraphs with double enters)"></textarea>
-                </div>
+            <!-- Updates Format Selector (Only visible when Section = 'updates' or 'news') -->
+            <div id="updatesTypeSelectorRow" style="display: none; margin-bottom: 1.5rem;">
+              <label class="post-input-label" style="margin-bottom: 0.5rem;">Select Updates Format</label>
+              <div class="admin-type-tabs">
+                <button type="button" class="admin-type-tab-btn" data-type="news" onclick="switchUpdateSubtype('news')">
+                  <span>Daily Live News (Homepage)</span>
+                </button>
+                <button type="button" class="admin-type-tab-btn active" data-type="photo-info" onclick="switchUpdateSubtype('photo-info')">
+                  <span>Photo with Information</span>
+                </button>
+                <button type="button" class="admin-type-tab-btn" data-type="article" onclick="switchUpdateSubtype('article')">
+                  <span>Article / Story</span>
+                </button>
+                <button type="button" class="admin-type-tab-btn" data-type="photo" onclick="switchUpdateSubtype('photo')">
+                  <span>Photo Showcase</span>
+                </button>
               </div>
             </div>
 
-            <!-- ==============================================
-                 SECTION B: PODCAST FIELDS
-            ============================================== -->
-            <div id="sectionFieldsPodcast" class="form-group-full" style="display: none;">
-              <div class="post-form-grid" style="padding: 0;">
-                <div class="form-group-full">
-                  <label class="post-input-label" for="postPodcastTitle">Podcast Episode Title / Number</label>
-                  <input type="text" id="postPodcastTitle" class="post-input-field" placeholder="e.g. Episode 09: Decades Behind the Lens — Women in Classical Storytelling">
+            <!-- Main Post Form -->
+            <form id="adminPostForm">
+              <div class="post-form-grid">
+
+                <!-- Common Row 1: Date & Category -->
+                <div id="groupCommonDate">
+                  <label class="post-input-label" for="postDate" id="dateInputLabel">Publication Date</label>
+                  <input type="date" id="postDate" class="post-input-field">
                 </div>
 
-                <div>
-                  <label class="post-input-label" for="postPodcastHost">Host / Moderator</label>
-                  <input type="text" id="postPodcastHost" class="post-input-field" placeholder="e.g. Screenlady Broadcast Studio" value="Accolade Screenlady Desk">
+                <div id="groupCommonCategory">
+                  <label class="post-input-label" for="postCategory">Category</label>
+                  <select id="postCategory" class="post-input-field">
+                    <!-- Populated dynamically per section -->
+                  </select>
                 </div>
 
-                <div>
-                  <label class="post-input-label" for="postPodcastGuest">Featured Guest(s)</label>
-                  <input type="text" id="postPodcastGuest" class="post-input-field" placeholder="e.g. Smt. Shobha Gurunath">
-                </div>
-
-                <div>
-                  <label class="post-input-label" for="postPodcastDuration">Total Episode Duration</label>
-                  <input type="text" id="postPodcastDuration" class="post-input-field" placeholder="e.g. 42 Mins" value="38 Mins">
-                </div>
-
-                <!-- Social Media Link for Podcast -->
-                <div class="form-group-full">
-                  <label class="post-input-label" for="postPodcastSocialLink">
-                    Social Media Podcast Streaming Link (YouTube, Spotify, Instagram, Apple)
-                  </label>
-                  <input type="url" id="postPodcastSocialLink" class="post-input-field" placeholder="https://youtube.com/watch?v=... or https://spotify.com/episode/..." value="https://youtube.com">
-                  <p style="font-size: 0.76rem; color: var(--gold-light); margin: 0.35rem 0 0;">
-                    ✓ Listeners will click to stream the full episode on your verified social channel.
-                  </p>
-                </div>
-
-                <!-- 10-Second Playback Preview Configuration -->
-                <div class="form-group-full">
-                  <div style="background: rgba(212,175,55,0.06); border: 1px dashed var(--border-gold-subtle); border-radius: var(--radius-sm); padding: 1rem 1.25rem;">
-                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.5rem; flex-wrap: wrap; gap: 0.5rem;">
-                      <label class="post-input-label" for="postPodcastAudioUrl" style="color: var(--gold-light); font-weight: 700; margin: 0;">
-                        🎵 10-Second Playback Preview Audio
-                      </label>
-                      <span class="badge-gold">Interactive Preview Engine</span>
+                <!-- ==============================================
+                     SECTION A: EDITORIALS FIELDS
+                ============================================== -->
+                <div id="sectionFieldsEditorials" class="form-group-full" style="display: block;">
+                  <div class="post-form-grid" style="padding: 0;">
+                    <div class="form-group-full">
+                      <label class="post-input-label" for="postEditorialTitle">Editorial Article Title / Headline</label>
+                      <input type="text" id="postEditorialTitle" class="post-input-field" placeholder="e.g. The Metamorphosis of Contemporary Cinema: Women Behind the Camera">
                     </div>
-                    <input type="text" id="postPodcastAudioUrl" class="post-input-field" placeholder="Optional direct MP3 audio URL (or leave blank for high-fidelity luxury broadcast audio preview)">
-                    <p style="font-size: 0.78rem; color: var(--text-muted); margin: 0.4rem 0 0;">
-                      The Podcast page includes an interactive <strong>10-Second Playback Preview</strong> with animated equalizers and countdown timer. If no custom audio URL is given, it automatically generates a pristine harmonic broadcast preview!
-                    </p>
+
+                    <div>
+                      <label class="post-input-label" for="postEditorialAuthor">Author / Contributor Name</label>
+                      <input type="text" id="postEditorialAuthor" class="post-input-field" placeholder="e.g. Dr. Radhika Singhania">
+                    </div>
+
+                    <div>
+                      <label class="post-input-label" for="postEditorialDesignation">Author Designation / Title</label>
+                      <input type="text" id="postEditorialDesignation" class="post-input-field" placeholder="e.g. Senior Film Scholar & Guest Columnist">
+                    </div>
+
+                    <div>
+                      <label class="post-input-label" for="postEditorialReadTime">Estimated Read Time</label>
+                      <input type="text" id="postEditorialReadTime" class="post-input-field" placeholder="e.g. 5 Min Read" value="5 Min Read">
+                    </div>
+
+                    <div class="form-group-full">
+                      <label class="post-input-label" for="postEditorialQuote">Featured Pull Quote / Key Editorial Excerpt</label>
+                      <input type="text" id="postEditorialQuote" class="post-input-field" placeholder="e.g. 'True cinematic storytelling doesn’t simply capture reality; it reframes our collective conscience.'">
+                    </div>
+
+                    <div class="form-group-full">
+                      <label class="post-input-label" for="postEditorialBody">Editorial Writing, Articles & In-Depth Information</label>
+                      <textarea id="postEditorialBody" class="post-input-field" rows="8" placeholder="Write full article body paragraphs, critical analyses, thoughts, and background information here... (Separate paragraphs with double enter)"></textarea>
+                    </div>
                   </div>
                 </div>
 
-                <div class="form-group-full">
-                  <label class="post-input-label" for="postPodcastShowNotes">Show Notes, Key Discussion Highlights & Description</label>
-                  <textarea id="postPodcastShowNotes" class="post-input-field" rows="6" placeholder="Summary of topics explored in this episode, key timestamps, notable quotes, and interview notes..."></textarea>
-                </div>
-              </div>
-            </div>
-
-            <!-- ==============================================
-                 SECTION C: PHOTOS FIELDS (PHOTO, DATE, LOCATION & 1-LINE DESCRIPTION)
-            ============================================== -->
-            <div id="sectionFieldsPhotos" class="form-group-full" style="display: none;">
-              <!-- Photo Display Standard Note -->
-              <div class="admin-photo-standard-note" style="background: rgba(212, 175, 55, 0.08); border: 1px solid var(--gold-primary); border-left: 4px solid var(--gold-primary); border-radius: 6px; padding: 0.9rem 1.25rem; margin-bottom: 1.25rem;">
-                <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 0.35rem;">
-                  <strong style="color: var(--gold-light); font-size: 0.88rem; display: inline-flex; align-items: center; gap: 0.4rem;">
-                    <span>📌 Accolade Screenlady Gallery Photo Format</span>
-                  </strong>
-                  <span class="badge-gold" style="font-size: 0.65rem;">4 Side-by-Side</span>
-                </div>
-                <p style="font-size: 0.82rem; color: #E5E7EB; line-height: 1.55; margin: 0;">
-                  Gallery displays 4 photos side-by-side with <strong>Photo</strong>, <strong>Name / Event Title</strong>, and <strong>Date</strong> below.
-                </p>
-              </div>
-
-              <div class="post-form-grid" style="padding: 0;">
-                <div>
-                  <label class="post-input-label" for="postPhotoTitle">🏷️ Photo / Event Name</label>
-                  <input type="text" id="postPhotoTitle" class="post-input-field" placeholder="e.g. Women of Distinction Annual Honors Ceremony">
-                </div>
-
-                <div>
-                  <label class="post-input-label" for="postPhotoVenue">📍 Event / Photo Location (Optional)</label>
-                  <input type="text" id="postPhotoVenue" class="post-input-field" placeholder="e.g. Screenlady Headquarters, Mumbai">
-                </div>
-
-                <div class="form-group-full">
-                  <label class="post-input-label" for="postPhotoCaption">📝 1-Line Description / Notes (Optional)</label>
-                  <input type="text" id="postPhotoCaption" class="post-input-field" placeholder="e.g. Official collaborative portrait of the Accolade Screenlady Executive Leadership." maxlength="160">
-                </div>
-              </div>
-            </div>
-
-            <!-- ==============================================
-                 SECTION D: UPDATES FIELDS (TEAM & MILESTONES)
-            ============================================== -->
-            <div id="sectionFieldsUpdates" class="form-group-full" style="display: none;">
-              <div class="post-form-grid" style="padding: 0;">
-                
-                <div id="groupHeadline" class="form-group-full">
-                  <label class="post-input-label" for="postHeadline">Update Headline / Milestone Title</label>
-                  <input type="text" id="postHeadline" class="post-input-field" placeholder="e.g. Executive Editorial Board Meeting Led by Founder Mr. Prashant Sagvekar">
-                </div>
-
-                <div id="groupWomanName">
-                  <label class="post-input-label" for="postWomanName">Team Member(s) / Lead Organizer Involved</label>
-                  <input type="text" id="postWomanName" class="post-input-field" list="screenladyTeamList" placeholder="e.g. Mr. Prashant Sagvekar (Founder) / Mrs. Amruta Rao / Screenlady Board">
-                  <datalist id="screenladyTeamList">
-                    <option value="Mr. Prashant Sagvekar (Founder & Publisher)"></option>
-                    <option value="Mrs. Amruta Rao (Editor-in-Chief)"></option>
-                    <option value="Mrs. Sakshi Sagvekar (Managing Director)"></option>
-                    <option value="Mr. Vedang Sagvekar (Marketing Director)"></option>
-                    <option value="Mrs. Manasi Ingle (Board Member)"></option>
-                    <option value="Mrs. Supriya Vinod (Board Member)"></option>
-                    <option value="Accolade Screenlady Full Executive Team"></option>
-                  </datalist>
-                </div>
-
-                <div>
-                  <label class="post-input-label" for="postUpdateVenue">Venue / City Location</label>
-                  <input type="text" id="postUpdateVenue" class="post-input-field" placeholder="e.g. Screenlady Headquarters, Mumbai / Film City Studios">
-                </div>
-
-                <div id="groupArticleTitle" class="form-group-full" style="display: none;">
-                  <label class="post-input-label" for="postArticleTitle">Article Headline / Title</label>
-                  <input type="text" id="postArticleTitle" class="post-input-field" placeholder="e.g. The New Architecture of Executive Governance">
-                </div>
-
-                <div id="groupAuthor" class="form-group-full" style="display: none;">
-                  <label class="post-input-label" for="postAuthor">Author / Byline</label>
-                  <input type="text" id="postAuthor" class="post-input-field" placeholder="e.g. Accolade Screenlady Desk">
-                </div>
-
-                <div id="groupPhotoTitle" class="form-group-full" style="display: none;">
-                  <label class="post-input-label" for="postPhotoTitle">Photo Title / Caption Headline</label>
-                  <input type="text" id="postPhotoTitle" class="post-input-field" placeholder="e.g. Premiere Gala Assembly">
-                </div>
-
-                <div id="groupCredit" class="form-group-full" style="display: none;">
-                  <label class="post-input-label" for="postCredit">Photography / Source Credit</label>
-                  <input type="text" id="postCredit" class="post-input-field" placeholder="e.g. Screenlady Official Archives">
-                </div>
-
-                <div id="groupSummary" class="form-group-full">
-                  <label class="post-input-label" id="summaryLabel" for="postSummary">Brief Summary / 1-Line Key Highlights</label>
-                  <textarea id="postSummary" class="post-input-field" rows="3" placeholder="Summarize the meeting, award, movie talk, meet-and-greet, or event highlights..."></textarea>
-                </div>
-
-                <div id="groupFullBody" class="form-group-full">
-                  <label class="post-input-label" for="postFullBody">Full Event Report / Extended Story (Shown in Modal / Reader)</label>
-                  <textarea id="postFullBody" class="post-input-field" rows="5" placeholder="Write full article body paragraphs, quotes, and extended details... (Separate paragraphs with double enter)"></textarea>
-                </div>
-              </div>
-            </div>
-
-            <!-- Common: Photo Selection / Local Upload -->
-            <div class="form-group-full">
-              <label class="post-input-label" id="photoPickerLabel">Feature Photograph / Visual (Upload, preset, or link)</label>
-              
-              <div class="admin-photo-picker-box">
-                <div class="admin-photo-preview-wrap">
-                  <img id="adminPhotoPreview" src="/assets/images/featured-icon-saree.jpg" alt="Preview" class="admin-preview-img">
-                  <div>
-                    <div class="admin-upload-btn-wrap">
-                      <label class="admin-upload-btn" for="adminFileInput">
-                        <span>📁 Upload from Your Computer</span>
-                      </label>
-                      <input type="file" id="adminFileInput" accept="image/*" style="display: none;">
+                <!-- ==============================================
+                     SECTION B: PODCAST FIELDS
+                ============================================== -->
+                <div id="sectionFieldsPodcast" class="form-group-full" style="display: none;">
+                  <div class="post-form-grid" style="padding: 0;">
+                    <div class="form-group-full">
+                      <label class="post-input-label" for="postPodcastTitle">Podcast Episode Title / Number</label>
+                      <input type="text" id="postPodcastTitle" class="post-input-field" placeholder="e.g. Episode 09: Decades Behind the Lens — Women in Classical Storytelling">
                     </div>
-                    <p id="uploadFileStatus" style="font-size: 0.78rem; color: var(--text-muted); margin-top: 0.35rem;">
-                      Upload any JPG/PNG/WEBP photo, or select a preset below:
-                    </p>
+
+                    <div>
+                      <label class="post-input-label" for="postPodcastHost">Host / Moderator</label>
+                      <input type="text" id="postPodcastHost" class="post-input-field" placeholder="e.g. Screenlady Broadcast Studio" value="Accolade Screenlady Desk">
+                    </div>
+
+                    <div>
+                      <label class="post-input-label" for="postPodcastGuest">Featured Guest(s)</label>
+                      <input type="text" id="postPodcastGuest" class="post-input-field" placeholder="e.g. Smt. Shobha Gurunath">
+                    </div>
+
+                    <div>
+                      <label class="post-input-label" for="postPodcastDuration">Total Episode Duration</label>
+                      <input type="text" id="postPodcastDuration" class="post-input-field" placeholder="e.g. 42 Mins" value="38 Mins">
+                    </div>
+
+                    <div class="form-group-full">
+                      <label class="post-input-label" for="postPodcastSocialLink">
+                        Social Media Podcast Streaming Link (YouTube, Spotify, Instagram, Apple)
+                      </label>
+                      <input type="url" id="postPodcastSocialLink" class="post-input-field" placeholder="https://youtube.com/watch?v=... or https://spotify.com/episode/..." value="https://youtube.com">
+                      <p style="font-size: 0.76rem; color: var(--admin-gold-light); margin: 0.35rem 0 0;">
+                        Listeners will click to stream the full episode on your verified social channel.
+                      </p>
+                    </div>
+
+                    <div class="form-group-full">
+                      <div style="background: rgba(212,175,55,0.06); border: 1px dashed var(--admin-border-gold); border-radius: var(--admin-radius-sm); padding: 1rem 1.25rem;">
+                        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.5rem; flex-wrap: wrap; gap: 0.5rem;">
+                          <label class="post-input-label" for="postPodcastAudioUrl" style="color: var(--admin-gold-light); font-weight: 700; margin: 0;">
+                            10-Second Playback Preview Audio
+                          </label>
+                          <span class="admin-badge admin-badge-gold">Interactive Preview Engine</span>
+                        </div>
+                        <input type="text" id="postPodcastAudioUrl" class="post-input-field" placeholder="Optional direct MP3 audio URL (or leave blank for high-fidelity luxury audio preview)">
+                        <p style="font-size: 0.78rem; color: var(--admin-text-muted); margin: 0.4rem 0 0;">
+                          The Podcast page includes an interactive 10-Second Playback Preview with animated equalizers and countdown timer.
+                        </p>
+                      </div>
+                    </div>
+
+                    <div class="form-group-full">
+                      <label class="post-input-label" for="postPodcastShowNotes">Show Notes, Key Discussion Highlights & Description</label>
+                      <textarea id="postPodcastShowNotes" class="post-input-field" rows="6" placeholder="Summary of topics explored in this episode, key timestamps, notable quotes, and interview notes..."></textarea>
+                    </div>
                   </div>
                 </div>
 
-                <div style="margin-bottom: 0.5rem; font-size: 0.75rem; color: var(--gold-light); font-weight: 600;">
-                  Ready-to-Use Screenlady Presets:
-                </div>
-                <div class="post-photo-previews" id="adminPresetGrid"></div>
+                <!-- ==============================================
+                     SECTION C: PHOTOS FIELDS
+                ============================================== -->
+                <div id="sectionFieldsPhotos" class="form-group-full" style="display: none;">
+                  <div class="admin-photo-standard-note" style="background: rgba(212, 175, 55, 0.08); border: 1px solid var(--admin-gold); border-left: 4px solid var(--admin-gold); border-radius: 6px; padding: 0.9rem 1.25rem; margin-bottom: 1.25rem;">
+                    <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 0.35rem;">
+                      <strong style="color: var(--admin-gold-light); font-size: 0.88rem;">Accolade Screenlady Gallery Format</strong>
+                      <span class="admin-badge admin-badge-gold" style="font-size: 0.65rem;">4 Side-by-Side</span>
+                    </div>
+                    <p style="font-size: 0.82rem; color: #E5E7EB; line-height: 1.55; margin: 0;">
+                      Gallery displays 4 photos side-by-side with Photo, Name / Event Title, and Date below.
+                    </p>
+                  </div>
 
-                <div style="margin-top: 0.85rem;">
-                  <label class="post-input-label" style="font-size: 0.7rem; color: var(--text-faint);">Or Direct Image URL / Path:</label>
-                  <input type="text" id="postPhotoInput" class="post-input-field" value="assets/images/featured-icon-saree.jpg" placeholder="assets/images/... or https://...">
+                  <div class="post-form-grid" style="padding: 0;">
+                    <div>
+                      <label class="post-input-label" for="postPhotoTitle">Photo / Event Name</label>
+                      <input type="text" id="postPhotoTitle" class="post-input-field" placeholder="e.g. Women of Distinction Annual Honors Ceremony">
+                    </div>
+
+                    <div>
+                      <label class="post-input-label" for="postPhotoVenue">Event / Photo Location (Optional)</label>
+                      <input type="text" id="postPhotoVenue" class="post-input-field" placeholder="e.g. Screenlady Headquarters, Mumbai">
+                    </div>
+
+                    <div class="form-group-full">
+                      <label class="post-input-label" for="postPhotoCaption">1-Line Description / Notes (Optional)</label>
+                      <input type="text" id="postPhotoCaption" class="post-input-field" placeholder="e.g. Official collaborative portrait of the Accolade Screenlady Executive Leadership." maxlength="160">
+                    </div>
+                  </div>
+                </div>
+
+                <!-- ==============================================
+                     SECTION D: UPDATES & CURATED FIELDS
+                ============================================== -->
+                <div id="sectionFieldsUpdates" class="form-group-full" style="display: none;">
+                  <div class="post-form-grid" style="padding: 0;">
+                    
+                    <div id="groupHeadline" class="form-group-full">
+                      <label class="post-input-label" for="postHeadline">Update Headline / Milestone Title</label>
+                      <input type="text" id="postHeadline" class="post-input-field" placeholder="e.g. Executive Editorial Board Meeting Led by Founder Mr. Prashant Sagvekar">
+                    </div>
+
+                    <div id="groupWomanName">
+                      <label class="post-input-label" for="postWomanName">Team Member(s) / Lead Organizer Involved</label>
+                      <input type="text" id="postWomanName" class="post-input-field" list="screenladyTeamList" placeholder="e.g. Mr. Prashant Sagvekar (Founder) / Mrs. Amruta Rao / Screenlady Board">
+                      <datalist id="screenladyTeamList">
+                        <option value="Mr. Prashant Sagvekar (Founder & Publisher)"></option>
+                        <option value="Mrs. Amruta Rao (Editor-in-Chief)"></option>
+                        <option value="Mrs. Sakshi Sagvekar (Managing Director)"></option>
+                        <option value="Mr. Vedang Sagvekar (Marketing Director)"></option>
+                        <option value="Mrs. Manasi Ingle (Board Member)"></option>
+                        <option value="Mrs. Supriya Vinod (Board Member)"></option>
+                        <option value="Accolade Screenlady Full Executive Team"></option>
+                      </datalist>
+                    </div>
+
+                    <div>
+                      <label class="post-input-label" for="postUpdateVenue">Venue / City Location</label>
+                      <input type="text" id="postUpdateVenue" class="post-input-field" placeholder="e.g. Screenlady Headquarters, Mumbai / Film City Studios">
+                    </div>
+
+                    <div id="groupArticleTitle" class="form-group-full" style="display: none;">
+                      <label class="post-input-label" for="postArticleTitle">Article Headline / Title</label>
+                      <input type="text" id="postArticleTitle" class="post-input-field" placeholder="e.g. The New Architecture of Executive Governance">
+                    </div>
+
+                    <div id="groupAuthor" class="form-group-full" style="display: none;">
+                      <label class="post-input-label" for="postAuthor">Author / Byline</label>
+                      <input type="text" id="postAuthor" class="post-input-field" placeholder="e.g. Accolade Screenlady Desk">
+                    </div>
+
+                    <div id="groupPhotoTitle" class="form-group-full" style="display: none;">
+                      <label class="post-input-label" for="postPhotoTitle">Photo Title / Caption Headline</label>
+                      <input type="text" id="postPhotoTitle" class="post-input-field" placeholder="e.g. Premiere Gala Assembly">
+                    </div>
+
+                    <div id="groupCredit" class="form-group-full" style="display: none;">
+                      <label class="post-input-label" for="postCredit">Photography / Source Credit</label>
+                      <input type="text" id="postCredit" class="post-input-field" placeholder="e.g. Screenlady Official Archives">
+                    </div>
+
+                    <div id="groupSummary" class="form-group-full">
+                      <label class="post-input-label" id="summaryLabel" for="postSummary">Brief Summary / 1-Line Key Highlights</label>
+                      <textarea id="postSummary" class="post-input-field" rows="3" placeholder="Summarize the meeting, award, movie talk, meet-and-greet, or event highlights..."></textarea>
+                    </div>
+
+                    <div id="groupFullBody" class="form-group-full">
+                      <label class="post-input-label" for="postFullBody">Full Event Report / Extended Story (Shown in Reader)</label>
+                      <textarea id="postFullBody" class="post-input-field" rows="5" placeholder="Write full article body paragraphs, quotes, and extended details... (Separate paragraphs with double enter)"></textarea>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Common: Photo Selection / Upload -->
+                <div class="form-group-full">
+                  <label class="post-input-label" id="photoPickerLabel">Feature Photograph / Visual (ImageKit CDN)</label>
+                  
+                  <div class="admin-photo-picker-box">
+                    <div class="admin-photo-preview-wrap">
+                      <img id="adminPhotoPreview" src="https://ik.imagekit.io/acooladescreenlady/assets/images/featured-icon-saree.jpg" alt="Preview" class="admin-preview-img" onerror="this.src='/assets/images/featured-icon-saree.jpg'">
+                      <div>
+                        <div class="admin-upload-btn-wrap">
+                          <label class="admin-upload-btn" for="adminFileInput">
+                            <span>Upload from Computer</span>
+                          </label>
+                          <input type="file" id="adminFileInput" accept="image/*" style="display: none;">
+                        </div>
+                        <p id="uploadFileStatus" style="font-size: 0.78rem; color: var(--admin-text-muted); margin-top: 0.35rem;">
+                          Upload any JPG/PNG/WEBP photo, or select a preset below:
+                        </p>
+                      </div>
+                    </div>
+
+                    <div style="margin-bottom: 0.5rem; font-size: 0.75rem; color: var(--admin-gold-light); font-weight: 600;">
+                      Screenlady Editorial Presets:
+                    </div>
+                    <div class="post-photo-previews" id="adminPresetGrid"></div>
+
+                    <div style="margin-top: 0.85rem;">
+                      <label class="post-input-label" style="font-size: 0.7rem; color: var(--admin-text-faint);">Direct Image URL / ImageKit CDN Path:</label>
+                      <input type="text" id="postPhotoInput" class="post-input-field" value="https://ik.imagekit.io/acooladescreenlady/assets/images/featured-icon-saree.jpg" placeholder="https://ik.imagekit.io/...">
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Common: Tags -->
+                <div class="form-group-full" id="groupCommonTags">
+                  <label class="post-input-label" for="postTags">Tags (Comma-separated)</label>
+                  <input type="text" id="postTags" class="post-input-field" placeholder="e.g. Cinema, Leadership, Honors, 2026">
+                </div>
+
+              </div>
+
+              <!-- Submit Toolbar -->
+              <div style="display: flex; justify-content: flex-end; gap: 1rem; border-top: 1px solid var(--admin-border); padding-top: 1.5rem; margin-top: 1.5rem;">
+                <button type="button" class="admin-btn admin-btn-outline admin-btn-sm" onclick="resetForm()">Reset Form</button>
+                <button type="submit" id="adminSubmitBtn" class="admin-btn admin-btn-gold" style="font-weight: 700; font-size: 0.88rem; padding: 0.75rem 1.75rem;">
+                  Publish to Website &rarr;
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+
+        <!-- =========================================================
+             PANEL 3: CONTENT MANAGEMENT ARCHIVE
+             ========================================================= -->
+        <div class="admin-view-panel" id="panel-content">
+          <div class="admin-view-header">
+            <div class="admin-view-title-group">
+              <h1>Content Management Archive</h1>
+              <p>Filter, edit, and delete published entries across all website sections.</p>
+            </div>
+            <div class="admin-card-toolbar">
+              <button type="button" class="admin-btn admin-btn-gold admin-btn-sm" onclick="navigateToComposer()">
+                <span>+ Create New Post</span>
+              </button>
+              <button type="button" class="admin-btn admin-btn-outline admin-btn-sm" onclick="exportDataJson()" title="Download full JSON backup of all published content">
+                <span>Export JSON Backup</span>
+              </button>
+              <button type="button" class="admin-btn admin-btn-danger admin-btn-sm" onclick="deleteCurrentSectionData()" title="Delete all items in the current filtered section">
+                <span>Delete Filtered Section</span>
+              </button>
+              <button type="button" class="admin-btn admin-btn-outline admin-btn-sm" onclick="resetAllDefaults()" title="Restore factory default archives">
+                <span>Restore Defaults</span>
+              </button>
+            </div>
+          </div>
+
+          <div class="admin-card" id="adminManageSection">
+            <!-- Filter Toolbar -->
+            <div class="admin-card-header">
+              <!-- Section Tabs -->
+              <div class="admin-type-tabs" style="margin-bottom: 0;">
+                <button type="button" class="admin-type-tab-btn active" data-manage-filter="all" onclick="setManageFilter('all')">
+                  <span>All Content</span>
+                </button>
+                <button type="button" class="admin-type-tab-btn" data-manage-filter="news" onclick="setManageFilter('news')">
+                  <span>Live News</span>
+                </button>
+                <button type="button" class="admin-type-tab-btn" data-manage-filter="filmy_adda" onclick="setManageFilter('filmy_adda')">
+                  <span>Filmy Adda</span>
+                </button>
+                <button type="button" class="admin-type-tab-btn" data-manage-filter="bizz_world" onclick="setManageFilter('bizz_world')">
+                  <span>Bizz World</span>
+                </button>
+                <button type="button" class="admin-type-tab-btn" data-manage-filter="women_inspiration" onclick="setManageFilter('women_inspiration')">
+                  <span>Women of Inspiration</span>
+                </button>
+                <button type="button" class="admin-type-tab-btn" data-manage-filter="fashion_lifestyle" onclick="setManageFilter('fashion_lifestyle')">
+                  <span>Fashion & Lifestyle</span>
+                </button>
+                <button type="button" class="admin-type-tab-btn" data-manage-filter="home_photos" onclick="setManageFilter('home_photos')">
+                  <span>Home Photos</span>
+                </button>
+                <button type="button" class="admin-type-tab-btn" data-manage-filter="photos" onclick="setManageFilter('photos')">
+                  <span>Gallery</span>
+                </button>
+                <button type="button" class="admin-type-tab-btn" data-manage-filter="editorials" onclick="setManageFilter('editorials')">
+                  <span>Editorials</span>
+                </button>
+                <button type="button" class="admin-type-tab-btn" data-manage-filter="podcast" onclick="setManageFilter('podcast')">
+                  <span>Podcasts</span>
+                </button>
+                <button type="button" class="admin-type-tab-btn" data-manage-filter="updates" onclick="setManageFilter('updates')">
+                  <span>Updates</span>
+                </button>
+              </div>
+
+              <!-- Instant Search Input -->
+              <div>
+                <input 
+                  type="text" 
+                  id="adminContentSearchInput" 
+                  class="admin-search-input" 
+                  placeholder="Search articles, headlines, authors..." 
+                  oninput="handleContentSearch(this.value)"
+                >
+              </div>
+            </div>
+
+            <!-- Content Data Table -->
+            <div class="admin-table-wrap">
+              <table class="admin-table admin-manage-table">
+                <thead>
+                  <tr>
+                    <th style="width: 70px;">Order</th>
+                    <th style="width: 80px;">Thumbnail</th>
+                    <th style="width: 140px;">Section</th>
+                    <th>Headline / Title</th>
+                    <th style="width: 170px;">Date & Category</th>
+                    <th style="width: 170px; text-align: right;">Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="adminUpdatesTableBody">
+                  <!-- Populated dynamically via admin.js -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- =========================================================
+             PANEL 4: CUSTOMER ORDERS & MAGAZINE PURCHASES
+             ========================================================= -->
+        <div class="admin-view-panel" id="panel-orders">
+          <div class="admin-view-header">
+            <div class="admin-view-title-group">
+              <h1>Magazine Customer Orders</h1>
+              <p>Real-time ledger of print magazine purchase orders, customer delivery addresses, online payments, and shipping fulfillment.</p>
+            </div>
+            <div class="admin-card-toolbar">
+              <button type="button" class="admin-btn admin-btn-outline admin-btn-sm" onclick="exportMagazineOrdersCsv()" title="Export all orders as CSV spreadsheet">
+                <span>Export CSV</span>
+              </button>
+              <button type="button" class="admin-btn admin-btn-gold admin-btn-sm" onclick="switchAdminView('panel-magazine')">
+                <span>Magazine Settings</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Orders KPI Metrics -->
+          <div class="admin-orders-kpi-grid">
+            <div class="admin-kpi-card">
+              <div>
+                <div class="admin-kpi-value" id="kpiOrdersTotal">3</div>
+                <div class="admin-kpi-label">Total Orders</div>
+              </div>
+              <div class="admin-kpi-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path></svg>
+              </div>
+            </div>
+
+            <div class="admin-kpi-card">
+              <div>
+                <div class="admin-kpi-value" id="kpiOrdersRevenue" style="color: #34D399;">₹1,948</div>
+                <div class="admin-kpi-label">Total Revenue</div>
+              </div>
+              <div class="admin-kpi-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
+              </div>
+            </div>
+
+            <div class="admin-kpi-card">
+              <div>
+                <div class="admin-kpi-value" id="kpiOrdersPaid" style="color: #34D399;">3</div>
+                <div class="admin-kpi-label">Paid Online</div>
+              </div>
+              <div class="admin-kpi-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg>
+              </div>
+            </div>
+
+            <div class="admin-kpi-card">
+              <div>
+                <div class="admin-kpi-value" id="kpiOrdersPending" style="color: #FDE047;">1</div>
+                <div class="admin-kpi-label">Pending Dispatch</div>
+              </div>
+              <div class="admin-kpi-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+              </div>
+            </div>
+
+            <div class="admin-kpi-card">
+              <div>
+                <div class="admin-kpi-value" id="kpiOrdersFulfilled" style="color: #93C5FD;">2</div>
+                <div class="admin-kpi-label">In Transit / Delivered</div>
+              </div>
+              <div class="admin-kpi-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="3" width="15" height="13"></rect><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon><circle cx="5.5" cy="18.5" r="2.5"></circle><circle cx="18.5" cy="18.5" r="2.5"></circle></svg>
+              </div>
+            </div>
+          </div>
+
+          <div class="admin-card" id="adminMagazineOrdersSection">
+            <!-- Filter & Search Toolbar -->
+            <div class="admin-card-header">
+              <div class="admin-orders-filters">
+                <button type="button" class="admin-order-filter-btn active" data-order-filter="all" onclick="setMagazineOrderFilter('all')">
+                  All (<span id="countOrderAll">3</span>)
+                </button>
+                <button type="button" class="admin-order-filter-btn" data-order-filter="paid" onclick="setMagazineOrderFilter('paid')">
+                  Paid (<span id="countOrderPaid">3</span>)
+                </button>
+                <button type="button" class="admin-order-filter-btn" data-order-filter="pending" onclick="setMagazineOrderFilter('pending')">
+                  Pending Dispatch (<span id="countOrderPending">1</span>)
+                </button>
+                <button type="button" class="admin-order-filter-btn" data-order-filter="shipped" onclick="setMagazineOrderFilter('shipped')">
+                  In Transit (<span id="countOrderShipped">1</span>)
+                </button>
+                <button type="button" class="admin-order-filter-btn" data-order-filter="delivered" onclick="setMagazineOrderFilter('delivered')">
+                  Delivered (<span id="countOrderDelivered">1</span>)
+                </button>
+              </div>
+
+              <div>
+                <input 
+                  type="text" 
+                  id="magazineOrderSearchInput" 
+                  class="admin-search-input" 
+                  placeholder="Search by customer, phone, city..." 
+                  oninput="handleMagazineOrderSearch(this.value)"
+                >
+              </div>
+            </div>
+
+            <!-- Orders Table -->
+            <div class="admin-table-wrap">
+              <table class="admin-table admin-manage-table">
+                <thead>
+                  <tr>
+                    <th style="width: 125px;">Order ID & Date</th>
+                    <th style="width: 220px;">Customer Info</th>
+                    <th style="width: 240px;">Delivery Address</th>
+                    <th style="width: 120px;">Edition & Qty</th>
+                    <th style="width: 130px;">Payment Method</th>
+                    <th style="width: 130px;">Payment Status</th>
+                    <th style="width: 150px;">Fulfillment Status</th>
+                    <th style="width: 140px; text-align: right;">Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="adminMagazineOrdersTableBody">
+                  <!-- Dynamically populated via magazine-orders.js -->
+                </tbody>
+              </table>
+            </div>
+
+            <!-- Inline Order Slip Container (Rendered inline on page when 'Slip' is clicked) -->
+            <div id="inlineOrderSlipBox" style="display: none; padding: 2rem; border-top: 1px solid var(--admin-border); background: rgba(0, 0, 0, 0.4);">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                <h3 style="font-family: var(--font-serif); font-size: 1.15rem; color: var(--admin-gold-light); margin: 0;">Courier Dispatch Slip</h3>
+                <button type="button" class="admin-btn admin-btn-outline admin-btn-sm" onclick="document.getElementById('inlineOrderSlipBox').style.display='none'">
+                  Close Slip
+                </button>
+              </div>
+              <div id="inlineOrderSlipContent"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- =========================================================
+             PANEL 5: MAGAZINE SPREAD & SETTINGS (INLINE FORM)
+             ========================================================= -->
+        <div class="admin-view-panel" id="panel-magazine">
+          <div class="admin-view-header">
+            <div class="admin-view-title-group">
+              <h1>Monthly Print Magazine Issue & Settings</h1>
+              <p>Update monthly magazine issue details, retail price, cover imagery, headline, subtitle, and storefront announcements.</p>
+            </div>
+          </div>
+
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(360px, 1fr)); gap: 1.5rem; margin-bottom: 2rem;">
+            <!-- Live Preview Cards -->
+            <div class="admin-card" style="padding: 1.5rem;">
+              <div style="font-weight: 700; color: var(--admin-gold-light); margin-bottom: 0.75rem;">Front Cover Preview</div>
+              <img id="adminPanelMagCoverImg" src="https://ik.imagekit.io/acooladescreenlady/assets/images/magazine-cover-latest.jpg" alt="Current Cover" style="width: 100%; height: 380px; object-fit: cover; border-radius: var(--admin-radius-md); border: 1px solid var(--admin-border-gold); margin-bottom: 1rem;">
+              <div id="adminPanelMagEdition" style="font-weight: 700; color: #FFFFFF; font-size: 1.05rem; margin-bottom: 0.25rem;">November 2026 Issue</div>
+              <div id="adminPanelMagPrice" style="color: var(--admin-gold); font-weight: 600; font-size: 0.92rem;">Price: ₹220</div>
+            </div>
+
+            <div class="admin-card" style="padding: 1.5rem;">
+              <div style="font-weight: 700; color: var(--admin-gold-light); margin-bottom: 0.75rem;">Page 2 Feature Spread Preview</div>
+              <img id="adminPanelMagPage2Img" src="https://ik.imagekit.io/acooladescreenlady/assets/images/magazine-page2-feature.jpg" alt="Spread Feature" style="width: 100%; height: 380px; object-fit: cover; border-radius: var(--admin-radius-md); border: 1px solid var(--admin-border); margin-bottom: 1rem;">
+              <div id="adminPanelMagHeadline" style="font-weight: 700; color: #FFFFFF; font-size: 1.05rem; margin-bottom: 0.25rem;">THE ARCHITECTS OF MODERN INFLUENCE</div>
+              <div id="adminPanelMagSubtitle" style="color: var(--admin-text-muted); font-size: 0.85rem;">Inside spread feature celebrating trailblazing women leaders.</div>
+            </div>
+          </div>
+
+          <!-- Inline Settings Form (No Modals) -->
+          <div class="admin-card" style="padding: 2rem;">
+            <div class="admin-card-header" style="margin: -2rem -2rem 1.75rem -2rem; padding: 1.25rem 2rem;">
+              <h2 class="admin-card-title">Edit Magazine Edition Details & Pricing</h2>
+              <span class="admin-badge admin-badge-gold">D1 Cloudflare Sync</span>
+            </div>
+
+            <form onsubmit="handleSaveMagazineConfig(event)">
+              <div class="post-form-grid">
+                <div>
+                  <label class="post-input-label" for="cfgMagEdition">Issue Edition Name *</label>
+                  <input type="text" id="cfgMagEdition" class="post-input-field" value="November 2026 — Power, Art & Corporate Leadership Issue" required>
+                </div>
+                <div>
+                  <label class="post-input-label" for="cfgMagPrice">Retail Price (₹) *</label>
+                  <input type="number" id="cfgMagPrice" class="post-input-field" value="220" required>
+                </div>
+
+                <div class="form-group-full">
+                  <label class="post-input-label" for="cfgMagCover">Page 1: Front Cover Image URL / ImageKit CDN Path *</label>
+                  <input type="text" id="cfgMagCover" class="post-input-field" value="https://ik.imagekit.io/acooladescreenlady/assets/images/magazine-cover-latest.jpg" required oninput="const img = document.getElementById('adminPanelMagCoverImg'); if(img) img.src=this.value;">
+                </div>
+
+                <div class="form-group-full">
+                  <label class="post-input-label" for="cfgMagPage2">Page 2: Inside Feature Spread Image URL / ImageKit CDN Path *</label>
+                  <input type="text" id="cfgMagPage2" class="post-input-field" value="https://ik.imagekit.io/acooladescreenlady/assets/images/magazine-page2-feature.jpg" required oninput="const img = document.getElementById('adminPanelMagPage2Img'); if(img) img.src=this.value;">
+                </div>
+
+                <div>
+                  <label class="post-input-label" for="cfgMagHeadline">Cover Headline</label>
+                  <input type="text" id="cfgMagHeadline" class="post-input-field" value="THE ARCHITECTS OF MODERN INFLUENCE">
+                </div>
+
+                <div>
+                  <label class="post-input-label" for="cfgMagSubtitle">Cover Subtitle</label>
+                  <input type="text" id="cfgMagSubtitle" class="post-input-field" value="Celebrating Trailblazing Women Behind the Screen & Across Boardrooms">
+                </div>
+
+                <div>
+                  <label class="post-input-label" for="cfgMagPopupBadge">Storefront Announcement Badge</label>
+                  <input type="text" id="cfgMagPopupBadge" class="post-input-field" value="Screenlady Print Magazine">
+                </div>
+
+                <div>
+                  <label class="post-input-label" for="cfgMagPopupMsg">Announcement Message Text</label>
+                  <input type="text" id="cfgMagPopupMsg" class="post-input-field" value="Collector's Print Edition Now Available • Insured Doorstep Courier Across India">
+                </div>
+              </div>
+
+              <div style="display: flex; justify-content: flex-end; gap: 1rem; border-top: 1px solid var(--admin-border); padding-top: 1.5rem; margin-top: 1.5rem;">
+                <button type="submit" class="admin-btn admin-btn-gold" style="font-weight: 700; padding: 0.75rem 2rem;">
+                  Save Magazine Settings &rarr;
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+
+        <!-- =========================================================
+             PANEL 6: IMAGEKIT MEDIA CDN UPLOADER
+             ========================================================= -->
+        <div class="admin-view-panel" id="panel-media">
+          <div class="admin-view-header">
+            <div class="admin-view-title-group">
+              <h1>ImageKit Global Media CDN</h1>
+              <p>Upload high-resolution editorial photos directly to the Screenlady ImageKit CDN and copy optimized URLs.</p>
+            </div>
+          </div>
+
+          <div class="admin-card" style="padding: 2rem;">
+            <!-- Upload Dropzone -->
+            <div class="admin-dropzone" onclick="document.getElementById('mediaPanelFileInput').click()">
+              <input type="file" id="mediaPanelFileInput" accept="image/*" style="display: none;" onchange="handleMediaPanelUpload(event)">
+              <div class="admin-dropzone-icon">
+                <svg width="42" height="42" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+              </div>
+              <div class="admin-dropzone-title">Click to upload photo to ImageKit CDN</div>
+              <div class="admin-dropzone-desc">Supports JPG, PNG, WEBP high-resolution photography up to 25MB</div>
+              <div id="mediaUploadStatus" style="margin-top: 0.75rem; font-weight: 600; font-size: 0.85rem;"></div>
+            </div>
+
+            <!-- Upload Result Bar -->
+            <div style="margin-top: 1.5rem; display: flex; gap: 1rem; align-items: center; flex-wrap: wrap;">
+              <img id="mediaUploadPreview" src="/assets/images/featured-icon-saree.jpg" alt="Uploaded Preview" style="width: 70px; height: 70px; border-radius: 8px; object-fit: cover; border: 1px solid var(--admin-border-gold); display: none;">
+              <div style="flex: 1; min-width: 260px;">
+                <label class="post-input-label" style="font-size: 0.75rem;">Optimized ImageKit CDN URL</label>
+                <div style="display: flex; gap: 0.5rem;">
+                  <input type="text" id="mediaUploadedUrl" class="post-input-field" placeholder="Upload a photo above to generate CDN URL..." readonly style="margin-bottom: 0;">
+                  <button type="button" class="admin-btn admin-btn-gold admin-btn-sm" onclick="const u = document.getElementById('mediaUploadedUrl'); if(u && u.value){ navigator.clipboard.writeText(u.value); showToast('CDN URL copied to clipboard.'); }">
+                    Copy URL
+                  </button>
                 </div>
               </div>
             </div>
 
-            <!-- Common: Tags -->
-            <div class="form-group-full" id="groupCommonTags">
-              <label class="post-input-label" for="postTags">Tags (Comma-separated)</label>
-              <input type="text" id="postTags" class="post-input-field" placeholder="e.g. Cinema, Leadership, Honors, 2026">
+            <!-- Available Screenlady Presets -->
+            <div style="margin-top: 2.5rem; border-top: 1px solid var(--admin-border); padding-top: 1.75rem;">
+              <div style="font-weight: 700; color: var(--admin-gold-light); margin-bottom: 1rem;">
+                Core Screenlady CDN Presets (Click to Copy):
+              </div>
+              <div class="post-photo-previews" id="mediaLibraryPresetsGrid">
+                <!-- Dynamically rendered via renderMediaPresets() -->
+              </div>
             </div>
-
-          </div>
-
-          <div style="display: flex; justify-content: flex-end; gap: 1rem; border-top: 1px solid rgba(212,175,55,0.2); padding-top: 1.5rem; margin-top: 1rem;">
-            <button type="button" class="btn btn-outline-gold btn-sm" onclick="resetForm()">Reset Form</button>
-            <button type="submit" id="adminSubmitBtn" class="btn btn-gold btn-sm" style="font-weight: 700; font-size: 0.88rem; padding: 0.75rem 1.75rem;">
-              ✦ Publish Post (Displays 1st on Live Website)
-            </button>
-          </div>
-        </form>
-      </section>
-
-      <!-- ==============================================
-           4. DEDICATED SECTION: MAGAZINE PURCHASE DETAILS
-           Captures user info, home address, payment status & dispatch
-      ============================================== -->
-      <section class="admin-magazine-orders-section" id="adminMagazineOrdersSection">
-        <div class="admin-card-header">
-          <div>
-            <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.35rem; flex-wrap: wrap;">
-              <span class="badge-gold">🛍️ Official Magazine Store & Orders</span>
-              <span class="admin-badge-status" style="background: rgba(34, 197, 94, 0.15); color: #4ade80;">
-                ✓ Online Payment & Notification Sync Active
-              </span>
-            </div>
-            <h2 class="admin-card-title">Magazine Purchase Details</h2>
-            <p style="color: var(--text-muted); font-size: 0.86rem; margin-top: 0.35rem; max-width: 900px; line-height: 1.55;">
-              Live ledger of customers ordering the monthly print magazine. Captures verified customer full name, phone number, email ID, complete home address, city, state, pincode, quantity, and online payment status. Automated notification alerts are routed directly to Screenlady WhatsApp (<strong style="color: var(--gold-light);">+91 96650 35503</strong>) and Email (<strong style="color: var(--gold-light);">editor@accoladescreenlady.com</strong> / <strong style="color: var(--gold-light);">AccoladeScreenlady@gmail.com</strong>).
-            </p>
-          </div>
-
-          <div style="display: flex; gap: 0.65rem; flex-wrap: wrap; align-items: center;">
-            <button type="button" class="btn btn-gold btn-sm" onclick="showMagazineModal()" style="font-weight: 700;">
-              📖 Preview Latest Issue Spread
-            </button>
-            <button type="button" class="btn btn-outline-gold btn-sm" onclick="openMagazineIssueConfigModal()" title="Update monthly cover, feature page and pricing">
-              ⚙️ Magazine Settings
-            </button>
-            <button type="button" class="btn btn-outline-gold btn-sm" onclick="exportMagazineOrdersCsv()" title="Export all orders as CSV spreadsheet">
-              📥 Export Orders CSV
-            </button>
           </div>
         </div>
 
-        <!-- Orders KPI Metrics -->
-        <div class="admin-orders-kpi-grid">
-          <div class="admin-kpi-card">
-            <div>
-              <div class="admin-kpi-val" id="kpiOrdersTotal">3</div>
-              <div class="admin-kpi-lbl">Total Orders</div>
-            </div>
-            <div style="font-size: 1.75rem;">📦</div>
-          </div>
+      </main>
 
-          <div class="admin-kpi-card">
-            <div>
-              <div class="admin-kpi-val" id="kpiOrdersRevenue" style="color: #4ade80;">₹1,948</div>
-              <div class="admin-kpi-lbl">Total Revenue</div>
-            </div>
-            <div style="font-size: 1.75rem;">💰</div>
-          </div>
-
-          <div class="admin-kpi-card">
-            <div>
-              <div class="admin-kpi-val" id="kpiOrdersPaid" style="color: #4ade80;">3</div>
-              <div class="admin-kpi-lbl">Paid (Online Only)</div>
-            </div>
-            <div style="font-size: 1.75rem;">💳</div>
-          </div>
-
-          <div class="admin-kpi-card">
-            <div>
-              <div class="admin-kpi-val" id="kpiOrdersPending" style="color: #fde047;">1</div>
-              <div class="admin-kpi-lbl">Pending Dispatch</div>
-            </div>
-            <div style="font-size: 1.75rem;">⏳</div>
-          </div>
-
-          <div class="admin-kpi-card">
-            <div>
-              <div class="admin-kpi-val" id="kpiOrdersFulfilled" style="color: #93c5fd;">2</div>
-              <div class="admin-kpi-lbl">Shipped / Delivered</div>
-            </div>
-            <div style="font-size: 1.75rem;">🚚</div>
-          </div>
+      <!-- Minimal Admin Footer -->
+      <footer style="padding: 1.5rem 2rem; border-top: 1px solid var(--admin-border); font-size: 0.8rem; color: var(--admin-text-faint); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+        <div>&copy; 2026 Accolade Screenlady &bull; Editorial CMS Portal &bull; Concept by Mr. Prashant Chandrakant Sagvekar</div>
+        <div style="display: flex; gap: 1rem;">
+          <a href="http://localhost:4321/editorials" target="_blank" style="color: var(--admin-gold); text-decoration: none;">Editorials</a>
+          <a href="http://localhost:4321/podcast" target="_blank" style="color: var(--admin-gold); text-decoration: none;">Podcasts</a>
+          <a href="http://localhost:4321/photos" target="_blank" style="color: var(--admin-gold); text-decoration: none;">Photos</a>
+          <a href="http://localhost:4321/updates" target="_blank" style="color: var(--admin-gold); text-decoration: none;">Updates</a>
+          <a href="http://localhost:4321" target="_blank" style="color: var(--admin-text-muted); text-decoration: none;">Home</a>
         </div>
-
-        <!-- Filter & Search Toolbar -->
-        <div class="admin-orders-toolbar">
-          <div class="admin-orders-filters">
-            <button type="button" class="admin-order-filter-btn active" data-order-filter="all" onclick="setMagazineOrderFilter('all')">
-              All Orders (<span id="countOrderAll">3</span>)
-            </button>
-            <button type="button" class="admin-order-filter-btn" data-order-filter="paid" onclick="setMagazineOrderFilter('paid')">
-              ✓ Paid (<span id="countOrderPaid">3</span>)
-            </button>
-            <button type="button" class="admin-order-filter-btn" data-order-filter="pending" onclick="setMagazineOrderFilter('pending')">
-              ⏳ Pending Dispatch (<span id="countOrderPending">1</span>)
-            </button>
-            <button type="button" class="admin-order-filter-btn" data-order-filter="shipped" onclick="setMagazineOrderFilter('shipped')">
-              🚚 In Transit (<span id="countOrderShipped">1</span>)
-            </button>
-            <button type="button" class="admin-order-filter-btn" data-order-filter="delivered" onclick="setMagazineOrderFilter('delivered')">
-              ✨ Delivered (<span id="countOrderDelivered">1</span>)
-            </button>
-          </div>
-
-          <div style="position: relative; min-width: 280px;">
-            <input type="text" id="magazineOrderSearchInput" class="post-input-field" placeholder="🔍 Search by Name, Phone, City, ID..." oninput="handleMagazineOrderSearch(this.value)" style="padding: 0.5rem 0.9rem; font-size: 0.82rem;">
-          </div>
-        </div>
-
-        <!-- Orders Table -->
-        <div style="overflow-x: auto; background: rgba(9, 9, 13, 0.7); border-radius: var(--radius-sm); border: 1px solid rgba(212, 175, 55, 0.2);">
-          <table class="admin-manage-table">
-            <thead>
-              <tr>
-                <th style="width: 125px;">Order ID & Date</th>
-                <th style="width: 220px;">Customer Information</th>
-                <th style="width: 250px;">Shipping Home Address</th>
-                <th style="width: 125px;">Edition & Qty</th>
-                <th style="width: 135px;">Payment Method</th>
-                <th style="width: 135px;">Payment Status</th>
-                <th style="width: 155px;">Fulfillment Status</th>
-                <th style="width: 165px; text-align: right;">Actions</th>
-              </tr>
-            </thead>
-            <tbody id="adminMagazineOrdersTableBody">
-              <!-- Dynamically populated via renderMagazineOrdersTable() -->
-            </tbody>
-          </table>
-        </div>
-      </section>
-
-      <!-- 5. Manage Published Content Section -->
-      <section class="admin-card" id="adminManageSection">
-        <div class="admin-card-header">
-          <div>
-            <span class="badge-gold" style="margin-bottom: 0.35rem; display: inline-block;">Content Archive</span>
-            <h2 class="admin-card-title">Manage Published Content</h2>
-            <p style="color: var(--text-muted); font-size: 0.82rem; margin-top: 0.25rem;">
-              Filter across Editorials, Podcasts, Event Photos, and Updates. The newest item strictly appears first at Order #1. (Note: In photo sections, cards show the whole photo with strictly Date, Name, Location, and 2-Line Description below).
-            </p>
-          </div>
-          <div style="display: flex; gap: 0.65rem; flex-wrap: wrap; align-items: center;">
-            <button type="button" class="btn btn-outline-gold btn-sm" onclick="exportDataJson()" title="Download full JSON backup of all published content">
-              📥 Export All JSON Backup
-            </button>
-            <button type="button" class="btn btn-sm" onclick="deleteCurrentSectionData()" style="background: rgba(239, 68, 68, 0.15); color: #fca5a5; border: 1px solid rgba(239, 68, 68, 0.45); font-weight: 600;" title="Delete all items in the current filtered section">
-              🗑️ Delete Filtered Section
-            </button>
-            <button type="button" class="btn btn-sm" onclick="deleteAllData()" style="background: rgba(239, 68, 68, 0.25); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.65); font-weight: 700;" title="Permanently delete all data across all sections">
-              🗑️ Clear All Data
-            </button>
-            <button type="button" class="btn btn-outline-gold btn-sm" onclick="resetAllDefaults()" style="color: var(--gold-light); border-color: rgba(212, 175, 55, 0.4);" title="Restore factory default archives">
-              ↺ Restore Default Archives
-            </button>
-          </div>
-        </div>
-
-        <!-- Section Filter Tabs for the Table -->
-        <div class="admin-type-tabs" style="margin-bottom: 1.25rem;">
-          <button type="button" class="admin-type-tab-btn active" data-manage-filter="all" onclick="setManageFilter('all')">
-            <span>🌐 All Content</span>
-          </button>
-          <button type="button" class="admin-type-tab-btn" data-manage-filter="news" onclick="setManageFilter('news')">
-            <span>⚡ Live News</span>
-          </button>
-          <button type="button" class="admin-type-tab-btn" data-manage-filter="filmy_adda" onclick="setManageFilter('filmy_adda')">
-            <span>🎬 Filmy Adda</span>
-          </button>
-          <button type="button" class="admin-type-tab-btn" data-manage-filter="bizz_world" onclick="setManageFilter('bizz_world')">
-            <span>💼 Bizz World</span>
-          </button>
-          <button type="button" class="admin-type-tab-btn" data-manage-filter="women_inspiration" onclick="setManageFilter('women_inspiration')">
-            <span>👑 Women of Inspiration</span>
-          </button>
-          <button type="button" class="admin-type-tab-btn" data-manage-filter="fashion_lifestyle" onclick="setManageFilter('fashion_lifestyle')">
-            <span>✨ Fashion & Lifestyle</span>
-          </button>
-          <button type="button" class="admin-type-tab-btn" data-manage-filter="home_photos" onclick="setManageFilter('home_photos')">
-            <span>🖼️ Homepage Photos</span>
-          </button>
-          <button type="button" class="admin-type-tab-btn" data-manage-filter="photos" onclick="setManageFilter('photos')">
-            <span>📷 Screenlady Gallery</span>
-          </button>
-          <button type="button" class="admin-type-tab-btn" data-manage-filter="updates" onclick="setManageFilter('updates')">
-            <span>🗞️ Screenlady Updates</span>
-          </button>
-          <button type="button" class="admin-type-tab-btn" data-manage-filter="editorials" onclick="setManageFilter('editorials')">
-            <span>🖋️ Editorials</span>
-          </button>
-          <button type="button" class="admin-type-tab-btn" data-manage-filter="podcast" onclick="setManageFilter('podcast')">
-            <span>🎙️ Podcasts</span>
-          </button>
-        </div>
-
-        <div style="overflow-x: auto;">
-          <table class="admin-manage-table">
-            <thead>
-              <tr>
-                <th style="width: 80px;">Order</th>
-                <th style="width: 75px;">Image</th>
-                <th style="width: 130px;">Section</th>
-                <th>Title / Headline</th>
-                <th style="width: 170px;">Date & Category</th>
-                <th style="width: 220px; text-align: right;">Actions</th>
-              </tr>
-            </thead>
-            <tbody id="adminUpdatesTableBody">
-              <!-- Dynamically populated via admin.js -->
-            </tbody>
-          </table>
-        </div>
-      </section>
-
-      <!-- Footer Info -->
-      <footer style="text-align: center; padding: 2rem 0; border-top: 1px solid rgba(255, 255, 255, 0.08); font-size: 0.8rem; color: var(--text-faint);">
-        <p>© 2026 Accolade Screenlady — Editorial Portal • Concept by Mr. Prashant Chandrakant Sagvekar</p>
-        <p style="margin-top: 0.4rem;">
-          <a href="http://localhost:4321/editorials" target="_blank" style="color: var(--gold-primary); text-decoration: none;">Editorials</a> • 
-          <a href="http://localhost:4321/podcast" target="_blank" style="color: var(--gold-primary); text-decoration: none;">Podcast</a> • 
-          <a href="http://localhost:4321/photos" target="_blank" style="color: var(--gold-primary); text-decoration: none;">Photos</a> • 
-          <a href="http://localhost:4321/updates" target="_blank" style="color: var(--gold-primary); text-decoration: none;">Updates</a> • 
-          <a href="http://localhost:4321" target="_blank" style="color: var(--text-muted); text-decoration: none;">Home</a>
-        </p>
       </footer>
-
     </div>
   </div>
 
-  <!-- Global Modal Component -->
-  <div class="modal-overlay" id="globalModal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
-    <div class="modal-content-wrap">
-      <button class="modal-close-btn" id="modalCloseBtn" aria-label="Close modal">✕</button>
-      <div id="modalBody"></div>
-    </div>
-  </div>
+  <!-- Global Toast Notification Container -->
+  <div id="adminToastContainer" class="admin-toast-container"></div>
 
-  <!-- Include all feed controllers to give Admin access to data helpers -->
+  <!-- Essential Scripts -->
   <script src="/assets/js/api-client.js" is:inline></script>
   <script src="/assets/js/main.js" is:inline></script>
   <script src="/assets/js/updates.js" is:inline></script>
