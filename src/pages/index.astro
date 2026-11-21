@@ -124,7 +124,11 @@ const extraScripts = [
 
               <!-- Slides Stage (Dynamically populated from Cloudflare D1 database) -->
               <div class="pure-slides-stage" id="slidesStage">
-                <!-- Populated dynamically from database by assets/js/home-slider.js -->
+                <div class="pure-slide active" data-index="0">
+                  <div class="pure-cover-frame">
+                    <img src="https://ik.imagekit.io/acooladescreenlady/screenlady/magazine/magazine-cover-october_w1tQru2RC.jpg" alt="October 2026 Edition" class="pure-cover-image" />
+                  </div>
+                </div>
               </div>
 
               <!-- Next Button -->
@@ -139,7 +143,16 @@ const extraScripts = [
             <!-- Timeline of Covers (Dynamically populated from Cloudflare D1 database) -->
             <nav class="pure-timeline" aria-label="Edition Timeline">
               <div class="pure-timeline-track" id="timelineTrack">
-                <!-- Populated dynamically from database by assets/js/home-slider.js -->
+                <button type="button" class="pure-timeline-step active" data-index="0" title="October 2026 Edition">
+                  <div class="pure-step-indicator">
+                    <span class="pure-step-dot"></span>
+                    <span class="pure-step-bar"><span class="pure-step-fill" style="width: 100%;"></span></span>
+                  </div>
+                  <span class="pure-step-label">
+                    <span class="label-desktop">October</span>
+                    <span class="label-mobile">Oct</span>
+                  </span>
+                </button>
               </div>
             </nav>
           </div>

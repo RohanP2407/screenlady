@@ -1893,6 +1893,221 @@
   margin-top: 1.25rem;
 }
 
+/* Responsive Overrides specifically for Editorial Hero & Slideshow */
+@media (max-width: 992px) {
+  .editorial-hero-section {
+    padding: 3rem 0 3.5rem !important;
+  }
+
+  .editorial-hero-grid {
+    grid-template-columns: 1fr !important;
+    gap: 2.25rem !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+  }
+
+  .editorial-hero-content {
+    text-align: center !important;
+    max-width: 600px !important;
+    margin: 0 auto !important;
+    min-width: 0 !important;
+    width: 100% !important;
+  }
+
+  .editorial-hero-desc {
+    margin-left: auto !important;
+    margin-right: auto !important;
+  }
+
+  .editorial-hero-actions {
+    justify-content: center !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .editorial-hero-section {
+    padding: 2.25rem 0 2.75rem !important;
+    overflow: hidden !important;
+  }
+
+  .editorial-hero-content {
+    padding: 0 0.5rem !important;
+    box-sizing: border-box !important;
+  }
+
+  .editorial-kicker {
+    font-size: 0.68rem !important;
+    letter-spacing: 0.08em !important;
+    padding: 0.35rem 0.85rem !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+    white-space: normal !important;
+    text-align: center !important;
+    line-height: 1.35 !important;
+    margin-bottom: 0.85rem !important;
+  }
+
+  .editorial-hero-headline {
+    font-size: clamp(1.6rem, 5.5vw, 2.1rem) !important;
+    line-height: 1.24 !important;
+    margin-bottom: 0.85rem !important;
+    overflow-wrap: break-word !important;
+    word-break: break-word !important;
+    max-width: 100% !important;
+  }
+
+  .editorial-hero-desc {
+    font-size: 0.92rem !important;
+    line-height: 1.6 !important;
+    color: #D0CCC2 !important;
+    margin-bottom: 1.35rem !important;
+    max-width: 100% !important;
+  }
+
+  .editorial-hero-actions {
+    flex-direction: column !important;
+    width: 100% !important;
+    max-width: 320px !important;
+    margin: 0 auto 0.5rem !important;
+    gap: 0.65rem !important;
+  }
+
+  .btn-editorial-gold,
+  .btn-editorial-outline {
+    width: 100% !important;
+    padding: 0.8rem 1.25rem !important;
+    font-size: 0.86rem !important;
+    justify-content: center !important;
+    box-sizing: border-box !important;
+    text-align: center !important;
+    min-height: 44px !important;
+  }
+
+  /* Center Visual Stage & Overlay Arrows to avoid horizontal overflow */
+  .editorial-hero-visual {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+  }
+
+  .editorial-hero-visual .pure-cover-slideshow-wrap {
+    width: 100% !important;
+    max-width: 320px !important;
+    margin: 0 auto !important;
+    box-sizing: border-box !important;
+    position: relative !important;
+  }
+
+  .editorial-hero-visual .pure-slideshow-theater {
+    position: relative !important;
+    width: 100% !important;
+    max-width: 260px !important;
+    margin: 0 auto 1.15rem !important;
+    gap: 0 !important;
+  }
+
+  .editorial-hero-visual .pure-slides-stage {
+    width: 240px !important;
+    max-width: 100% !important;
+    height: auto !important;
+    aspect-ratio: 1414 / 2000 !important;
+    border-radius: 10px !important;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.85), 0 0 25px rgba(212, 175, 55, 0.25) !important;
+    border: 1.5px solid rgba(212, 175, 55, 0.45) !important;
+    background: #08080C !important;
+    margin: 0 auto !important;
+    overflow: hidden !important;
+    flex-shrink: 0 !important;
+  }
+
+  .pure-nav-arrow {
+    position: absolute !important;
+    top: 50% !important;
+    transform: translateY(-50%) !important;
+    width: 36px !important;
+    height: 36px !important;
+    border-radius: 50% !important;
+    background: rgba(12, 12, 16, 0.88) !important;
+    border: 1.5px solid rgba(212, 175, 55, 0.6) !important;
+    color: var(--gold-light) !important;
+    z-index: 10 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    backdrop-filter: blur(8px) !important;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.7) !important;
+  }
+
+  .pure-nav-arrow.prev {
+    left: -12px !important;
+  }
+
+  .pure-nav-arrow.next {
+    right: -12px !important;
+  }
+
+  .pure-nav-arrow:hover {
+    transform: translateY(-50%) scale(1.08) !important;
+  }
+
+  .pure-nav-arrow svg {
+    width: 16px !important;
+    height: 16px !important;
+  }
+
+  .editorial-hero-visual .pure-timeline {
+    width: 100% !important;
+    max-width: 290px !important;
+    margin: 0 auto !important;
+  }
+
+  .pure-timeline-track {
+    display: grid !important;
+    grid-template-columns: repeat(5, 1fr) !important;
+    gap: 0.25rem !important;
+    width: 100% !important;
+  }
+
+  .pure-timeline-step {
+    padding: 0.2rem 0 !important;
+    gap: 0.3rem !important;
+  }
+
+  .pure-step-bar {
+    height: 2px !important;
+  }
+
+  .pure-step-dot {
+    width: 6px !important;
+    height: 6px !important;
+  }
+
+  .pure-step-label {
+    font-size: 0.64rem !important;
+    letter-spacing: 0 !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    text-align: center !important;
+  }
+}
+
+@media (max-width: 360px) {
+  .editorial-hero-visual .pure-slideshow-theater {
+    max-width: 220px !important;
+  }
+  .editorial-hero-visual .pure-slides-stage {
+    width: 205px !important;
+  }
+  .editorial-hero-visual .pure-timeline {
+    max-width: 230px !important;
+  }
+  .pure-step-label {
+    font-size: 0.58rem !important;
+  }
+}
+
 /* ==========================================================================
    CURATED HOMEPAGE SECTIONS: FILMY ADDA & BIZZ WORLD (Flush & Balanced Grids)
    ========================================================================== */
