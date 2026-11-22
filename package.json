@@ -11,8 +11,8 @@
     "build:admin": "npm run build --prefix admin-portal",
     "build:all": "npm run build:frontend && npm run build:admin",
     "deploy:backend": "wrangler deploy --config backend/wrangler.jsonc",
-    "deploy:frontend": "npm run build:frontend && wrangler pages deploy dist --project-name screenlady-website --branch main",
-    "deploy:admin": "npm run build:admin && wrangler pages deploy admin-portal/dist --project-name screenlady-admin --branch main",
+    "deploy:frontend": "npm run build:frontend && wrangler pages deploy dist --project-name screenlady-website --branch production",
+    "deploy:admin": "npm run build:admin && wrangler pages deploy admin-portal/dist --project-name screenlady-admin --branch production",
     "deploy:all": "npm run deploy:backend && npm run deploy:frontend && npm run deploy:admin"
   },
   "dependencies": {
