@@ -204,51 +204,56 @@
   async function loadMagazineCovers() {
     let covers = [];
 
-    // 1. Custom magazine covers from Admin Desk in localStorage
-    try {
-      const raw = localStorage.getItem('screenlady_custom_magazine_covers');
-      if (raw) covers = JSON.parse(raw);
-    } catch (e) { covers = []; }
-
-    // 2. Fetch live magazine covers from Cloudflare D1 magazine_covers table
+    // 1. Fetch live magazine covers from Cloudflare D1 magazine_covers table
     try {
       if (window.ScreenladyAPI && typeof window.ScreenladyAPI.getMagazineCovers === 'function') {
         const backendCovers = await window.ScreenladyAPI.getMagazineCovers();
         if (backendCovers && Array.isArray(backendCovers) && backendCovers.length > 0) {
-          const seen = new Set(covers.map(c => c.id));
-          backendCovers.forEach(bc => {
-            if (!seen.has(bc.id)) {
-              seen.add(bc.id);
-              covers.push(bc);
-            }
-          });
+          covers = [...backendCovers];
         }
       }
     } catch (e) {
       console.warn('[Home Slider] Notice fetching magazine covers from backend:', e.message);
     }
 
-    // 3. Fallback to magazine_settings.availableIssues if magazine_covers table is empty
-    if (covers.length === 0) {
-      try {
-        if (window.ScreenladyAPI && typeof window.ScreenladyAPI.getMagazineSettings === 'function') {
-          const magSettings = await window.ScreenladyAPI.getMagazineSettings();
-          if (magSettings && Array.isArray(magSettings.availableIssues) && magSettings.availableIssues.length > 0) {
-            covers = magSettings.availableIssues;
-          }
+    // 2. Custom magazine covers from Admin Desk in localStorage (for immediate preview)
+    try {
+      const raw = localStorage.getItem('screenlady_custom_magazine_covers');
+      if (raw) {
+        const customCovers = JSON.parse(raw);
+        if (Array.isArray(customCovers)) {
+          const seen = new Set(covers.map(c => c.id));
+          customCovers.forEach(cc => {
+            if (cc && cc.id && !seen.has(cc.id)) {
+              seen.add(cc.id);
+              covers.push(cc);
+            }
+          });
         }
-      } catch (e) {}
-    }
+      }
+    } catch (e) { /* ignore */ }
 
-    // Filter deleted IDs
+    // Filter deleted IDs & eliminate any legacy asset paths
     const deletedIds = (typeof window.getScreenladyDeletedIds === 'function')
       ? window.getScreenladyDeletedIds()
       : (() => { try { const r = localStorage.getItem('screenlady_deleted_ids'); return r ? JSON.parse(r) : []; } catch(e){ return []; } })();
 
-    covers = covers.filter(c => c && (c.photo || c.cover || c.image) && !deletedIds.includes(c.id));
+    covers = covers.filter(c => {
+      if (!c || deletedIds.includes(c.id)) return false;
+      const photoUrl = (c.photo || c.cover || c.image || '').trim();
+      // Must have a photo and must NOT be an old deleted local asset path
+      if (!photoUrl) return false;
+      if (photoUrl.startsWith('assets/images/magazine-cover') || photoUrl.startsWith('/assets/images/magazine-cover')) {
+        return false;
+      }
+      return true;
+    });
 
-    // Sort: Latest first
+    // Sort: Latest first or by displayOrder
     covers.sort((a, b) => {
+      const orderA = Number(a.displayOrder) || 0;
+      const orderB = Number(b.displayOrder) || 0;
+      if (orderA !== orderB) return orderA - orderB;
       const timeA = Number(a.timestamp) || new Date(a.date || 0).getTime() || 0;
       const timeB = Number(b.timestamp) || new Date(b.date || 0).getTime() || 0;
       return timeB - timeA;

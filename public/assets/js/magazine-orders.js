@@ -816,7 +816,7 @@ function updateLatestMagazinePopupContent() {
   const reopenText = document.getElementById('magPopupReopenText');
 
   if (thumb) {
-    thumb.src = settings.coverImage || 'assets/images/magazine-cover-latest.jpg';
+    thumb.src = settings.coverImage || '';
     thumb.alt = `${settings.edition || 'Latest Magazine'} Cover`;
   }
   if (tag) tag.textContent = settings.popupBadge || 'Latest Print Magazine';

@@ -430,6 +430,33 @@ function initFormControls() {
   const form = document.getElementById('adminPostForm');
   if (form) form.addEventListener('submit', handlePostSubmit);
 
+  // Magazine Cover Drag & Drop area listener
+  const dropArea = document.getElementById('magCoverDropArea');
+  if (dropArea) {
+    ['dragenter', 'dragover'].forEach(eventName => {
+      dropArea.addEventListener(eventName, (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        dropArea.style.borderColor = 'var(--admin-gold)';
+        dropArea.style.background = 'rgba(212,175,55,0.12)';
+      }, false);
+    });
+    ['dragleave', 'drop'].forEach(eventName => {
+      dropArea.addEventListener(eventName, (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        dropArea.style.borderColor = 'rgba(212,175,55,0.45)';
+        dropArea.style.background = 'rgba(212,175,55,0.03)';
+      }, false);
+    });
+    dropArea.addEventListener('drop', (e) => {
+      const dt = e.dataTransfer;
+      if (dt && dt.files && dt.files.length > 0) {
+        handleMagCoverPhotoUpload(e);
+      }
+    }, false);
+  }
+
   // Set initial section UI
   const sectionSelect = document.getElementById('postSectionSelect');
   if (sectionSelect && sectionSelect.value) {
@@ -3270,25 +3297,69 @@ window.getAllMagazineCovers = function() {
 
 window.updateMagCoverPhotoPreview = function(url) {
   const img = document.getElementById('magCoverPhotoPreview');
-  const ph = document.getElementById('magCoverPhotoPreviewPlaceholder');
-  if (img) {
-    if (url && url.trim().length > 0) {
-      img.src = url.trim();
+  const card = document.getElementById('magCoverPhotoPreviewCard');
+  const urlText = document.getElementById('magCoverPreviewUrlText');
+  const status = document.getElementById('magCoverPhotoUploadStatus');
+
+  if (url && url.trim().length > 0) {
+    const cleanUrl = url.trim();
+    if (img) {
+      img.src = cleanUrl;
       img.style.display = 'block';
-      if (ph) ph.style.display = 'none';
-    } else {
+    }
+    if (card) {
+      card.style.display = 'flex';
+    }
+    if (urlText) {
+      urlText.textContent = cleanUrl.startsWith('data:') ? 'Local file selected & ready for publish' : cleanUrl;
+    }
+    if (status && !status.textContent.includes('Error')) {
+      status.textContent = '✓ Cover photo ready';
+      status.style.color = '#34D399';
+    }
+  } else {
+    if (img) {
+      img.src = '';
       img.style.display = 'none';
-      if (ph) ph.style.display = 'inline';
+    }
+    if (card) {
+      card.style.display = 'none';
+    }
+    if (urlText) {
+      urlText.textContent = '';
     }
   }
 };
 
+window.clearMagCoverPhoto = function() {
+  const input = document.getElementById('magCoverPhotoInput');
+  const fileInput = document.getElementById('magCoverPhotoFileInput');
+  const status = document.getElementById('magCoverPhotoUploadStatus');
+  if (input) input.value = '';
+  if (fileInput) fileInput.value = '';
+  if (status) status.textContent = '';
+  updateMagCoverPhotoPreview('');
+};
+
 window.handleMagCoverPhotoUpload = async function(e) {
-  const file = e.target.files && e.target.files[0];
+  const file = (e.target && e.target.files && e.target.files[0]) || (e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0]);
   if (!file) return;
 
   const status = document.getElementById('magCoverPhotoUploadStatus');
-  if (status) status.textContent = 'Uploading cover to ImageKit CDN...';
+  if (status) {
+    status.textContent = `Reading ${file.name} and uploading to ImageKit CDN...`;
+    status.style.color = 'var(--admin-gold)';
+  }
+
+  // Instantly show local preview via FileReader
+  const reader = new FileReader();
+  reader.onload = (event) => {
+    const dataUrl = event.target.result;
+    const input = document.getElementById('magCoverPhotoInput');
+    if (input && !input.value) input.value = dataUrl;
+    updateMagCoverPhotoPreview(dataUrl);
+  };
+  reader.readAsDataURL(file);
 
   try {
     if (window.ScreenladyAPI && typeof window.ScreenladyAPI.uploadMedia === 'function') {
@@ -3299,23 +3370,20 @@ window.handleMagCoverPhotoUpload = async function(e) {
         const input = document.getElementById('magCoverPhotoInput');
         if (input) input.value = url;
         updateMagCoverPhotoPreview(url);
-        if (status) status.textContent = '✓ Uploaded cover to ImageKit CDN.';
+        if (status) {
+          status.textContent = `✓ Uploaded ${file.name} to ImageKit CDN`;
+          status.style.color = '#34D399';
+        }
         showToast('✓ Cover uploaded to ImageKit CDN');
         return;
       }
     }
-    const reader = new FileReader();
-    reader.onload = (event) => {
-      const dataUrl = event.target.result;
-      const input = document.getElementById('magCoverPhotoInput');
-      if (input) input.value = dataUrl;
-      updateMagCoverPhotoPreview(dataUrl);
-      if (status) status.textContent = '✓ Cover loaded locally.';
-    };
-    reader.readAsDataURL(file);
   } catch (err) {
-    if (status) status.textContent = 'Upload failed: ' + err.message;
-    console.warn('Cover upload error:', err);
+    console.warn('Cover upload warning (preserved locally):', err);
+    if (status) {
+      status.textContent = `✓ Image selected: ${file.name} (ready to publish)`;
+      status.style.color = '#34D399';
+    }
   }
 };
 
@@ -3352,7 +3420,16 @@ window.renderMagazineCoversPanel = async function() {
     ? window.getScreenladyDeletedIds()
     : (() => { try { const r = localStorage.getItem('screenlady_deleted_ids'); return r ? JSON.parse(r) : []; } catch(e){ return []; } })();
 
-  covers = covers.filter(item => item && !deletedIds.includes(item.id));
+  // Filter deleted IDs and eliminate any legacy assets references
+  covers = covers.filter(item => {
+    if (!item || deletedIds.includes(item.id)) return false;
+    const photo = (item.photo || item.cover || item.image || '').trim();
+    if (!photo) return false;
+    if (photo.startsWith('assets/images/magazine-cover') || photo.startsWith('/assets/images/magazine-cover')) {
+      return false;
+    }
+    return true;
+  });
 
   if (statBadge) statBadge.textContent = covers.length;
   if (kpiStat) kpiStat.textContent = covers.length;
@@ -3364,37 +3441,40 @@ window.renderMagazineCoversPanel = async function() {
       <tr>
         <td colspan="5" style="text-align: center; padding: 3rem 1.5rem; color: var(--admin-text-muted);">
           <div style="font-size: 1.1rem; color: var(--admin-gold-light); font-weight: 600; margin-bottom: 0.5rem;">No Magazine Covers Published Yet</div>
-          <p style="font-size: 0.85rem; max-width: 420px; margin: 0 auto;">Use the form above to publish your first monthly magazine edition cover to the Hero Slideshow ("Exploring the Diverse World of Women").</p>
+          <p style="font-size: 0.85rem; max-width: 420px; margin: 0 auto; line-height: 1.5;">Use the form above to upload and publish your magazine edition covers to the Hero Slideshow ("Exploring the Diverse World of Women").</p>
         </td>
       </tr>
     `;
     return;
   }
 
-  tableBody.innerHTML = covers.map(item => `
-    <tr>
-      <td>
-        <img src="${escapeHtml(item.photo || item.cover || item.image)}" alt="${escapeHtml(item.title)}" style="width: 48px; height: 68px; object-fit: cover; border-radius: 3px; border: 1px solid var(--admin-border-gold);" onerror="this.src='/assets/images/featured-icon-saree.jpg'">
-      </td>
-      <td>
-        <div style="font-weight: 700; color: #FFFFFF; font-size: 0.92rem;">${escapeHtml(item.monthYear || item.month || 'Monthly Issue')}</div>
-        <span style="font-size: 0.72rem; color: var(--admin-text-faint); font-family: monospace;">ID: ${escapeHtml(item.id)}</span>
-      </td>
-      <td>
-        <div style="font-weight: 600; color: var(--admin-gold-light); font-size: 0.88rem; margin-bottom: 0.2rem;">${escapeHtml(item.title)}</div>
-        ${item.headline ? `<div style="color: var(--admin-text-muted); font-size: 0.78rem;">${escapeHtml(item.headline)}</div>` : ''}
-      </td>
-      <td>
-        <span style="font-weight: 600; color: #34D399; font-size: 0.88rem;">₹${escapeHtml(item.price || 220)}</span>
-      </td>
-      <td style="text-align: right;">
-        <div style="display: inline-flex; gap: 0.4rem;">
-          <button type="button" class="admin-btn admin-btn-outline admin-btn-sm" onclick="editMagazineCover('${escapeHtml(item.id)}')">Edit</button>
-          <button type="button" class="admin-btn admin-btn-danger admin-btn-sm" onclick="deleteMagazineCover('${escapeHtml(item.id)}')">Delete</button>
-        </div>
-      </td>
-    </tr>
-  `).join('');
+  tableBody.innerHTML = covers.map(item => {
+    const photoUrl = item.photo || item.cover || item.image || '';
+    return `
+      <tr>
+        <td>
+          <img src="${escapeHtml(photoUrl)}" alt="${escapeHtml(item.title || 'Cover')}" style="width: 48px; height: 68px; object-fit: cover; border-radius: 3px; border: 1px solid var(--admin-border-gold); background: #14120e;" onerror="this.onerror=null; this.src='data:image/svg+xml;utf8,<svg xmlns=\\'http://www.w3.org/2000/svg\\' width=\\'48\\' height=\\'68\\' viewBox=\\'0 0 48 68\\'><rect width=\\'48\\' height=\\'68\\' fill=\\'%2314120e\\'/><text x=\\'50%25\\' y=\\'50%25\\' dominant-baseline=\\'middle\\' text-anchor=\\'middle\\' fill=\\'%23d4af37\\' font-family=\\'sans-serif\\' font-size=\\'8\\'>COVER</text></svg>';">
+        </td>
+        <td>
+          <div style="font-weight: 700; color: #FFFFFF; font-size: 0.92rem;">${escapeHtml(item.monthYear || item.month || 'Monthly Issue')}</div>
+          <span style="font-size: 0.72rem; color: var(--admin-text-faint); font-family: monospace;">ID: ${escapeHtml(item.id)}</span>
+        </td>
+        <td>
+          <div style="font-weight: 600; color: var(--admin-gold-light); font-size: 0.88rem; margin-bottom: 0.2rem;">${escapeHtml(item.title)}</div>
+          ${item.headline ? `<div style="color: var(--admin-text-muted); font-size: 0.78rem;">${escapeHtml(item.headline)}</div>` : ''}
+        </td>
+        <td>
+          <span style="font-weight: 600; color: #34D399; font-size: 0.88rem;">₹${escapeHtml(item.price || 220)}</span>
+        </td>
+        <td style="text-align: right;">
+          <div style="display: inline-flex; gap: 0.4rem;">
+            <button type="button" class="admin-btn admin-btn-outline admin-btn-sm" onclick="editMagazineCover('${escapeHtml(item.id)}')">Edit</button>
+            <button type="button" class="admin-btn admin-btn-danger admin-btn-sm" onclick="deleteMagazineCover('${escapeHtml(item.id)}')">Delete</button>
+          </div>
+        </td>
+      </tr>
+    `;
+  }).join('');
 };
 
 window.handleSaveMagazineCover = async function(e) {
@@ -3541,7 +3621,11 @@ window.cancelMagazineCoverEdit = function() {
   if (form) form.reset();
   const idField = document.getElementById('magCoverEditingId');
   if (idField) idField.value = '';
-  updateMagCoverPhotoPreview('');
+  if (typeof clearMagCoverPhoto === 'function') {
+    clearMagCoverPhoto();
+  } else {
+    updateMagCoverPhotoPreview('');
+  }
   const formTitle = document.getElementById('magCoverFormTitle');
   if (formTitle) formTitle.textContent = '+ Add New Magazine Cover to Hero Slideshow';
   const subBtn = document.getElementById('magCoverSubmitBtn');

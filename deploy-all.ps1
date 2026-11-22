@@ -1,4 +1,4 @@
-﻿# ==============================================================================
+# ==============================================================================
 # Screenlady Full Deployment Script (PowerShell)
 # Deploys:
 #   1. Cloudflare Worker Backend + D1 Database
@@ -53,3 +53,4 @@ Write-Host "==========================================" -ForegroundColor Cyan
 Write-Host "  • Main Website: https://screenlady-website.pages.dev" -ForegroundColor White
 Write-Host "  • Admin Portal: https://screenlady-admin.pages.dev" -ForegroundColor White
 Write-Host "  • Backend API:  https://screenlady-backend.patilrohan2407.workers.dev" -ForegroundColor White
+
