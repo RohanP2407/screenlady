@@ -10,16 +10,15 @@ const SCREENLADY_API_BASE = (function() {
     if (stored) return stored;
     // When running locally on localhost, default to local wrangler dev server if port 8787 is used
     if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
-      // By default use local backend if developing locally, or set localStorage.setItem('screenlady_api_url', '...')
       if (window.location.search.includes('api=remote')) {
-        return 'https://screenlady-backend.patilrohan2407.workers.dev';
+        return 'https://api.accoladescreenlady.com';
       }
       if (window.location.search.includes('api=local')) {
         return 'http://localhost:8787';
       }
     }
   }
-  return 'https://screenlady-backend.patilrohan2407.workers.dev';
+  return 'https://api.accoladescreenlady.com';
 })();
 
 // Request deduplication & short-TTL cache (prevents duplicate bursts to backend)

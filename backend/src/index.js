@@ -9,11 +9,19 @@ app.use('*', logger());
 app.use('*', cors({
   origin: (origin) => {
     if (!origin) return '*';
+    const allowed = [
+      'https://accoladescreenlady.com',
+      'https://www.accoladescreenlady.com',
+      'https://admin.accoladescreenlady.com',
+      'https://api.accoladescreenlady.com'
+    ];
     if (
+      allowed.includes(origin) ||
+      origin.includes('accoladescreenlady.com') ||
       origin.includes('localhost') ||
       origin.includes('127.0.0.1') ||
       origin.includes('pages.dev') ||
-      origin.includes('accoladescreenlady.com')
+      origin.includes('workers.dev')
     ) {
       return origin;
     }
