@@ -11,6 +11,9 @@
  */
 
 const DEFAULT_ADMIN_PIN = 'screenlady2026';
+const PUBLIC_FRONTEND_URL = (typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'))
+  ? 'http://localhost:4321'
+  : 'https://accoladescreenlady.com';
 
 let currentSection = 'editorials'; // 'editorials' | 'podcast' | 'photos' | 'updates'
 let currentUpdateType = 'photo-info'; // for updates section: 'photo-info' | 'article' | 'photo'
@@ -1155,10 +1158,10 @@ function handlePostSubmit(e) {
     const targetItemId = (editingItem && editingItem.section === section) ? editingItem.id : `curated-${section}-${Date.now()}`;
 
     const sectionTargetUrls = {
-      filmy_adda: 'http://localhost:4321/#filmyAddaSection',
-      bizz_world: 'http://localhost:4321/#bizzWorldSection',
-      women_inspiration: 'http://localhost:4321/#womenInspirationSection',
-      fashion_lifestyle: 'http://localhost:4321/#fashionLifestyleSection'
+      filmy_adda: `${PUBLIC_FRONTEND_URL}/#filmyAddaSection`,
+      bizz_world: `${PUBLIC_FRONTEND_URL}/#bizzWorldSection`,
+      women_inspiration: `${PUBLIC_FRONTEND_URL}/#womenInspirationSection`,
+      fashion_lifestyle: `${PUBLIC_FRONTEND_URL}/#fashionLifestyleSection`
     };
 
     const newCuratedItem = {
@@ -1179,7 +1182,7 @@ function handlePostSubmit(e) {
       fullInfo: formatParagraphs(fullBody),
       photo: photo,
       tags: tags,
-      link: sectionTargetUrls[section] || 'http://localhost:4321/',
+      link: sectionTargetUrls[section] || `${PUBLIC_FRONTEND_URL}/`,
       timestamp: Date.now()
     };
 
@@ -1540,33 +1543,33 @@ function renderManageTable() {
   const updates = (typeof getAllUpdates === 'function') ? getAllUpdates() : [];
 
   // Tag items with their section and target live URL
-  const taggedNews = newsItems.map(i => ({ ...i, _section: 'news', _targetUrl: 'http://localhost:4321/#homeHeroSplitSection', _storageKey: 'screenlady_custom_news' }));
-  const taggedHomePhotos = homePhotos.map(i => ({ ...i, _section: 'business_ads', _targetUrl: 'http://localhost:4321/#homePhotoSlideshowWrap', _storageKey: 'screenlady_custom_business_ads' }));
-  const taggedEditorials = editorials.map(i => ({ ...i, _section: 'editorials', _targetUrl: `http://localhost:4321/editorials#${i.id}`, _storageKey: 'screenlady_custom_editorials' }));
-  const taggedPodcasts = podcasts.map(i => ({ ...i, _section: 'podcast', _targetUrl: `http://localhost:4321/podcast#${i.id}`, _storageKey: 'screenlady_custom_podcasts' }));
-  const taggedPhotos = photos.map(i => ({ ...i, _section: 'photos', _targetUrl: `http://localhost:4321/photos#${i.id}`, _storageKey: 'screenlady_custom_photos' }));
+  const taggedNews = newsItems.map(i => ({ ...i, _section: 'news', _targetUrl: `${PUBLIC_FRONTEND_URL}/#homeHeroSplitSection`, _storageKey: 'screenlady_custom_news' }));
+  const taggedHomePhotos = homePhotos.map(i => ({ ...i, _section: 'business_ads', _targetUrl: `${PUBLIC_FRONTEND_URL}/#homePhotoSlideshowWrap`, _storageKey: 'screenlady_custom_business_ads' }));
+  const taggedEditorials = editorials.map(i => ({ ...i, _section: 'editorials', _targetUrl: `${PUBLIC_FRONTEND_URL}/editorials#${i.id}`, _storageKey: 'screenlady_custom_editorials' }));
+  const taggedPodcasts = podcasts.map(i => ({ ...i, _section: 'podcast', _targetUrl: `${PUBLIC_FRONTEND_URL}/podcast#${i.id}`, _storageKey: 'screenlady_custom_podcasts' }));
+  const taggedPhotos = photos.map(i => ({ ...i, _section: 'photos', _targetUrl: `${PUBLIC_FRONTEND_URL}/photos#${i.id}`, _storageKey: 'screenlady_custom_photos' }));
   const taggedUpdates = updates
     .filter(i => i && !i.isHomepageNews && i.curatedSection !== 'news' && i.type !== 'news' && !(i.id && i.id.startsWith('news-')))
     .map(i => {
     let sec = 'updates';
-    let target = `http://localhost:4321/updates#${i.id}`;
+    let target = `${PUBLIC_FRONTEND_URL}/updates#${i.id}`;
     let storeKey = 'screenlady_custom_updates';
 
     if (i.curatedSection === 'filmy_adda' || isFilmyAddaItem(i)) {
       sec = 'filmy_adda';
-      target = 'http://localhost:4321/#filmyAddaSection';
+      target = `${PUBLIC_FRONTEND_URL}/#filmyAddaSection`;
       storeKey = 'screenlady_custom_filmy';
     } else if (i.curatedSection === 'bizz_world' || isBizzWorldItem(i)) {
       sec = 'bizz_world';
-      target = 'http://localhost:4321/#bizzWorldSection';
+      target = `${PUBLIC_FRONTEND_URL}/#bizzWorldSection`;
       storeKey = 'screenlady_custom_bizz';
     } else if (i.curatedSection === 'women_inspiration' || isInspirationItem(i)) {
       sec = 'women_inspiration';
-      target = 'http://localhost:4321/#womenInspirationSection';
+      target = `${PUBLIC_FRONTEND_URL}/#womenInspirationSection`;
       storeKey = 'screenlady_custom_inspiration';
     } else if (i.curatedSection === 'fashion_lifestyle' || isFashionItem(i)) {
       sec = 'fashion_lifestyle';
-      target = 'http://localhost:4321/#fashionLifestyleSection';
+      target = `${PUBLIC_FRONTEND_URL}/#fashionLifestyleSection`;
       storeKey = 'screenlady_custom_fashion';
     }
     return { ...i, _section: sec, _targetUrl: target, _storageKey: storeKey };

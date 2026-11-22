@@ -6,6 +6,12 @@
   "compatibility_flags": [
     "nodejs_compat"
   ],
+  "routes": [
+    {
+      "pattern": "api.accoladescreenlady.com/*",
+      "custom_domain": true
+    }
+  ],
   "observability": {
     "enabled": true
   },
@@ -18,7 +24,9 @@
     }
   ],
   "vars": {
-    "FRONTEND_URL": "http://localhost:4321",
+    "FRONTEND_URL": "https://accoladescreenlady.com",
+    "ADMIN_URL": "https://admin.accoladescreenlady.com",
+    "API_URL": "https://api.accoladescreenlady.com",
     "ENVIRONMENT": "production",
     "IMAGEKIT_URL_ENDPOINT": "https://ik.imagekit.io/acooladescreenlady",
     "IMAGEKIT_PUBLIC_KEY": "public_HK3u+qaYDRJ9IUqH0FoURIpxLrQ="
