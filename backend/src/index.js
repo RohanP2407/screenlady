@@ -147,10 +147,10 @@ function rowToOrder(row) {
 function rowToMagazine(row) {
   if (!row) {
     return {
-      activeIssue: 'November 2026 — Power, Art & Corporate Leadership Issue',
-      edition: 'November 2026 — Power, Art & Corporate Leadership Issue',
-      coverImage: 'https://ik.imagekit.io/acooladescreenlady/assets/images/magazine-cover-latest.jpg',
-      page2Image: 'https://ik.imagekit.io/acooladescreenlady/assets/images/magazine-page2-feature.jpg',
+      activeIssue: 'Latest Issue',
+      edition: 'Latest Issue',
+      coverImage: 'https://ik.imagekit.io/acooladescreenlady/magazine-covers/cover-1795330731064_0Xwt7ILYb',
+      page2Image: 'https://ik.imagekit.io/acooladescreenlady/screenlady/general/magazine-page2-feature_gqTZYEREU.jpg',
       price: 220,
       currency: 'INR',
       headline: 'THE ARCHITECTS OF MODERN INFLUENCE',
@@ -168,10 +168,10 @@ function rowToMagazine(row) {
     } catch {}
   }
   return {
-    activeIssue: row.active_issue || 'November 2026 — Power, Art & Corporate Leadership Issue',
-    edition: row.active_issue || 'November 2026 — Power, Art & Corporate Leadership Issue',
-    coverImage: row.cover_image || 'https://ik.imagekit.io/acooladescreenlady/assets/images/magazine-cover-latest.jpg',
-    page2Image: row.page2_image || 'https://ik.imagekit.io/acooladescreenlady/assets/images/magazine-page2-feature.jpg',
+    activeIssue: row.active_issue || 'Latest Issue',
+    edition: row.active_issue || 'Latest Issue',
+    coverImage: row.cover_image || 'https://ik.imagekit.io/acooladescreenlady/magazine-covers/cover-1795330731064_0Xwt7ILYb',
+    page2Image: row.page2_image || 'https://ik.imagekit.io/acooladescreenlady/screenlady/general/magazine-page2-feature_gqTZYEREU.jpg',
     price: row.price || 220,
     currency: row.currency || 'INR',
     headline: row.headline || 'THE ARCHITECTS OF MODERN INFLUENCE',
@@ -584,9 +584,19 @@ app.get('/api/magazine', async (c) => {
   try {
     const db = getDb(c);
     const row = await db.prepare('SELECT * FROM magazine_settings WHERE id = ?').bind('current').first();
+    const data = rowToMagazine(row);
+    // If coverImage is empty or default, look up the latest cover from magazine_covers
+    if (!data.coverImage || data.coverImage.includes('/assets/images/')) {
+      const latestCover = await db.prepare('SELECT photo, title, price FROM magazine_covers WHERE id NOT IN (SELECT id FROM deleted_records) ORDER BY timestamp DESC LIMIT 1').first();
+      if (latestCover && latestCover.photo) {
+        data.coverImage = latestCover.photo;
+        if (latestCover.title) data.activeIssue = latestCover.title;
+        if (latestCover.price) data.price = latestCover.price;
+      }
+    }
     return c.json({
       success: true,
-      data: rowToMagazine(row)
+      data
     });
   } catch (err) {
     return c.json({ error: err.message }, 500);

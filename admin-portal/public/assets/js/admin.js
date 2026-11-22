@@ -2581,6 +2581,40 @@ window.populateMagazineSettingsForm = function(settings) {
   if (subtitleEl && s.subtitle) subtitleEl.textContent = s.subtitle;
 };
 
+window.handleMagSettingUpload = async function(e, targetInputId, targetImgId) {
+  const file = e.target.files && e.target.files[0];
+  if (!file) return;
+
+  const input = document.getElementById(targetInputId);
+  const img = document.getElementById(targetImgId);
+
+  // Instant local preview
+  const reader = new FileReader();
+  reader.onload = (event) => {
+    if (input && !input.value) input.value = event.target.result;
+    if (img) img.src = event.target.result;
+  };
+  reader.readAsDataURL(file);
+
+  showToast(`Uploading ${file.name} to ImageKit CDN...`);
+
+  try {
+    if (window.ScreenladyAPI && typeof window.ScreenladyAPI.uploadMedia === 'function') {
+      const customKey = 'mag-setting-' + Date.now();
+      const res = await window.ScreenladyAPI.uploadMedia(file, customKey, 'magazine-covers');
+      const url = res.url || (res.data && res.data.url);
+      if (url) {
+        if (input) input.value = url;
+        if (img) img.src = url;
+        showToast('✓ Photo uploaded to ImageKit CDN');
+        return;
+      }
+    }
+  } catch (err) {
+    console.warn('Upload warning (preserved locally):', err);
+  }
+};
+
 window.handleSaveMagazineConfig = async function(e) {
   if (e && typeof e.preventDefault === 'function') e.preventDefault();
 
@@ -2597,8 +2631,8 @@ window.handleSaveMagazineConfig = async function(e) {
     edition: edition || 'November 2026 — Power, Art & Corporate Leadership Issue',
     monthYear: 'November 2026',
     price: isNaN(price) ? 220 : price,
-    coverImage: coverImage || 'https://ik.imagekit.io/acooladescreenlady/assets/images/magazine-cover-latest.jpg',
-    page2Image: page2Image || 'https://ik.imagekit.io/acooladescreenlady/assets/images/magazine-page2-feature.jpg',
+    coverImage: coverImage || 'https://ik.imagekit.io/acooladescreenlady/magazine-covers/cover-1795330731064_0Xwt7ILYb',
+    page2Image: page2Image || 'https://ik.imagekit.io/acooladescreenlady/screenlady/general/magazine-page2-feature_gqTZYEREU.jpg',
     headline: headline || 'THE ARCHITECTS OF MODERN INFLUENCE',
     subtitle: subtitle || 'Celebrating Trailblazing Women Behind the Screen & Across Boardrooms',
     popupBadge: popupBadge || 'Screenlady Print Magazine',
@@ -2634,9 +2668,15 @@ window.handleSaveMagazineConfig = async function(e) {
   if (window.ScreenladyAPI && typeof window.ScreenladyAPI.updateMagazineSettings === 'function') {
     try {
       const pin = getSavedPin();
-      await window.ScreenladyAPI.updateMagazineSettings(newSettings, pin);
+      const res = await window.ScreenladyAPI.updateMagazineSettings(newSettings, pin);
+      if (res && res.error) {
+        showToast('⚠️ Backend notice: ' + res.error);
+      } else {
+        showToast('✓ Monthly Magazine settings successfully saved to D1 database!');
+      }
     } catch (backendErr) {
       console.warn('[Admin] Cloudflare D1 magazine sync notice:', backendErr);
+      showToast('⚠️ Sync notice: ' + backendErr.message);
     }
   }
 
@@ -2644,8 +2684,6 @@ window.handleSaveMagazineConfig = async function(e) {
   if (typeof updateMagazinePopupFromSettings === 'function') {
     updateMagazinePopupFromSettings();
   }
-
-  showToast('✓ Monthly Magazine settings successfully saved to D1 database!');
 };
 
 function showToast(message) {

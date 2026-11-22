@@ -1172,14 +1172,14 @@
             <!-- Live Preview Cards -->
             <div class="admin-card" style="padding: 1.5rem;">
               <div style="font-weight: 700; color: var(--admin-gold-light); margin-bottom: 0.75rem;">Front Cover Preview</div>
-              <img id="adminPanelMagCoverImg" src="https://ik.imagekit.io/acooladescreenlady/assets/images/magazine-cover-latest.jpg" alt="Current Cover" style="width: 100%; height: 380px; object-fit: cover; border-radius: var(--admin-radius-md); border: 1px solid var(--admin-border-gold); margin-bottom: 1rem;">
+              <img id="adminPanelMagCoverImg" src="https://ik.imagekit.io/acooladescreenlady/magazine-covers/cover-1795330731064_0Xwt7ILYb" alt="Current Cover" style="width: 100%; height: 380px; object-fit: cover; border-radius: var(--admin-radius-md); border: 1px solid var(--admin-border-gold); margin-bottom: 1rem;">
               <div id="adminPanelMagEdition" style="font-weight: 700; color: #FFFFFF; font-size: 1.05rem; margin-bottom: 0.25rem;">November 2026 Issue</div>
               <div id="adminPanelMagPrice" style="color: var(--admin-gold); font-weight: 600; font-size: 0.92rem;">Price: ₹220</div>
             </div>
 
             <div class="admin-card" style="padding: 1.5rem;">
               <div style="font-weight: 700; color: var(--admin-gold-light); margin-bottom: 0.75rem;">Page 2 Feature Spread Preview</div>
-              <img id="adminPanelMagPage2Img" src="https://ik.imagekit.io/acooladescreenlady/assets/images/magazine-page2-feature.jpg" alt="Spread Feature" style="width: 100%; height: 380px; object-fit: cover; border-radius: var(--admin-radius-md); border: 1px solid var(--admin-border); margin-bottom: 1rem;">
+              <img id="adminPanelMagPage2Img" src="https://ik.imagekit.io/acooladescreenlady/screenlady/general/magazine-page2-feature_gqTZYEREU.jpg" alt="Spread Feature" style="width: 100%; height: 380px; object-fit: cover; border-radius: var(--admin-radius-md); border: 1px solid var(--admin-border); margin-bottom: 1rem;">
               <div id="adminPanelMagHeadline" style="font-weight: 700; color: #FFFFFF; font-size: 1.05rem; margin-bottom: 0.25rem;">THE ARCHITECTS OF MODERN INFLUENCE</div>
               <div id="adminPanelMagSubtitle" style="color: var(--admin-text-muted); font-size: 0.85rem;">Inside spread feature celebrating trailblazing women leaders.</div>
             </div>
@@ -1205,12 +1205,26 @@
 
                 <div class="form-group-full">
                   <label class="post-input-label" for="cfgMagCover">Page 1: Front Cover Image URL / ImageKit CDN Path *</label>
-                  <input type="text" id="cfgMagCover" class="post-input-field" value="https://ik.imagekit.io/acooladescreenlady/assets/images/magazine-cover-latest.jpg" required oninput="const img = document.getElementById('adminPanelMagCoverImg'); if(img) img.src=this.value;">
+                  <div style="display: flex; gap: 0.75rem; align-items: center; flex-wrap: wrap;">
+                    <input type="text" id="cfgMagCover" class="post-input-field" value="https://ik.imagekit.io/acooladescreenlady/magazine-covers/cover-1795330731064_0Xwt7ILYb" required oninput="const img = document.getElementById('adminPanelMagCoverImg'); if(img) img.src=this.value;" style="flex: 1; min-width: 280px; margin-bottom: 0;">
+                    <input type="file" id="cfgMagCoverFileInput" accept="image/*" style="display: none;" onchange="handleMagSettingUpload(event, 'cfgMagCover', 'adminPanelMagCoverImg')">
+                    <button type="button" class="admin-btn admin-btn-outline admin-btn-sm" onclick="document.getElementById('cfgMagCoverFileInput').click()">
+                      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+                      <span>Upload Cover</span>
+                    </button>
+                  </div>
                 </div>
 
                 <div class="form-group-full">
                   <label class="post-input-label" for="cfgMagPage2">Page 2: Inside Feature Spread Image URL / ImageKit CDN Path *</label>
-                  <input type="text" id="cfgMagPage2" class="post-input-field" value="https://ik.imagekit.io/acooladescreenlady/assets/images/magazine-page2-feature.jpg" required oninput="const img = document.getElementById('adminPanelMagPage2Img'); if(img) img.src=this.value;">
+                  <div style="display: flex; gap: 0.75rem; align-items: center; flex-wrap: wrap;">
+                    <input type="text" id="cfgMagPage2" class="post-input-field" value="https://ik.imagekit.io/acooladescreenlady/screenlady/general/magazine-page2-feature_gqTZYEREU.jpg" required oninput="const img = document.getElementById('adminPanelMagPage2Img'); if(img) img.src=this.value;" style="flex: 1; min-width: 280px; margin-bottom: 0;">
+                    <input type="file" id="cfgMagPage2FileInput" accept="image/*" style="display: none;" onchange="handleMagSettingUpload(event, 'cfgMagPage2', 'adminPanelMagPage2Img')">
+                    <button type="button" class="admin-btn admin-btn-outline admin-btn-sm" onclick="document.getElementById('cfgMagPage2FileInput').click()">
+                      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+                      <span>Upload Spread</span>
+                    </button>
+                  </div>
                 </div>
 
                 <div>

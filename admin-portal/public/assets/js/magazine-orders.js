@@ -26,8 +26,8 @@ const DEFAULT_MAGAZINE_SETTINGS = {
   edition: 'November 2026 — Power, Art & Corporate Leadership Issue',
   monthYear: 'November 2026',
   price: 220,
-  coverImage: 'https://ik.imagekit.io/acooladescreenlady/assets/images/magazine-cover-latest.jpg',
-  page2Image: 'https://ik.imagekit.io/acooladescreenlady/assets/images/magazine-page2-feature.jpg',
+  coverImage: 'https://ik.imagekit.io/acooladescreenlady/magazine-covers/cover-1795330731064_0Xwt7ILYb',
+  page2Image: 'https://ik.imagekit.io/acooladescreenlady/screenlady/general/magazine-page2-feature_gqTZYEREU.jpg',
   headline: 'THE ARCHITECTS OF MODERN INFLUENCE',
   subtitle: 'Celebrating Trailblazing Women Behind the Screen & Across Boardrooms',
   popupBadge: 'Screenlady Print Magazine',
@@ -43,6 +43,9 @@ const DEFAULT_MAGAZINE_ORDERS = [];
    1. Data Helpers (Settings & Orders)
 ============================================================= */
 function getMagazineSettings() {
+  if (window.backendLiveMagazineSettings) {
+    return { ...DEFAULT_MAGAZINE_SETTINGS, ...window.backendLiveMagazineSettings };
+  }
   try {
     const raw = localStorage.getItem('screenlady_magazine_settings');
     if (raw) {
@@ -127,7 +130,22 @@ window.prevMagazineSpread = function() {
 
 window.showMagazineModal = function(issueTitle) {
   const settings = getMagazineSettings();
-  const currentTitle = issueTitle || settings.edition;
+  let currentTitle = (issueTitle && issueTitle !== 'October 2026') ? issueTitle : (settings.edition || 'Latest Collector\'s Issue');
+  let currentCover = settings.coverImage || '';
+
+  if (window.backendLiveMagazineCovers && window.backendLiveMagazineCovers.length > 0) {
+    const found = issueTitle ? window.backendLiveMagazineCovers.find(c =>
+      c.title === issueTitle || c.monthYear === issueTitle || c.id === issueTitle
+    ) : null;
+    if (found) {
+      currentCover = found.photo || found.cover || found.image || currentCover;
+      currentTitle = found.title || found.monthYear || currentTitle;
+    } else if (!issueTitle || issueTitle === 'October 2026') {
+      const latest = window.backendLiveMagazineCovers[0];
+      currentCover = latest.photo || latest.cover || latest.image || currentCover;
+      currentTitle = latest.title || latest.monthYear || currentTitle;
+    }
+  }
 
   const content = `
     <div class="magazine-modal-viewer">
@@ -160,7 +178,7 @@ window.showMagazineModal = function(issueTitle) {
         <!-- SPREAD 1: Cover Page -->
         <div id="magSpreadView1" class="magazine-spread-pane" style="display: block;">
           <div class="magazine-page-frame">
-            <img src="${settings.coverImage}" alt="Magazine Cover Page" class="magazine-page-img" onerror="this.src='assets/images/featured-icon-saree.jpg'">
+            <img src="${escapeHtml(currentCover)}" alt="Magazine Cover Page" class="magazine-page-img" onerror="this.onerror=null; this.src='data:image/svg+xml;utf8,<svg xmlns=\\'http://www.w3.org/2000/svg\\' width=\\'400\\' height=\\'550\\' viewBox=\\'0 0 400 550\\'><rect width=\\'400\\' height=\\'550\\' fill=\\'%2314120e\\'/><text x=\\'50%25\\' y=\\'50%25\\' dominant-baseline=\\'middle\\' text-anchor=\\'middle\\' fill=\\'%23d4af37\\' font-family=\\'sans-serif\\' font-size=\\'24\\'>SCREENLADY</text></svg>';">
             <div class="magazine-page-overlay-info">
               <span class="badge-gold">Page 1 of 2 • Official Monthly Cover</span>
               <h3 style="font-family: var(--font-serif-display); color: #FFFFFF; font-size: 1.35rem; margin: 0.5rem 0 0.25rem;">
@@ -176,7 +194,7 @@ window.showMagazineModal = function(issueTitle) {
         <!-- SPREAD 2: Inside Page -->
         <div id="magSpreadView2" class="magazine-spread-pane" style="display: none;">
           <div class="magazine-page-frame">
-            <img src="${settings.page2Image}" alt="Magazine Inside Feature Page" class="magazine-page-img" onerror="this.src='assets/images/featured-corporate-leader.jpg'">
+            <img src="${escapeHtml(settings.page2Image)}" alt="Magazine Inside Feature Page" class="magazine-page-img" onerror="this.onerror=null; this.src='data:image/svg+xml;utf8,<svg xmlns=\\'http://www.w3.org/2000/svg\\' width=\\'400\\' height=\\'550\\' viewBox=\\'0 0 400 550\\'><rect width=\\'400\\' height=\\'550\\' fill=\\'%2314120e\\'/><text x=\\'50%25\\' y=\\'50%25\\' dominant-baseline=\\'middle\\' text-anchor=\\'middle\\' fill=\\'%23d4af37\\' font-family=\\'sans-serif\\' font-size=\\'24\\'>SCREENLADY</text></svg>';">
             <div class="magazine-page-overlay-info">
               <span class="badge-gold">Page 2 of 2 • Inside Feature Spread</span>
               <h3 style="font-family: var(--font-serif-display); color: #FFFFFF; font-size: 1.25rem; margin: 0.5rem 0 0.25rem;">
@@ -234,8 +252,28 @@ window.showMagazineModal = function(issueTitle) {
 ============================================================= */
 window.selectedPaymentMethod = 'UPI';
 
-window.openMagazineOrderModal = function() {
+window.openMagazineOrderModal = function(requestedEdition) {
   const settings = getMagazineSettings();
+  let coverUrl = settings.coverImage || '';
+  let editionTitle = (requestedEdition && requestedEdition !== 'October 2026') ? requestedEdition : (settings.edition || 'Latest Collector\'s Print Edition');
+  let price = settings.price || 220;
+
+  // If live covers exist from backend, match requestedEdition or default to latest published cover
+  if (window.backendLiveMagazineCovers && window.backendLiveMagazineCovers.length > 0) {
+    const found = requestedEdition ? window.backendLiveMagazineCovers.find(c =>
+      c.title === requestedEdition || c.monthYear === requestedEdition || c.id === requestedEdition
+    ) : null;
+    if (found) {
+      coverUrl = found.photo || found.cover || found.image || coverUrl;
+      editionTitle = found.title || found.monthYear || editionTitle;
+      if (found.price) price = found.price;
+    } else if (!requestedEdition || requestedEdition === 'October 2026') {
+      const latest = window.backendLiveMagazineCovers[0];
+      coverUrl = latest.photo || latest.cover || latest.image || coverUrl;
+      editionTitle = latest.title || latest.monthYear || editionTitle;
+      if (latest.price) price = latest.price;
+    }
+  }
 
   const content = `
     <div class="magazine-order-flow">
@@ -254,16 +292,16 @@ window.openMagazineOrderModal = function() {
 
       <!-- Edition Quick Snapshot -->
       <div class="order-product-snapshot">
-        <img src="${settings.coverImage}" alt="Magazine Cover" class="order-thumb-img" onerror="this.src='assets/images/featured-icon-saree.jpg'">
+        <img src="${escapeHtml(coverUrl)}" alt="Magazine Cover" class="order-thumb-img" onerror="this.onerror=null; this.src='data:image/svg+xml;utf8,<svg xmlns=\\'http://www.w3.org/2000/svg\\' width=\\'80\\' height=\\'110\\' viewBox=\\'0 0 80 110\\'><rect width=\\'80\\' height=\\'110\\' fill=\\'%2314120e\\'/><text x=\\'50%25\\' y=\\'50%25\\' dominant-baseline=\\'middle\\' text-anchor=\\'middle\\' fill=\\'%23d4af37\\' font-family=\\'sans-serif\\' font-size=\\'10\\'>SCREENLADY</text></svg>';">
         <div style="flex-grow: 1;">
           <h4 style="color: #FFFFFF; font-size: 0.96rem; margin: 0 0 0.25rem 0; font-family: var(--font-serif-display);">
-            ${escapeHtml(settings.edition)}
+            ${escapeHtml(editionTitle)}
           </h4>
           <p style="color: var(--gold-light); font-size: 0.78rem; margin: 0 0 0.35rem 0;">
             Luxury High-Gloss 120 GSM Print Edition • Includes Certificate of Authenticity
           </p>
           <div style="display: flex; gap: 0.75rem; align-items: center; flex-wrap: wrap;">
-            <span class="badge-gold" style="font-size: 0.68rem;">₹${settings.price} per copy</span>
+            <span class="badge-gold" style="font-size: 0.68rem;">₹${price} per copy</span>
             <span style="font-size: 0.75rem; color: #4ade80;">Free Express Shipping</span>
             <span style="font-size: 0.75rem; color: #94a3b8;">Ships in 24–48 Hours</span>
           </div>
@@ -847,16 +885,50 @@ window.hideMagazinePopup = function() {};
 window.dismissMagazinePopup = function() {};
 window.updateMagazinePopupFromSettings = function() {};
 
+// Sync live magazine data from Cloudflare D1 backend
+window.syncLiveMagazineData = async function() {
+  if (window.ScreenladyAPI) {
+    try {
+      const [settings, covers] = await Promise.all([
+        typeof window.ScreenladyAPI.getMagazineSettings === 'function' ? window.ScreenladyAPI.getMagazineSettings() : Promise.resolve(null),
+        typeof window.ScreenladyAPI.getMagazineCovers === 'function' ? window.ScreenladyAPI.getMagazineCovers() : Promise.resolve([])
+      ]);
+      if (settings) {
+        window.backendLiveMagazineSettings = settings;
+        try { localStorage.setItem('screenlady_magazine_settings', JSON.stringify(settings)); } catch(e){}
+      }
+      if (covers && Array.isArray(covers) && covers.length > 0) {
+        window.backendLiveMagazineCovers = covers;
+        if (!settings || !settings.coverImage || settings.coverImage.includes('/assets/images/')) {
+          const latestCover = covers[0].photo || covers[0].cover || covers[0].image;
+          if (latestCover) {
+            const cur = window.backendLiveMagazineSettings || getMagazineSettings();
+            cur.coverImage = latestCover;
+            if (covers[0].title) cur.edition = covers[0].title;
+            window.backendLiveMagazineSettings = cur;
+          }
+        }
+      }
+      if (typeof initAvailableInPrint === 'function') initAvailableInPrint();
+      if (typeof updateLatestMagazinePopupContent === 'function') updateLatestMagazinePopupContent();
+    } catch (err) {
+      console.warn('[Magazine Orders] Notice syncing live magazine data:', err);
+    }
+  }
+};
+
 // Initialize listeners on DOM ready
 document.addEventListener('DOMContentLoaded', () => {
   initAvailableInPrint();
   initMagazineSellPopup();
+  syncLiveMagazineData();
 
   // Real-time synchronization across browser tabs
   window.addEventListener('storage', (e) => {
-    if (e.key === 'screenlady_magazine_settings') {
+    if (e.key === 'screenlady_magazine_settings' || e.key === 'screenlady_custom_magazine_covers') {
       initAvailableInPrint();
       updateMagazinePopupFromSettings();
+      syncLiveMagazineData();
     }
     if (e.key === 'screenlady_magazine_orders') {
       if (typeof renderMagazineOrdersTable === 'function') {
@@ -869,6 +941,7 @@ document.addEventListener('DOMContentLoaded', () => {
   window.addEventListener('screenlady_magazine_settings_changed', () => {
     initAvailableInPrint();
     updateMagazinePopupFromSettings();
+    syncLiveMagazineData();
   });
 
   // Cross-tab BroadcastChannel listener
@@ -879,8 +952,14 @@ document.addEventListener('DOMContentLoaded', () => {
         if (msg && msg.data && msg.data.type === 'magazine_settings_changed') {
           initAvailableInPrint();
           updateMagazinePopupFromSettings();
+          syncLiveMagazineData();
         }
       };
     }
   } catch (e) {}
 });
+
+// Run immediately if DOM already loaded
+if (document.readyState !== 'loading') {
+  syncLiveMagazineData();
+}

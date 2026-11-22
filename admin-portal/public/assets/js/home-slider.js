@@ -172,18 +172,22 @@
     // 2. Render Timeline Steps
     if (timelineTrack) {
       timelineTrack.innerHTML = availableIssues.map((issue, i) => {
-        const fullLabel = issue.monthYear || (issue.title ? issue.title.split('—')[0].trim().split(' ')[0] : `Issue ${i + 1}`);
-        const shortLabel = fullLabel.length > 4 ? fullLabel.substring(0, 3) : fullLabel;
+        const rawMonth = (issue.monthYear || issue.month || '').trim();
+        let displayLabel = rawMonth;
+        if (!displayLabel && issue.title) {
+          displayLabel = issue.title.split('—')[0].trim();
+        }
+        if (!displayLabel) displayLabel = `Issue ${i + 1}`;
+        // Clean formatting - capitalize first letter if lowercase (e.g. "dec" -> "Dec")
+        displayLabel = displayLabel.charAt(0).toUpperCase() + displayLabel.slice(1);
+
         return `
-          <button type="button" class="pure-timeline-step ${i === 0 ? 'active' : ''}" data-index="${i}" title="${escapeHtml(issue.title || '')}">
+          <button type="button" class="pure-timeline-step ${i === 0 ? 'active' : ''}" data-index="${i}" title="${escapeHtml(issue.title || displayLabel)}">
             <div class="pure-step-indicator">
               <span class="pure-step-dot"></span>
               <span class="pure-step-bar"><span class="pure-step-fill"></span></span>
             </div>
-            <span class="pure-step-label">
-              <span class="label-desktop">${escapeHtml(fullLabel)}</span>
-              <span class="label-mobile">${escapeHtml(shortLabel)}</span>
-            </span>
+            <span class="pure-step-label">${escapeHtml(displayLabel)}</span>
           </button>
         `;
       }).join('');
