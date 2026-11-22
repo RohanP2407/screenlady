@@ -6,9 +6,10 @@
   "compatibility_flags": [
     "nodejs_compat"
   ],
+  "workers_dev": true,
   "routes": [
     {
-      "pattern": "api.accoladescreenlady.com/*",
+      "pattern": "api.accoladescreenlady.com",
       "custom_domain": true
     }
   ],
