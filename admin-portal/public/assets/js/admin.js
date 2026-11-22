@@ -270,7 +270,8 @@ window.switchAdminView = function(viewId, targetFilter = null) {
     'panel-orders': 'Customer Purchase Orders',
     'panel-magazine': 'Monthly Magazine Issue & Settings',
     'panel-media': 'ImageKit Global Media CDN',
-    'panel-business-ads': 'Homepage Business Showcase'
+    'panel-business-ads': 'Homepage Business Showcase',
+    'panel-magazine-covers': 'Magazine Covers (Hero Slideshow)'
   };
   const sectionTitles = {
     all: 'All Content Archive',
@@ -306,6 +307,8 @@ window.switchAdminView = function(viewId, targetFilter = null) {
     if (typeof renderBusinessAdsPanel === 'function') renderBusinessAdsPanel();
   } else if (viewId === 'panel-magazine') {
     if (typeof renderMagazineEditionsList === 'function') renderMagazineEditionsList();
+  } else if (viewId === 'panel-magazine-covers') {
+    if (typeof renderMagazineCoversPanel === 'function') renderMagazineCoversPanel();
   }
 
   window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -1349,7 +1352,7 @@ async function loadAdminDashboard() {
   // Live Backend Synchronization across ALL content feeds
   if (window.ScreenladyAPI) {
     try {
-      const [backendUpdates, backendNews, backendAds, backendEditorials, backendPhotos, backendPodcasts, backendOrders, deletedIds, backendMagazine] = await Promise.all([
+      const [backendUpdates, backendNews, backendAds, backendEditorials, backendPhotos, backendPodcasts, backendOrders, deletedIds, backendMagazine, backendMagCovers] = await Promise.all([
         typeof window.ScreenladyAPI.getUpdates === 'function' ? window.ScreenladyAPI.getUpdates() : Promise.resolve([]),
         typeof window.ScreenladyAPI.getNews === 'function' ? window.ScreenladyAPI.getNews() : Promise.resolve([]),
         typeof window.ScreenladyAPI.getBusinessAds === 'function' ? window.ScreenladyAPI.getBusinessAds() : Promise.resolve([]),
@@ -1358,8 +1361,14 @@ async function loadAdminDashboard() {
         typeof window.ScreenladyAPI.getPodcasts === 'function' ? window.ScreenladyAPI.getPodcasts() : Promise.resolve([]),
         typeof window.ScreenladyAPI.getOrders === 'function' ? window.ScreenladyAPI.getOrders() : Promise.resolve([]),
         typeof window.ScreenladyAPI.getDeletedIds === 'function' ? window.ScreenladyAPI.getDeletedIds() : Promise.resolve([]),
-        typeof window.ScreenladyAPI.getMagazineSettings === 'function' ? window.ScreenladyAPI.getMagazineSettings() : Promise.resolve(null)
+        typeof window.ScreenladyAPI.getMagazineSettings === 'function' ? window.ScreenladyAPI.getMagazineSettings() : Promise.resolve(null),
+        typeof window.ScreenladyAPI.getMagazineCovers === 'function' ? window.ScreenladyAPI.getMagazineCovers() : Promise.resolve([])
       ]);
+
+      if (backendMagCovers && Array.isArray(backendMagCovers)) {
+        window.backendLiveMagazineCovers = backendMagCovers;
+        if (typeof renderMagazineCoversPanel === 'function') renderMagazineCoversPanel();
+      }
 
       if (backendAds && Array.isArray(backendAds)) {
         window.backendLiveBusinessAds = backendAds;
@@ -1429,6 +1438,7 @@ function updateStatCounters() {
   const elPhotos = document.getElementById('statTotalPhotos');
   const elUpdates = document.getElementById('statTotalUpdates');
   const elMagazineOrders = document.getElementById('statTotalMagazineOrders');
+  const elMagCovers = document.getElementById('statTotalMagCovers');
 
   const navNews = document.getElementById('navStatNews');
   const navFilmy = document.getElementById('navStatFilmy');
@@ -1438,6 +1448,7 @@ function updateStatCounters() {
   const navEditorials = document.getElementById('navStatEditorials');
   const navPodcasts = document.getElementById('navStatPodcasts');
   const navPhotos = document.getElementById('navStatPhotos');
+  const navMagCovers = document.getElementById('navStatMagCovers');
 
   const newsItems = (typeof getAllHomeNews === 'function') ? getAllHomeNews() : [];
   const homePhotos = (typeof getAllHomePhotos === 'function') ? getAllHomePhotos() : [];
@@ -1446,6 +1457,7 @@ function updateStatCounters() {
   const photos = (typeof getAllPhotos === 'function') ? getAllPhotos() : [];
   const updates = (typeof getAllUpdates === 'function') ? getAllUpdates() : [];
   const magazineOrders = (typeof getAllMagazineOrders === 'function') ? getAllMagazineOrders() : [];
+  const magCovers = (typeof getAllMagazineCovers === 'function') ? getAllMagazineCovers() : (window.backendLiveMagazineCovers || []);
 
   const filmyItems = updates.filter(isFilmyAddaItem);
   const bizzItems = updates.filter(isBizzWorldItem);
@@ -1463,6 +1475,7 @@ function updateStatCounters() {
   if (elPhotos) elPhotos.textContent = photos.length;
   if (elUpdates) elUpdates.textContent = updates.length;
   if (elMagazineOrders) elMagazineOrders.textContent = magazineOrders.length;
+  if (elMagCovers) elMagCovers.textContent = magCovers.length;
 
   if (navNews) navNews.textContent = newsItems.length;
   if (navFilmy) navFilmy.textContent = filmyItems.length;
@@ -1472,6 +1485,7 @@ function updateStatCounters() {
   if (navEditorials) navEditorials.textContent = editorials.length;
   if (navPodcasts) navPodcasts.textContent = podcasts.length;
   if (navPhotos) navPhotos.textContent = photos.length;
+  if (navMagCovers) navMagCovers.textContent = magCovers.length;
 }
 
 window.setManageFilter = function(filter) {
@@ -3208,4 +3222,375 @@ window.deleteMagazineEdition = async function(id) {
 
   renderMagazineEditionsList(issues);
   showToast('✓ Edition removed from homepage slideshow.');
+};
+
+/* =============================================================
+   HOMEPAGE MAGAZINE COVERS CONTROLLER ("Exploring the Diverse World of Women")
+   Connected to 'magazine_covers' D1 table
+   ============================================================= */
+
+window.getAllMagazineCovers = function() {
+  const localDeleted = (() => { try { const r = localStorage.getItem('screenlady_deleted_ids'); return r ? JSON.parse(r) : []; } catch(e){ return []; } })();
+  const backendDeleted = window.backendDeletedIds || [];
+  const deletedIds = Array.from(new Set([...localDeleted, ...backendDeleted]));
+
+  let customCovers = [];
+  try {
+    const raw = localStorage.getItem('screenlady_custom_magazine_covers');
+    if (raw) customCovers = JSON.parse(raw);
+  } catch (e) { customCovers = []; }
+
+  const backendCovers = window.backendLiveMagazineCovers || [];
+
+  const seen = new Set();
+  const deduped = [];
+
+  for (const item of customCovers) {
+    if (item && item.id && !seen.has(item.id) && !deletedIds.includes(item.id)) {
+      seen.add(item.id);
+      deduped.push({ ...item, isCustom: true });
+    }
+  }
+
+  for (const item of backendCovers) {
+    if (item && item.id && !seen.has(item.id) && !deletedIds.includes(item.id)) {
+      seen.add(item.id);
+      deduped.push(item);
+    }
+  }
+
+  deduped.sort((a, b) => {
+    const timeA = Number(a.timestamp) || new Date(a.date || 0).getTime() || 0;
+    const timeB = Number(b.timestamp) || new Date(b.date || 0).getTime() || 0;
+    return timeB - timeA;
+  });
+
+  return deduped;
+};
+
+window.updateMagCoverPhotoPreview = function(url) {
+  const img = document.getElementById('magCoverPhotoPreview');
+  const ph = document.getElementById('magCoverPhotoPreviewPlaceholder');
+  if (img) {
+    if (url && url.trim().length > 0) {
+      img.src = url.trim();
+      img.style.display = 'block';
+      if (ph) ph.style.display = 'none';
+    } else {
+      img.style.display = 'none';
+      if (ph) ph.style.display = 'inline';
+    }
+  }
+};
+
+window.handleMagCoverPhotoUpload = async function(e) {
+  const file = e.target.files && e.target.files[0];
+  if (!file) return;
+
+  const status = document.getElementById('magCoverPhotoUploadStatus');
+  if (status) status.textContent = 'Uploading cover to ImageKit CDN...';
+
+  try {
+    if (window.ScreenladyAPI && typeof window.ScreenladyAPI.uploadMedia === 'function') {
+      const customKey = 'cover-' + Date.now();
+      const res = await window.ScreenladyAPI.uploadMedia(file, customKey, 'magazine-covers');
+      const url = res.url || (res.data && res.data.url);
+      if (url) {
+        const input = document.getElementById('magCoverPhotoInput');
+        if (input) input.value = url;
+        updateMagCoverPhotoPreview(url);
+        if (status) status.textContent = '✓ Uploaded cover to ImageKit CDN.';
+        showToast('✓ Cover uploaded to ImageKit CDN');
+        return;
+      }
+    }
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const dataUrl = event.target.result;
+      const input = document.getElementById('magCoverPhotoInput');
+      if (input) input.value = dataUrl;
+      updateMagCoverPhotoPreview(dataUrl);
+      if (status) status.textContent = '✓ Cover loaded locally.';
+    };
+    reader.readAsDataURL(file);
+  } catch (err) {
+    if (status) status.textContent = 'Upload failed: ' + err.message;
+    console.warn('Cover upload error:', err);
+  }
+};
+
+window.renderMagazineCoversPanel = async function() {
+  const tableBody = document.getElementById('magazineCoversTableBody');
+  const statBadge = document.getElementById('navStatMagCovers');
+  const kpiStat = document.getElementById('statTotalMagCovers');
+
+  let covers = [];
+  try {
+    if (window.ScreenladyAPI && typeof window.ScreenladyAPI.getMagazineCovers === 'function') {
+      const backendCovers = await window.ScreenladyAPI.getMagazineCovers();
+      if (backendCovers && Array.isArray(backendCovers)) {
+        covers = backendCovers;
+        window.backendLiveMagazineCovers = covers;
+      }
+    }
+  } catch (err) {
+    console.warn('[Admin] Notice fetching magazine covers:', err);
+  }
+
+  if (covers.length === 0 && window.backendLiveMagazineCovers && window.backendLiveMagazineCovers.length > 0) {
+    covers = window.backendLiveMagazineCovers;
+  }
+
+  if (covers.length === 0) {
+    try {
+      const raw = localStorage.getItem('screenlady_custom_magazine_covers');
+      if (raw) covers = JSON.parse(raw);
+    } catch (e) { covers = []; }
+  }
+
+  const deletedIds = (typeof window.getScreenladyDeletedIds === 'function')
+    ? window.getScreenladyDeletedIds()
+    : (() => { try { const r = localStorage.getItem('screenlady_deleted_ids'); return r ? JSON.parse(r) : []; } catch(e){ return []; } })();
+
+  covers = covers.filter(item => item && !deletedIds.includes(item.id));
+
+  if (statBadge) statBadge.textContent = covers.length;
+  if (kpiStat) kpiStat.textContent = covers.length;
+
+  if (!tableBody) return;
+
+  if (covers.length === 0) {
+    tableBody.innerHTML = `
+      <tr>
+        <td colspan="5" style="text-align: center; padding: 3rem 1.5rem; color: var(--admin-text-muted);">
+          <div style="font-size: 1.1rem; color: var(--admin-gold-light); font-weight: 600; margin-bottom: 0.5rem;">No Magazine Covers Published Yet</div>
+          <p style="font-size: 0.85rem; max-width: 420px; margin: 0 auto;">Use the form above to publish your first monthly magazine edition cover to the Hero Slideshow ("Exploring the Diverse World of Women").</p>
+        </td>
+      </tr>
+    `;
+    return;
+  }
+
+  tableBody.innerHTML = covers.map(item => `
+    <tr>
+      <td>
+        <img src="${escapeHtml(item.photo || item.cover || item.image)}" alt="${escapeHtml(item.title)}" style="width: 48px; height: 68px; object-fit: cover; border-radius: 3px; border: 1px solid var(--admin-border-gold);" onerror="this.src='/assets/images/featured-icon-saree.jpg'">
+      </td>
+      <td>
+        <div style="font-weight: 700; color: #FFFFFF; font-size: 0.92rem;">${escapeHtml(item.monthYear || item.month || 'Monthly Issue')}</div>
+        <span style="font-size: 0.72rem; color: var(--admin-text-faint); font-family: monospace;">ID: ${escapeHtml(item.id)}</span>
+      </td>
+      <td>
+        <div style="font-weight: 600; color: var(--admin-gold-light); font-size: 0.88rem; margin-bottom: 0.2rem;">${escapeHtml(item.title)}</div>
+        ${item.headline ? `<div style="color: var(--admin-text-muted); font-size: 0.78rem;">${escapeHtml(item.headline)}</div>` : ''}
+      </td>
+      <td>
+        <span style="font-weight: 600; color: #34D399; font-size: 0.88rem;">₹${escapeHtml(item.price || 220)}</span>
+      </td>
+      <td style="text-align: right;">
+        <div style="display: inline-flex; gap: 0.4rem;">
+          <button type="button" class="admin-btn admin-btn-outline admin-btn-sm" onclick="editMagazineCover('${escapeHtml(item.id)}')">Edit</button>
+          <button type="button" class="admin-btn admin-btn-danger admin-btn-sm" onclick="deleteMagazineCover('${escapeHtml(item.id)}')">Delete</button>
+        </div>
+      </td>
+    </tr>
+  `).join('');
+};
+
+window.handleSaveMagazineCover = async function(e) {
+  if (e && typeof e.preventDefault === 'function') e.preventDefault();
+
+  const editingId = (document.getElementById('magCoverEditingId')?.value || '').trim();
+  const month = (document.getElementById('magCoverMonth')?.value || '').trim();
+  const title = (document.getElementById('magCoverTitle')?.value || '').trim();
+  const price = parseFloat(document.getElementById('magCoverPrice')?.value || '220');
+  const photo = (document.getElementById('magCoverPhotoInput')?.value || '').trim();
+  const headline = (document.getElementById('magCoverHeadline')?.value || '').trim();
+  const orderLink = (document.getElementById('magCoverOrderLink')?.value || '').trim();
+  const summary = (document.getElementById('magCoverSummary')?.value || '').trim();
+
+  if (!month || !title || !photo) {
+    showToast('⚠️ Please enter Edition Month, Title, and Cover Photo URL.');
+    return;
+  }
+
+  const id = editingId || ('mag-cover-' + month.toLowerCase().replace(/[^a-z0-9]+/g, '-') + '-' + Date.now());
+  const now = new Date();
+  const dateStr = now.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+
+  const coverItem = {
+    id,
+    title,
+    monthYear: month,
+    month,
+    photo,
+    cover: photo,
+    image: photo,
+    price: isNaN(price) ? 220 : price,
+    headline,
+    summary,
+    description: summary,
+    orderLink,
+    date: dateStr,
+    displayDate: dateStr,
+    timestamp: Date.now(),
+    isCustom: true
+  };
+
+  const pin = getSavedPin();
+
+  // 1. Publish directly to Cloudflare D1 magazine_covers table
+  if (window.ScreenladyAPI && typeof window.ScreenladyAPI.publishItem === 'function') {
+    try {
+      await window.ScreenladyAPI.publishItem('magazine_covers', coverItem, pin);
+    } catch (err) {
+      console.warn('Backend magazine_covers publish notice:', err);
+    }
+  }
+
+  // 2. Also keep available_issues array in magazine_settings synced for backwards compatibility
+  try {
+    let magSettings = {};
+    const raw = localStorage.getItem('screenlady_magazine_settings');
+    if (raw) magSettings = JSON.parse(raw);
+    let issues = Array.isArray(magSettings.availableIssues) ? [...magSettings.availableIssues] : [];
+    const existIdx = issues.findIndex(i => i.id === id);
+    const editionObj = { id, title, monthYear: month, cover: photo, price: coverItem.price };
+    if (existIdx >= 0) issues[existIdx] = editionObj;
+    else issues.unshift(editionObj);
+    magSettings.availableIssues = issues;
+    localStorage.setItem('screenlady_magazine_settings', JSON.stringify(magSettings));
+    if (window.ScreenladyAPI && typeof window.ScreenladyAPI.updateMagazineSettings === 'function') {
+      window.ScreenladyAPI.updateMagazineSettings(magSettings, pin).catch(() => {});
+    }
+  } catch (e) {}
+
+  // 3. Update localStorage custom magazine covers
+  let localCovers = [];
+  try {
+    const raw = localStorage.getItem('screenlady_custom_magazine_covers');
+    if (raw) localCovers = JSON.parse(raw);
+  } catch (e) { localCovers = []; }
+
+  const existIdx = localCovers.findIndex(c => c.id === id);
+  if (existIdx >= 0) {
+    localCovers[existIdx] = coverItem;
+  } else {
+    localCovers.unshift(coverItem);
+  }
+  localStorage.setItem('screenlady_custom_magazine_covers', JSON.stringify(localCovers));
+
+  // 4. Update in-memory backend list
+  if (!window.backendLiveMagazineCovers) window.backendLiveMagazineCovers = [];
+  const bIdx = window.backendLiveMagazineCovers.findIndex(c => c.id === id);
+  if (bIdx >= 0) {
+    window.backendLiveMagazineCovers[bIdx] = coverItem;
+  } else {
+    window.backendLiveMagazineCovers.unshift(coverItem);
+  }
+
+  cancelMagazineCoverEdit();
+  renderMagazineCoversPanel();
+  showToast(editingId ? '✓ Magazine cover updated successfully!' : '✓ Magazine cover published to Hero Slideshow!');
+};
+
+window.editMagazineCover = function(id) {
+  let covers = window.backendLiveMagazineCovers || [];
+  if (covers.length === 0) {
+    try {
+      const raw = localStorage.getItem('screenlady_custom_magazine_covers');
+      if (raw) covers = JSON.parse(raw);
+    } catch (e) { covers = []; }
+  }
+
+  const item = covers.find(c => c && c.id === id);
+  if (!item) return;
+
+  const idField = document.getElementById('magCoverEditingId');
+  if (idField) idField.value = item.id;
+  const monthField = document.getElementById('magCoverMonth');
+  if (monthField) monthField.value = item.monthYear || item.month || (item.title ? item.title.split('—')[0].trim() : '');
+  const titleField = document.getElementById('magCoverTitle');
+  if (titleField) titleField.value = item.title || '';
+  const priceField = document.getElementById('magCoverPrice');
+  if (priceField) priceField.value = item.price || 220;
+  const photoField = document.getElementById('magCoverPhotoInput');
+  if (photoField) photoField.value = item.photo || item.cover || item.image || '';
+  const hlField = document.getElementById('magCoverHeadline');
+  if (hlField) hlField.value = item.headline || '';
+  const orderField = document.getElementById('magCoverOrderLink');
+  if (orderField) orderField.value = item.orderLink || '';
+  const sumField = document.getElementById('magCoverSummary');
+  if (sumField) sumField.value = item.summary || item.description || '';
+
+  updateMagCoverPhotoPreview(item.photo || item.cover || item.image || '');
+
+  const formTitle = document.getElementById('magCoverFormTitle');
+  if (formTitle) formTitle.textContent = 'Edit Magazine Cover in Hero Slideshow';
+  const subBtn = document.getElementById('magCoverSubmitBtn');
+  if (subBtn) subBtn.innerHTML = 'Update Magazine Cover &rarr;';
+  const cancelBtn = document.getElementById('magCoverCancelBtn');
+  if (cancelBtn) cancelBtn.style.display = 'inline-block';
+
+  const form = document.getElementById('magazineCoverForm');
+  if (form) form.scrollIntoView({ behavior: 'smooth' });
+};
+
+window.cancelMagazineCoverEdit = function() {
+  const form = document.getElementById('magazineCoverForm');
+  if (form) form.reset();
+  const idField = document.getElementById('magCoverEditingId');
+  if (idField) idField.value = '';
+  updateMagCoverPhotoPreview('');
+  const formTitle = document.getElementById('magCoverFormTitle');
+  if (formTitle) formTitle.textContent = '+ Add New Magazine Cover to Hero Slideshow';
+  const subBtn = document.getElementById('magCoverSubmitBtn');
+  if (subBtn) subBtn.innerHTML = 'Publish Magazine Cover &rarr;';
+  const cancelBtn = document.getElementById('magCoverCancelBtn');
+  if (cancelBtn) cancelBtn.style.display = 'none';
+  const status = document.getElementById('magCoverPhotoUploadStatus');
+  if (status) status.textContent = '';
+};
+
+window.deleteMagazineCover = async function(id) {
+  if (!confirm('Are you sure you want to remove this magazine cover from the hero slideshow?')) return;
+
+  const pin = getSavedPin();
+
+  if (window.ScreenladyAPI && typeof window.ScreenladyAPI.deleteItem === 'function') {
+    try {
+      await window.ScreenladyAPI.deleteItem('magazine_covers', id, pin);
+    } catch (err) {
+      console.warn('Backend delete notice:', err);
+    }
+  }
+
+  // Update deleted IDs list
+  let deletedIds = [];
+  try {
+    const raw = localStorage.getItem('screenlady_deleted_ids');
+    if (raw) deletedIds = JSON.parse(raw);
+  } catch (e) { deletedIds = []; }
+  if (!deletedIds.includes(id)) {
+    deletedIds.push(id);
+    localStorage.setItem('screenlady_deleted_ids', JSON.stringify(deletedIds));
+  }
+  if (!window.backendDeletedIds) window.backendDeletedIds = [];
+  if (!window.backendDeletedIds.includes(id)) window.backendDeletedIds.push(id);
+
+  // Update localStorage
+  try {
+    const raw = localStorage.getItem('screenlady_custom_magazine_covers');
+    if (raw) {
+      const list = JSON.parse(raw).filter(c => c.id !== id);
+      localStorage.setItem('screenlady_custom_magazine_covers', JSON.stringify(list));
+    }
+  } catch (e) {}
+
+  if (window.backendLiveMagazineCovers) {
+    window.backendLiveMagazineCovers = window.backendLiveMagazineCovers.filter(c => c.id !== id);
+  }
+
+  renderMagazineCoversPanel();
+  showToast('✓ Magazine cover removed from hero slideshow.');
 };

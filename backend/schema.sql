@@ -229,6 +229,25 @@ CREATE TABLE IF NOT EXISTS magazine_settings (
   updated_at TEXT
 );
 
+-- 13. Magazine Covers / Editions (Homepage Hero Slideshow - "Exploring the Diverse World of Women")
+CREATE TABLE IF NOT EXISTS magazine_covers (
+  id TEXT PRIMARY KEY,
+  title TEXT NOT NULL,
+  month_year TEXT NOT NULL,
+  photo TEXT NOT NULL,
+  price REAL DEFAULT 220,
+  headline TEXT,
+  description TEXT,
+  order_link TEXT,
+  display_order INTEGER DEFAULT 0,
+  date TEXT,
+  display_date TEXT,
+  timestamp INTEGER,
+  created_at TEXT,
+  extra_data TEXT
+);
+CREATE INDEX IF NOT EXISTS idx_mag_covers_timestamp ON magazine_covers(timestamp DESC);
+
 -- Backward compatibility view/table for legacy queries if any
 CREATE TABLE IF NOT EXISTS content_items (
   id TEXT PRIMARY KEY,

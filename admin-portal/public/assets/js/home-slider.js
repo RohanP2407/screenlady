@@ -157,29 +157,32 @@
     }
 
     // 1. Render Slides
-    stage.innerHTML = availableIssues.map((issue, i) => `
-      <div class="pure-slide ${i === 0 ? 'active' : ''}" data-index="${i}" onclick="if(window.openMagazineOrderModal) window.openMagazineOrderModal('${escapeHtml(issue.title || 'Collector Edition')}');" style="cursor: pointer;" title="Click to view & order ${escapeHtml(issue.title || 'Edition')}">
-        <div class="pure-cover-frame">
-          <img src="${escapeHtml(issue.cover)}" alt="${escapeHtml(issue.title || 'Screenlady Magazine Cover')}" class="pure-cover-image" />
+    stage.innerHTML = availableIssues.map((issue, i) => {
+      const coverUrl = issue.photo || issue.cover || issue.image || '';
+      const title = issue.title || issue.monthYear || 'Screenlady Magazine Cover';
+      return `
+        <div class="pure-slide ${i === 0 ? 'active' : ''}" data-index="${i}" onclick="if(window.openMagazineOrderModal) window.openMagazineOrderModal('${escapeHtml(title)}');" style="cursor: pointer;" title="Click to view & order ${escapeHtml(title)}">
+          <div class="pure-cover-frame">
+            <img src="${escapeHtml(coverUrl)}" alt="${escapeHtml(title)}" class="pure-cover-image" />
+          </div>
         </div>
-      </div>
-    `).join('');
+      `;
+    }).join('');
 
     // 2. Render Timeline Steps
     if (timelineTrack) {
       timelineTrack.innerHTML = availableIssues.map((issue, i) => {
-        const monthMatch = (issue.title || '').match(/^(January|February|March|April|May|June|July|August|September|October|November|December)/i);
-        const fullLabel = monthMatch ? monthMatch[1] : (issue.title ? issue.title.split(' ')[0] : `Issue ${i + 1}`);
+        const fullLabel = issue.monthYear || (issue.title ? issue.title.split('—')[0].trim().split(' ')[0] : `Issue ${i + 1}`);
         const shortLabel = fullLabel.length > 4 ? fullLabel.substring(0, 3) : fullLabel;
         return `
-          <button type="button" class="pure-timeline-step ${i === 0 ? 'active' : ''}" data-index="${i}" title="${issue.title || ''}">
+          <button type="button" class="pure-timeline-step ${i === 0 ? 'active' : ''}" data-index="${i}" title="${escapeHtml(issue.title || '')}">
             <div class="pure-step-indicator">
               <span class="pure-step-dot"></span>
               <span class="pure-step-bar"><span class="pure-step-fill"></span></span>
             </div>
             <span class="pure-step-label">
-              <span class="label-desktop">${fullLabel}</span>
-              <span class="label-mobile">${shortLabel}</span>
+              <span class="label-desktop">${escapeHtml(fullLabel)}</span>
+              <span class="label-mobile">${escapeHtml(shortLabel)}</span>
             </span>
           </button>
         `;
@@ -199,31 +202,67 @@
   }
 
   async function loadMagazineCovers() {
+    let covers = [];
+
+    // 1. Custom magazine covers from Admin Desk in localStorage
     try {
-      if (window.ScreenladyAPI && typeof window.ScreenladyAPI.getMagazineSettings === 'function') {
-        const magSettings = await window.ScreenladyAPI.getMagazineSettings();
-        if (magSettings && Array.isArray(magSettings.availableIssues) && magSettings.availableIssues.length > 0) {
-          renderSlideshow(magSettings.availableIssues);
-          return;
+      const raw = localStorage.getItem('screenlady_custom_magazine_covers');
+      if (raw) covers = JSON.parse(raw);
+    } catch (e) { covers = []; }
+
+    // 2. Fetch live magazine covers from Cloudflare D1 magazine_covers table
+    try {
+      if (window.ScreenladyAPI && typeof window.ScreenladyAPI.getMagazineCovers === 'function') {
+        const backendCovers = await window.ScreenladyAPI.getMagazineCovers();
+        if (backendCovers && Array.isArray(backendCovers) && backendCovers.length > 0) {
+          const seen = new Set(covers.map(c => c.id));
+          backendCovers.forEach(bc => {
+            if (!seen.has(bc.id)) {
+              seen.add(bc.id);
+              covers.push(bc);
+            }
+          });
         }
       }
     } catch (e) {
-      console.warn('[Home Slider] Notice fetching magazine covers from database:', e.message);
+      console.warn('[Home Slider] Notice fetching magazine covers from backend:', e.message);
     }
 
-    // Secondary fallback to existing DOM slides if already rendered
-    const stage = document.getElementById('slidesStage');
-    const theater = document.getElementById('slideshowTheater');
-    if (stage && theater) {
-      slides = Array.from(stage.querySelectorAll('.pure-slide'));
-      steps = Array.from(document.querySelectorAll('.pure-timeline-step'));
-      if (slides.length > 0) {
-        setupControls(theater);
-        showSlide(0);
-        startTimer();
-      }
+    // 3. Fallback to magazine_settings.availableIssues if magazine_covers table is empty
+    if (covers.length === 0) {
+      try {
+        if (window.ScreenladyAPI && typeof window.ScreenladyAPI.getMagazineSettings === 'function') {
+          const magSettings = await window.ScreenladyAPI.getMagazineSettings();
+          if (magSettings && Array.isArray(magSettings.availableIssues) && magSettings.availableIssues.length > 0) {
+            covers = magSettings.availableIssues;
+          }
+        }
+      } catch (e) {}
     }
+
+    // Filter deleted IDs
+    const deletedIds = (typeof window.getScreenladyDeletedIds === 'function')
+      ? window.getScreenladyDeletedIds()
+      : (() => { try { const r = localStorage.getItem('screenlady_deleted_ids'); return r ? JSON.parse(r) : []; } catch(e){ return []; } })();
+
+    covers = covers.filter(c => c && (c.photo || c.cover || c.image) && !deletedIds.includes(c.id));
+
+    // Sort: Latest first
+    covers.sort((a, b) => {
+      const timeA = Number(a.timestamp) || new Date(a.date || 0).getTime() || 0;
+      const timeB = Number(b.timestamp) || new Date(b.date || 0).getTime() || 0;
+      return timeB - timeA;
+    });
+
+    renderSlideshow(covers);
   }
+
+  // Listen for Admin publishing events in real-time
+  window.addEventListener('storage', (e) => {
+    if (e.key === 'screenlady_custom_magazine_covers' || e.key === 'screenlady_magazine_settings' || e.key === 'screenlady_last_updated') {
+      loadMagazineCovers();
+    }
+  });
 
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', loadMagazineCovers);

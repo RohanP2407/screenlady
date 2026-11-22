@@ -89,6 +89,17 @@ window.ScreenladyAPI = {
     return this.getBusinessAds();
   },
 
+  // Fetch Magazine Covers (Homepage Hero Slideshow - "Exploring the Diverse World of Women")
+  async getMagazineCovers() {
+    try {
+      const json = await cachedGet('/api/magazine-covers');
+      return (json && json.data) ? json.data : [];
+    } catch (err) {
+      console.warn('[Screenlady API] Notice fetching magazine covers:', err.message);
+      return [];
+    }
+  },
+
   // Fetch globally deleted item IDs
   async getDeletedIds() {
     try {

@@ -73,6 +73,12 @@ function serializeItem(row, sectionName) {
     fullInfo: row.full_body || '',
     photo: row.photo || '',
     image: row.photo || '',
+    cover: row.photo || '',
+    coverImage: row.photo || '',
+    monthYear: row.month_year || '',
+    price: row.price || 220,
+    orderLink: row.order_link || '',
+    displayOrder: row.display_order || 0,
     destinationUrl: row.destination_url || '',
     link: row.destination_url || row.social_link || 'javascript:void(0)',
     venue: row.venue || '',
@@ -202,6 +208,7 @@ app.get('/', (c) => {
       'podcasts',
       'orders',
       'magazine_settings',
+      'magazine_covers',
       'deleted_records'
     ],
     media: {
@@ -226,7 +233,8 @@ app.get('/api/stats', async (c) => {
       photosRes,
       editorialsRes,
       podcastsRes,
-      ordersRes
+      ordersRes,
+      magCoversRes
     ] = await Promise.all([
       db.prepare('SELECT COUNT(*) as c FROM realtime_updates WHERE id NOT IN (SELECT id FROM deleted_records)').first(),
       db.prepare('SELECT COUNT(*) as c FROM business_ads WHERE id NOT IN (SELECT id FROM deleted_records)').first(),
@@ -237,7 +245,8 @@ app.get('/api/stats', async (c) => {
       db.prepare('SELECT COUNT(*) as c FROM gallery_photos WHERE id NOT IN (SELECT id FROM deleted_records)').first(),
       db.prepare('SELECT COUNT(*) as c FROM editorials WHERE id NOT IN (SELECT id FROM deleted_records)').first(),
       db.prepare('SELECT COUNT(*) as c FROM podcasts WHERE id NOT IN (SELECT id FROM deleted_records)').first(),
-      db.prepare('SELECT COUNT(*) as c FROM orders').first()
+      db.prepare('SELECT COUNT(*) as c FROM orders').first(),
+      db.prepare('SELECT COUNT(*) as c FROM magazine_covers WHERE id NOT IN (SELECT id FROM deleted_records)').first()
     ]);
 
     const rtCount = rtRes?.c || 0;
@@ -250,6 +259,7 @@ app.get('/api/stats', async (c) => {
     const editorialsCount = editorialsRes?.c || 0;
     const podcastsCount = podcastsRes?.c || 0;
     const ordersCount = ordersRes?.c || 0;
+    const magCoversCount = magCoversRes?.c || 0;
 
     return c.json({
       success: true,
@@ -265,7 +275,8 @@ app.get('/api/stats', async (c) => {
         photos: photosCount,
         editorials: editorialsCount,
         podcasts: podcastsCount,
-        orders: ordersCount
+        orders: ordersCount,
+        magazineCovers: magCoversCount
       }
     });
   } catch (err) {
@@ -538,7 +549,35 @@ app.get('/api/podcast', async (c) => {
 });
 
 // ==========================================
-// 6. MAGAZINE SETTINGS & ORDERS
+// 6. MAGAZINE COVERS (HOMEPAGE HERO SLIDESHOW)
+// Section: "Exploring the Diverse World of Women"
+// ==========================================
+
+const getMagazineCoversHandler = async (c) => {
+  try {
+    const db = getDb(c);
+    const rows = await db.prepare(`
+      SELECT * FROM magazine_covers
+      WHERE id NOT IN (SELECT id FROM deleted_records)
+      ORDER BY timestamp DESC
+    `).all();
+
+    const items = (rows.results || []).map((r) => serializeItem(r, 'magazine_covers'));
+    return c.json({
+      success: true,
+      total: items.length,
+      data: items
+    });
+  } catch (err) {
+    return c.json({ error: err.message }, 500);
+  }
+};
+
+app.get('/api/magazine-covers', getMagazineCoversHandler);
+app.get('/api/magazine-editions', getMagazineCoversHandler);
+
+// ==========================================
+// 7. MAGAZINE SETTINGS & ORDERS
 // ==========================================
 
 app.get('/api/magazine', async (c) => {
@@ -844,6 +883,18 @@ app.post('/api/publish', async (c) => {
         item.duration || '35 Mins', item.socialLink || 'https://youtube.com', item.audioUrl || '',
         summary, photo, category || 'Podcast', categoryBadge || 'Audio Dispatch', date, displayDate, timestamp, item.createdAt || now, null
       ).run();
+    } else if (section === 'magazine_covers' || section === 'magazine_editions') {
+      const monthYear = item.monthYear || item.month || date;
+      const price = parseFloat(item.price) || 220;
+      const orderLink = item.orderLink || '';
+      const displayOrder = parseInt(item.displayOrder, 10) || 0;
+      await db.prepare(`
+        INSERT OR REPLACE INTO magazine_covers (
+          id, title, month_year, photo, price, headline, description, order_link, display_order, date, display_date, timestamp, created_at, extra_data
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      `).bind(
+        id, title, monthYear, photo, price, headline, summary, orderLink, displayOrder, date, displayDate, timestamp, item.createdAt || now, null
+      ).run();
     } else {
       return c.json({ error: `Unknown section: ${section}` }, 400);
     }
@@ -892,7 +943,9 @@ app.post('/api/delete', async (c) => {
       'gallery_photos': 'gallery_photos',
       'editorials': 'editorials',
       'podcast': 'podcasts',
-      'podcasts': 'podcasts'
+      'podcasts': 'podcasts',
+      'magazine_covers': 'magazine_covers',
+      'magazine_editions': 'magazine_covers'
     };
 
     const targetTable = section ? tableMap[section] : null;
@@ -903,7 +956,7 @@ app.post('/api/delete', async (c) => {
       // If table not specified, attempt deletion across all category tables
       const allTables = [
         'realtime_updates', 'business_ads', 'filmy_adda', 'bizz_world',
-        'women_inspiration', 'fashion_lifestyle', 'gallery_photos', 'editorials', 'podcasts'
+        'women_inspiration', 'fashion_lifestyle', 'gallery_photos', 'editorials', 'podcasts', 'magazine_covers'
       ];
       for (const t of allTables) {
         await db.prepare(`DELETE FROM ${t} WHERE id = ?`).bind(id).run();
