@@ -350,5 +350,41 @@ window.ScreenladyAPI = {
       console.warn('[Screenlady API] Magazine update fallback:', err.message);
       return { success: false, error: err.message };
     }
+  },
+
+  // Verify admin passcode against backend
+  async verifyAdminPin(pin) {
+    try {
+      const res = await fetch(`${SCREENLADY_API_BASE}/api/admin/verify-pin`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Admin-PIN': pin
+        },
+        body: JSON.stringify({ pin })
+      });
+      return await res.json();
+    } catch (err) {
+      console.warn('[Screenlady API] Verify PIN request failed:', err.message);
+      throw err;
+    }
+  },
+
+  // Change admin passcode in backend D1 database
+  async changeAdminPin(currentPin, newPin) {
+    try {
+      const res = await fetch(`${SCREENLADY_API_BASE}/api/admin/change-pin`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Admin-PIN': currentPin
+        },
+        body: JSON.stringify({ currentPin, newPin })
+      });
+      return await res.json();
+    } catch (err) {
+      console.warn('[Screenlady API] Change PIN request failed:', err.message);
+      throw err;
+    }
   }
 };

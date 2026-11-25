@@ -33,12 +33,29 @@ app.use('*', cors({
   maxAge: 86400,
 }));
 
-// Helper to verify Admin PIN
-function verifyAdminPin(c, providedPin) {
-  const validPin = c.env?.ADMIN_PIN || 'screenlady2026';
+// Helper to get active Admin PIN from D1 database with fallback to env or default
+async function getStoredAdminPin(c) {
+  try {
+    if (c.env?.DB) {
+      const row = await c.env.DB.prepare('SELECT pin_hash, pin_plain FROM admin_auth WHERE id = ?').bind('primary').first();
+      if (row && (row.pin_plain || row.pin_hash)) {
+        return (row.pin_plain || row.pin_hash).trim();
+      }
+    }
+  } catch (err) {
+    console.warn('Could not read admin_auth table, falling back to env/default PIN:', err);
+  }
+  return (c.env?.ADMIN_PIN || 'screenlady2026').trim();
+}
+
+// Helper to verify Admin PIN (asynchronous, checking D1 database)
+async function verifyAdminPin(c, providedPin) {
   const headerPin = c.req.header('X-Admin-PIN');
-  const pin = providedPin || headerPin;
-  return Boolean(pin && (pin === validPin || pin.toLowerCase() === validPin.toLowerCase()));
+  const pin = (providedPin || headerPin || '').trim();
+  if (!pin) return false;
+
+  const validPin = await getStoredAdminPin(c);
+  return pin === validPin || pin.toLowerCase() === validPin.toLowerCase();
 }
 
 function getDb(c) {
@@ -217,7 +234,8 @@ app.get('/', (c) => {
       'orders',
       'magazine_settings',
       'magazine_covers',
-      'deleted_records'
+      'deleted_records',
+      'admin_auth'
     ],
     media: {
       provider: 'ImageKit.io',
@@ -225,6 +243,64 @@ app.get('/', (c) => {
       endpoint: c.env?.IMAGEKIT_URL_ENDPOINT || 'https://ik.imagekit.io/accoladescreenlady'
     }
   });
+});
+
+// ==========================================
+// ADMIN AUTHENTICATION & PASSCODE APIs
+// ==========================================
+
+// POST /api/admin/verify-pin - Validate executive passcode
+app.post('/api/admin/verify-pin', async (c) => {
+  try {
+    const body = await c.req.json().catch(() => ({}));
+    const pin = (body.pin || c.req.header('X-Admin-PIN') || '').trim();
+    if (!pin) {
+      return c.json({ success: false, error: 'Passcode is required' }, 400);
+    }
+    const isValid = await verifyAdminPin(c, pin);
+    if (!isValid) {
+      return c.json({ success: false, error: 'Incorrect administrator passcode' }, 401);
+    }
+    return c.json({ success: true, message: 'Administrator passcode verified successfully' });
+  } catch (err) {
+    return c.json({ success: false, error: err.message || 'Verification failed' }, 500);
+  }
+});
+
+// POST /api/admin/change-pin - Update executive passcode in Cloudflare D1
+app.post('/api/admin/change-pin', async (c) => {
+  try {
+    const body = await c.req.json().catch(() => ({}));
+    const { currentPin, newPin } = body;
+    if (!currentPin || !newPin) {
+      return c.json({ success: false, error: 'Both current and new passcodes are required' }, 400);
+    }
+    const isCurrentValid = await verifyAdminPin(c, currentPin);
+    if (!isCurrentValid) {
+      return c.json({ success: false, error: 'Current passcode is incorrect' }, 401);
+    }
+    const trimmedNew = String(newPin).trim();
+    if (trimmedNew.length < 6) {
+      return c.json({ success: false, error: 'New passcode must be at least 6 characters long' }, 400);
+    }
+
+    const db = getDb(c);
+    await db.prepare(`
+      INSERT INTO admin_auth (id, pin_hash, pin_plain, updated_at)
+      VALUES ('primary', ?, ?, CURRENT_TIMESTAMP)
+      ON CONFLICT(id) DO UPDATE SET
+        pin_hash = excluded.pin_hash,
+        pin_plain = excluded.pin_plain,
+        updated_at = CURRENT_TIMESTAMP
+    `).bind(trimmedNew, trimmedNew).run();
+
+    return c.json({
+      success: true,
+      message: 'Administrator passcode updated successfully across all devices and database.'
+    });
+  } catch (err) {
+    return c.json({ success: false, error: err.message || 'Failed to update passcode' }, 500);
+  }
 });
 
 // GET /api/stats - Global Counters for Admin Dashboard
@@ -616,7 +692,7 @@ app.post('/api/magazine', async (c) => {
     const body = await c.req.json();
     const { settings, adminPin } = body;
 
-    if (!verifyAdminPin(c, adminPin)) {
+    if (!(await verifyAdminPin(c, adminPin))) {
       return c.json({ error: 'Unauthorized: Invalid Administrator Passcode' }, 401);
     }
 
@@ -734,7 +810,7 @@ app.put('/api/orders/:id', async (c) => {
     const body = await c.req.json();
     const { paymentStatus, dispatchStatus, status, adminPin } = body;
 
-    if (!verifyAdminPin(c, adminPin)) {
+    if (!(await verifyAdminPin(c, adminPin))) {
       return c.json({ error: 'Unauthorized: Invalid Administrator Passcode' }, 401);
     }
 
@@ -765,7 +841,7 @@ app.delete('/api/orders/:id', async (c) => {
     const id = c.req.param('id');
     const adminPin = c.req.query('adminPin') || c.req.header('X-Admin-PIN');
 
-    if (!verifyAdminPin(c, adminPin)) {
+    if (!(await verifyAdminPin(c, adminPin))) {
       return c.json({ error: 'Unauthorized: Invalid Administrator Passcode' }, 401);
     }
 
@@ -791,7 +867,7 @@ app.post('/api/publish', async (c) => {
     const body = await c.req.json();
     const { section, item, adminPin } = body;
 
-    if (!verifyAdminPin(c, adminPin)) {
+    if (!(await verifyAdminPin(c, adminPin))) {
       return c.json({ error: 'Unauthorized: Invalid Administrator Passcode' }, 401);
     }
 
@@ -937,7 +1013,7 @@ app.post('/api/delete', async (c) => {
     const body = await c.req.json();
     const { section, id, adminPin } = body;
 
-    if (!verifyAdminPin(c, adminPin)) {
+    if (!(await verifyAdminPin(c, adminPin))) {
       return c.json({ error: 'Unauthorized: Invalid Administrator Passcode' }, 401);
     }
 

@@ -281,3 +281,12 @@ CREATE TABLE IF NOT EXISTS content_items (
   created_at TEXT,
   extra_data TEXT
 );
+
+-- 14. Admin Authentication Credentials (Cross-Device Persistent Passcode)
+CREATE TABLE IF NOT EXISTS admin_auth (
+  id TEXT PRIMARY KEY,
+  pin_hash TEXT NOT NULL,
+  pin_plain TEXT,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+

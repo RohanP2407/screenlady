@@ -182,36 +182,79 @@ function getSavedPin() {
   return localStorage.getItem('screenlady_admin_pin') || DEFAULT_ADMIN_PIN;
 }
 
-function handleAdminLogin(e) {
+async function handleAdminLogin(e) {
   if (e && typeof e.preventDefault === 'function') e.preventDefault();
   const pinInput = document.getElementById('adminPinInput');
   const errEl = document.getElementById('adminAuthErr');
   const enteredPin = (pinInput ? pinInput.value : '').trim();
-  const savedPin = (getSavedPin() || '').trim();
 
-  // Allow default pin, saved pin, and case-insensitive matches
-  const isValid = 
-    enteredPin === savedPin ||
-    enteredPin.toLowerCase() === DEFAULT_ADMIN_PIN.toLowerCase() ||
-    enteredPin.toLowerCase() === savedPin.toLowerCase();
-
-  if (isValid) {
-    sessionStorage.setItem('screenlady_admin_auth', 'true');
-    if (errEl) errEl.style.display = 'none';
-    const overlay = document.getElementById('adminAuthOverlay');
-    const dashboard = document.getElementById('adminDashboard');
-    if (overlay) overlay.style.display = 'none';
-    if (dashboard) dashboard.style.display = 'flex';
-    loadAdminDashboard();
-    showToast('Admin access granted. Welcome to Screenlady Editorial Desk.');
-  } else {
+  if (!enteredPin) {
     if (errEl) {
-      errEl.textContent = 'Incorrect Admin Passcode. Default is: screenlady2026';
+      errEl.textContent = 'Please enter your administrator passcode.';
       errEl.style.display = 'block';
     }
-    if (pinInput) {
-      pinInput.value = '';
-      pinInput.focus();
+    return;
+  }
+
+  const unlockBtn = document.querySelector('.admin-btn-unlock');
+  const originalBtnText = unlockBtn ? unlockBtn.innerHTML : '';
+  if (unlockBtn) {
+    unlockBtn.innerHTML = 'Verifying Passcode...';
+    unlockBtn.disabled = true;
+  }
+
+  try {
+    let isValid = false;
+    if (window.ScreenladyAPI && typeof window.ScreenladyAPI.verifyAdminPin === 'function') {
+      const res = await window.ScreenladyAPI.verifyAdminPin(enteredPin);
+      isValid = Boolean(res && res.success);
+    } else {
+      const savedPin = (getSavedPin() || '').trim();
+      isValid = (enteredPin === savedPin || enteredPin.toLowerCase() === savedPin.toLowerCase());
+    }
+
+    if (isValid) {
+      localStorage.setItem('screenlady_admin_pin', enteredPin);
+      sessionStorage.setItem('screenlady_admin_auth', 'true');
+      if (errEl) errEl.style.display = 'none';
+      const overlay = document.getElementById('adminAuthOverlay');
+      const dashboard = document.getElementById('adminDashboard');
+      if (overlay) overlay.style.display = 'none';
+      if (dashboard) dashboard.style.display = 'flex';
+      loadAdminDashboard();
+      showToast('Admin access granted. Welcome to Screenlady Editorial Desk.');
+    } else {
+      if (errEl) {
+        errEl.textContent = 'Incorrect Administrator Passcode. Please check and try again.';
+        errEl.style.display = 'block';
+      }
+      if (pinInput) {
+        pinInput.value = '';
+        pinInput.focus();
+      }
+    }
+  } catch (err) {
+    // In case of network disconnect, try local verified passcode
+    const savedPin = (getSavedPin() || '').trim();
+    if (enteredPin === savedPin || enteredPin.toLowerCase() === savedPin.toLowerCase()) {
+      sessionStorage.setItem('screenlady_admin_auth', 'true');
+      if (errEl) errEl.style.display = 'none';
+      const overlay = document.getElementById('adminAuthOverlay');
+      const dashboard = document.getElementById('adminDashboard');
+      if (overlay) overlay.style.display = 'none';
+      if (dashboard) dashboard.style.display = 'flex';
+      loadAdminDashboard();
+      showToast('Admin access granted (offline/cached mode).');
+    } else {
+      if (errEl) {
+        errEl.textContent = 'Verification error: ' + (err.message || 'Incorrect passcode');
+        errEl.style.display = 'block';
+      }
+    }
+  } finally {
+    if (unlockBtn) {
+      unlockBtn.innerHTML = originalBtnText;
+      unlockBtn.disabled = false;
     }
   }
 }
@@ -222,22 +265,47 @@ function handleAdminLogout() {
   window.location.reload();
 }
 
-window.changeAdminPin = function() {
-  const currentPin = getSavedPin();
-  const inputOld = prompt('Enter Current Passcode:');
-  if (inputOld !== currentPin) {
-    if (inputOld !== null) alert('Incorrect current passcode.');
+window.changeAdminPin = async function() {
+  const inputOld = prompt('Enter Current Administrator Passcode:');
+  if (inputOld === null) return;
+  if (!inputOld.trim()) {
+    alert('Current passcode is required.');
     return;
   }
 
-  const newPin = prompt('Enter New Passcode (min 6 characters):');
-  if (!newPin || newPin.trim().length < 6) {
+  const newPin = prompt('Enter New Administrator Passcode (minimum 6 characters):');
+  if (newPin === null) return;
+  if (!newPin.trim() || newPin.trim().length < 6) {
     alert('Passcode must be at least 6 characters long.');
     return;
   }
 
-  localStorage.setItem('screenlady_admin_pin', newPin.trim());
-  showToast('Admin passcode successfully updated.');
+  const confirmPin = prompt('Confirm New Administrator Passcode:');
+  if (confirmPin === null) return;
+  if (confirmPin.trim() !== newPin.trim()) {
+    alert('Passcodes do not match. Change cancelled.');
+    return;
+  }
+
+  try {
+    if (window.ScreenladyAPI && typeof window.ScreenladyAPI.changeAdminPin === 'function') {
+      const res = await window.ScreenladyAPI.changeAdminPin(inputOld.trim(), newPin.trim());
+      if (res && res.success) {
+        localStorage.setItem('screenlady_admin_pin', newPin.trim());
+        if (typeof showToast === 'function') {
+          showToast('✓ Admin passcode successfully updated in Cloudflare D1 across all devices.');
+        }
+        alert('Admin passcode successfully updated across all devices & database!\n\nPlease use your new passcode for future logins.');
+      } else {
+        alert(res?.error || 'Failed to update passcode in database.');
+      }
+    } else {
+      localStorage.setItem('screenlady_admin_pin', newPin.trim());
+      showToast('Admin passcode updated locally.');
+    }
+  } catch (err) {
+    alert('Error updating passcode: ' + err.message);
+  }
 };
 
 /* =============================================================
