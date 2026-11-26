@@ -1003,345 +1003,373 @@ function handleFileUpload(e) {
 /* =============================================================
    4. Save, Edit & Publish Handler (Per Selected Section)
 ============================================================= */
-function handlePostSubmit(e) {
+async function handlePostSubmit(e) {
   e.preventDefault();
 
-  const section = currentSection;
-  const dateStr = document.getElementById('postDate').value || new Date().toISOString().split('T')[0];
-  const category = document.getElementById('postCategory').value.trim() || 'General';
-  const photo = document.getElementById('postPhotoInput').value.trim() || 'https://ik.imagekit.io/acooladescreenlady/assets/images/featured-icon-saree.jpg';
-  const rawTags = document.getElementById('postTags').value.trim();
-  const tags = rawTags ? rawTags.split(',').map(t => t.trim()).filter(Boolean) : [category];
-
-  const dateObj = new Date(dateStr);
-  const displayDate = dateObj.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
-
-  // -------------------------------------------------------------
-  // SECTION: EDITORIALS
-  // -------------------------------------------------------------
-  if (section === 'editorials') {
-    const title = (document.getElementById('postEditorialTitle')?.value || '').trim() || 'Accolade Screenlady Feature Editorial';
-    const author = (document.getElementById('postEditorialAuthor')?.value || '').trim() || 'Accolade Screenlady Desk';
-    const designation = (document.getElementById('postEditorialDesignation')?.value || '').trim() || 'Guest Columnist';
-    const readTime = (document.getElementById('postEditorialReadTime')?.value || '').trim() || '5 Min Read';
-    const pullQuote = (document.getElementById('postEditorialQuote')?.value || '').trim();
-    const rawBody = (document.getElementById('postEditorialBody')?.value || '').trim();
-
-    const formattedContent = formatParagraphs(rawBody);
-    const firstLineBody = rawBody ? (rawBody.split(/\n+/).filter(Boolean)[0] || '') : '';
-    const editorialSummary = pullQuote || (firstLineBody.length > 160 ? firstLineBody.substring(0, 157) + '...' : firstLineBody) || title;
-    const finalFullContent = formattedContent || `<p>${escapeHtml(editorialSummary)}</p>`;
-
-    const newEditorial = {
-      id: (editingItem && editingItem.section === 'editorials') ? editingItem.id : `editorial-custom-${Date.now()}`,
-      title: title,
-      headline: title,
-      author: author,
-      authorRole: designation,
-      authorDesignation: designation,
-      readTime: readTime,
-      pullQuote: pullQuote || editorialSummary,
-      summary: editorialSummary,
-      fullBody: finalFullContent,
-      content: finalFullContent,
-      fullContent: finalFullContent,
-      previewExcerptHtml: `<div class="editorial-lead-box" style="margin-bottom: 0.95rem; padding: 0.85rem 1.1rem; font-size: 0.92rem;"><strong>(Accolade Screenlady Editorial)</strong> ${escapeHtml(editorialSummary)}</div>${finalFullContent.split(/<\/p>/i).slice(0, 3).map(p => p.trim() ? p + '</p>' : '').join('\n')}`,
-      date: dateStr,
-      displayDate: displayDate,
-      category: category,
-      categoryBadge: `✦ ${category}`,
-      photo: photo,
-      photoCaption: title,
-      tags: tags,
-      timestamp: Date.now()
-    };
-
-    saveCustomItem('screenlady_custom_editorials', newEditorial);
-    showToast('✦ Editorial saved successfully! It is live on the Editorials page.');
+  const submitBtn = document.getElementById('adminSubmitBtn');
+  const originalBtnHtml = submitBtn ? submitBtn.innerHTML : 'Publish to Website &rarr;';
+  if (submitBtn) {
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = 'Publishing & Syncing to Live Database...';
   }
 
-  // -------------------------------------------------------------
-  // SECTION: PODCAST
-  // -------------------------------------------------------------
-  else if (section === 'podcast') {
-    const title = (document.getElementById('postPodcastTitle')?.value || '').trim() || 'Accolade Screenlady Podcast Episode';
-    const host = (document.getElementById('postPodcastHost')?.value || '').trim() || 'Accolade Screenlady Desk';
-    const guest = (document.getElementById('postPodcastGuest')?.value || '').trim() || 'Distinguished Guest';
-    const duration = (document.getElementById('postPodcastDuration')?.value || '').trim() || '38 Mins';
-    const socialLink = (document.getElementById('postPodcastSocialLink')?.value || '').trim() || 'https://youtube.com';
-    const audioUrl = (document.getElementById('postPodcastAudioUrl')?.value || '').trim();
-    const showNotes = (document.getElementById('postPodcastShowNotes')?.value || '').trim();
+  let syncResult = { success: true };
+  let sectionLabel = 'Post';
 
-    const cleanNotes = showNotes ? showNotes.split(/\n+/).filter(Boolean) : [];
-    const firstLineNotes = cleanNotes.length > 0 ? cleanNotes[0] : '';
-    const podcastSummary = firstLineNotes.length > 160 ? firstLineNotes.substring(0, 157) + '...' : (firstLineNotes || title);
-    const fullShowNotes = showNotes || title;
+  try {
+    const section = currentSection;
+    const dateStr = document.getElementById('postDate').value || new Date().toISOString().split('T')[0];
+    const category = document.getElementById('postCategory').value.trim() || 'General';
+    const photo = document.getElementById('postPhotoInput').value.trim() || 'https://ik.imagekit.io/acooladescreenlady/assets/images/featured-icon-saree.jpg';
+    const rawTags = document.getElementById('postTags').value.trim();
+    const tags = rawTags ? rawTags.split(',').map(t => t.trim()).filter(Boolean) : [category];
 
-    const newPodcast = {
-      id: (editingItem && editingItem.section === 'podcast') ? editingItem.id : `podcast-custom-${Date.now()}`,
-      title: title,
-      host: host,
-      guest: guest,
-      duration: duration,
-      socialLink: socialLink,
-      audioUrl: audioUrl || '',
-      summary: podcastSummary,
-      showNotes: formatParagraphs(fullShowNotes),
-      date: dateStr,
-      displayDate: displayDate,
-      category: category,
-      photo: photo,
-      tags: tags,
-      timestamp: Date.now()
-    };
+    const dateObj = new Date(dateStr);
+    const displayDate = dateObj.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
 
-    saveCustomItem('screenlady_custom_podcasts', newPodcast);
-    showToast('✦ Podcast episode published! It now appears 1st with a 10s preview on the Podcast page.');
-  }
+    // -------------------------------------------------------------
+    // SECTION: EDITORIALS
+    // -------------------------------------------------------------
+    if (section === 'editorials') {
+      sectionLabel = 'Editorial';
+      const title = (document.getElementById('postEditorialTitle')?.value || '').trim() || 'Accolade Screenlady Feature Editorial';
+      const author = (document.getElementById('postEditorialAuthor')?.value || '').trim() || 'Accolade Screenlady Desk';
+      const designation = (document.getElementById('postEditorialDesignation')?.value || '').trim() || 'Guest Columnist';
+      const readTime = (document.getElementById('postEditorialReadTime')?.value || '').trim() || '5 Min Read';
+      const pullQuote = (document.getElementById('postEditorialQuote')?.value || '').trim();
+      const rawBody = (document.getElementById('postEditorialBody')?.value || '').trim();
 
-  // -------------------------------------------------------------
-  // SECTION: LIVE NEWS (HOMEPAGE SCREENLADY UPDATES)
-  // -------------------------------------------------------------
-  else if (section === 'news' || (section === 'updates' && currentUpdateType === 'news')) {
-    const headline = (document.getElementById('postHeadline')?.value || '').trim() || 'Screenlady Live News Update';
-    const summary = (document.getElementById('postSummary')?.value || '').trim() || headline;
-    const fullBody = (document.getElementById('postFullBody')?.value || '').trim() || summary;
+      const formattedContent = formatParagraphs(rawBody);
+      const firstLineBody = rawBody ? (rawBody.split(/\n+/).filter(Boolean)[0] || '') : '';
+      const editorialSummary = pullQuote || (firstLineBody.length > 160 ? firstLineBody.substring(0, 157) + '...' : firstLineBody) || title;
+      const finalFullContent = formattedContent || `<p>${escapeHtml(editorialSummary)}</p>`;
 
-    const newNews = {
-      id: (editingItem && (editingItem.section === 'news' || editingItem.section === 'updates')) ? editingItem.id : `news-custom-${Date.now()}`,
-      type: 'news',
-      curatedSection: 'news',
-      isHomepageNews: true,
-      category: category,
-      categoryBadge: `✦ ${category}`,
-      date: dateStr,
-      displayDate: displayDate,
-      title: headline,
-      headline: headline,
-      summary: summary,
-      infoSummary: summary,
-      fullBody: formatParagraphs(fullBody),
-      fullInfo: formatParagraphs(fullBody),
-      photo: photo,
-      tags: tags,
-      link: 'javascript:void(0)',
-      timestamp: Date.now()
-    };
+      const newEditorial = {
+        id: (editingItem && editingItem.section === 'editorials') ? editingItem.id : `editorial-custom-${Date.now()}`,
+        title: title,
+        headline: title,
+        author: author,
+        authorRole: designation,
+        authorDesignation: designation,
+        readTime: readTime,
+        pullQuote: pullQuote || editorialSummary,
+        summary: editorialSummary,
+        fullBody: finalFullContent,
+        content: finalFullContent,
+        fullContent: finalFullContent,
+        previewExcerptHtml: `<div class="editorial-lead-box" style="margin-bottom: 0.95rem; padding: 0.85rem 1.1rem; font-size: 0.92rem;"><strong>(Accolade Screenlady Editorial)</strong> ${escapeHtml(editorialSummary)}</div>${finalFullContent.split(/<\/p>/i).slice(0, 3).map(p => p.trim() ? p + '</p>' : '').join('\n')}`,
+        date: dateStr,
+        displayDate: displayDate,
+        category: category,
+        categoryBadge: `✦ ${category}`,
+        photo: photo,
+        photoCaption: title,
+        tags: tags,
+        timestamp: Date.now()
+      };
 
-    saveCustomItem('screenlady_custom_news', newNews);
-    showToast('✦ Live News published! It now appears 1st on the Homepage under Screenlady Updates.');
-  }
-
-  // -------------------------------------------------------------
-  // SECTION: BUSINESS ADS / BRAND SPOTLIGHT (HOMEPAGE RIGHT COLUMN - business_ads table)
-  // -------------------------------------------------------------
-  else if (section === 'business_ads' || section === 'home_photos') {
-    const brandName = (document.getElementById('postBrandName')?.value || document.getElementById('postHeadline')?.value || '').trim() || 'Featured Brand Partner';
-    const headline = (document.getElementById('postBrandHeadline')?.value || document.getElementById('postHeadline')?.value || '').trim() || brandName;
-    const tagline = (document.getElementById('postBrandTagline')?.value || '').trim();
-    const summary = (document.getElementById('postBrandSummary')?.value || document.getElementById('postSummary')?.value || '').trim();
-    const destUrl = (document.getElementById('postBrandDestUrl')?.value || '').trim() || 'https://instagram.com';
-    const brandCat = (document.getElementById('postBrandCategory')?.value || category || 'Enterprise').trim();
-
-    const newAd = {
-      id: (editingItem && (editingItem.section === 'business_ads' || editingItem.section === 'home_photos')) ? editingItem.id : `ad-custom-${Date.now()}`,
-      section: 'business_ads',
-      brandName: brandName,
-      title: headline,
-      headline: headline,
-      tagline: tagline,
-      summary: summary,
-      infoSummary: summary,
-      category: brandCat,
-      categoryBadge: 'Brand Spotlight',
-      photo: photo,
-      image: photo,
-      destinationUrl: destUrl,
-      link: destUrl,
-      date: dateStr,
-      displayDate: displayDate,
-      timestamp: Date.now()
-    };
-
-    saveCustomItem('screenlady_custom_business_ads', newAd, 'business_ads');
-    showToast('✦ Brand Spotlight published! It now displays in the Homepage Brand Spotlight showcase.');
-  }
-
-  // -------------------------------------------------------------
-  // SECTION: PHOTOS (ACCOLADE SCREENLADY GALLERY)
-  // -------------------------------------------------------------
-  else if (section === 'photos') {
-    const photoTitle = (document.getElementById('postPhotoTitle')?.value || '').trim() ||
-                       (document.getElementById('postPhotoCaption')?.value || '').trim() ||
-                       'Accolade Screenlady Gallery Photograph';
-    const venue = (document.getElementById('postPhotoVenue')?.value || '').trim() || 'Screenlady Studios, Mumbai';
-    const caption = (document.getElementById('postPhotoCaption')?.value || '').trim() || photoTitle;
-
-    const newPhoto = {
-      id: (editingItem && editingItem.section === 'photos') ? editingItem.id : `photo-custom-${Date.now()}`,
-      title: photoTitle,
-      venue: venue,
-      location: venue,
-      caption: caption,
-      description: caption,
-      summary: caption,
-      date: dateStr,
-      displayDate: displayDate,
-      category: category || 'Gallery',
-      photo: photo,
-      credit: 'Official Screenlady Photography Archive',
-      tags: tags || ['Gallery'],
-      timestamp: Date.now()
-    };
-
-    saveCustomItem('screenlady_custom_photos', newPhoto);
-    showToast('✦ Photo published! It now displays 1st in Accolade Screenlady Gallery.');
-  }
-
-  // -------------------------------------------------------------
-  // SECTIONS: FILMY ADDA, BIZZ WORLD, WOMEN OF INSPIRATION, FASHION & LIFESTYLE
-  // -------------------------------------------------------------
-  else if (['filmy_adda', 'bizz_world', 'women_inspiration', 'fashion_lifestyle'].includes(section)) {
-    const womanName = (document.getElementById('postWomanName')?.value || '').trim();
-    const headline = (document.getElementById('postHeadline')?.value || '').trim();
-    const summary = (document.getElementById('postSummary')?.value || '').trim();
-    const fullBody = (document.getElementById('postFullBody')?.value || '').trim() || summary || headline;
-
-    let displayTitle = headline;
-    if (section === 'women_inspiration') {
-      displayTitle = womanName || headline || 'Inspirational Honoree';
-    } else if (!displayTitle) {
-      displayTitle = (section === 'filmy_adda' ? 'Filmy Adda Cinema Feature' :
-                     section === 'bizz_world' ? 'Bizz World Enterprise Feature' :
-                     'Fashion & Lifestyle Collection');
+      syncResult = await saveCustomItem('screenlady_custom_editorials', newEditorial);
     }
 
-    const defaultBadges = {
-      filmy_adda: '🎬 Cinema',
-      bizz_world: '💼 Business',
-      women_inspiration: '👑 Inspiration',
-      fashion_lifestyle: '✨ Fashion & Style'
-    };
+    // -------------------------------------------------------------
+    // SECTION: PODCAST
+    // -------------------------------------------------------------
+    else if (section === 'podcast') {
+      sectionLabel = 'Podcast';
+      const title = (document.getElementById('postPodcastTitle')?.value || '').trim() || 'Accolade Screenlady Podcast Episode';
+      const host = (document.getElementById('postPodcastHost')?.value || '').trim() || 'Accolade Screenlady Desk';
+      const guest = (document.getElementById('postPodcastGuest')?.value || '').trim() || 'Distinguished Guest';
+      const duration = (document.getElementById('postPodcastDuration')?.value || '').trim() || '38 Mins';
+      const socialLink = (document.getElementById('postPodcastSocialLink')?.value || '').trim() || 'https://youtube.com';
+      const audioUrl = (document.getElementById('postPodcastAudioUrl')?.value || '').trim();
+      const showNotes = (document.getElementById('postPodcastShowNotes')?.value || '').trim();
 
-    const targetItemId = (editingItem && editingItem.section === section) ? editingItem.id : `curated-${section}-${Date.now()}`;
+      const cleanNotes = showNotes ? showNotes.split(/\n+/).filter(Boolean) : [];
+      const firstLineNotes = cleanNotes.length > 0 ? cleanNotes[0] : '';
+      const podcastSummary = firstLineNotes.length > 160 ? firstLineNotes.substring(0, 157) + '...' : (firstLineNotes || title);
+      const fullShowNotes = showNotes || title;
 
-    const sectionTargetUrls = {
-      filmy_adda: `${PUBLIC_FRONTEND_URL}/#filmyAddaSection`,
-      bizz_world: `${PUBLIC_FRONTEND_URL}/#bizzWorldSection`,
-      women_inspiration: `${PUBLIC_FRONTEND_URL}/#womenInspirationSection`,
-      fashion_lifestyle: `${PUBLIC_FRONTEND_URL}/#fashionLifestyleSection`
-    };
+      const newPodcast = {
+        id: (editingItem && editingItem.section === 'podcast') ? editingItem.id : `podcast-custom-${Date.now()}`,
+        title: title,
+        host: host,
+        guest: guest,
+        duration: duration,
+        socialLink: socialLink,
+        audioUrl: audioUrl || '',
+        summary: podcastSummary,
+        showNotes: formatParagraphs(fullShowNotes),
+        date: dateStr,
+        displayDate: displayDate,
+        category: category,
+        photo: photo,
+        tags: tags,
+        timestamp: Date.now()
+      };
 
-    const newCuratedItem = {
-      id: targetItemId,
-      curatedSection: section,
-      type: 'photo-info',
-      isHomepageNews: false,
-      category: category,
-      categoryBadge: `✦ ${category || defaultBadges[section]}`,
-      date: dateStr,
-      displayDate: displayDate,
-      title: displayTitle,
-      headline: headline || displayTitle,
-      womanName: womanName || displayTitle,
-      summary: summary || displayTitle,
-      infoSummary: summary || displayTitle,
-      fullBody: formatParagraphs(fullBody),
-      fullInfo: formatParagraphs(fullBody),
-      photo: photo,
-      tags: tags,
-      link: sectionTargetUrls[section] || `${PUBLIC_FRONTEND_URL}/`,
-      timestamp: Date.now()
-    };
+      syncResult = await saveCustomItem('screenlady_custom_podcasts', newPodcast);
+    }
 
-    const targetStorageKey = section === 'filmy_adda' ? 'screenlady_custom_filmy' :
-                             section === 'bizz_world' ? 'screenlady_custom_bizz' :
-                             section === 'women_inspiration' ? 'screenlady_custom_inspiration' :
-                             'screenlady_custom_fashion';
+    // -------------------------------------------------------------
+    // SECTION: LIVE NEWS (HOMEPAGE SCREENLADY UPDATES)
+    // -------------------------------------------------------------
+    else if (section === 'news' || (section === 'updates' && currentUpdateType === 'news')) {
+      sectionLabel = 'Live News';
+      const headline = (document.getElementById('postHeadline')?.value || '').trim() || 'Screenlady Live News Update';
+      const summary = (document.getElementById('postSummary')?.value || '').trim() || headline;
+      const fullBody = (document.getElementById('postFullBody')?.value || '').trim() || summary;
 
-    saveCustomItem(targetStorageKey, newCuratedItem, section);
+      const newNews = {
+        id: (editingItem && (editingItem.section === 'news' || editingItem.section === 'updates')) ? editingItem.id : `news-custom-${Date.now()}`,
+        type: 'news',
+        curatedSection: 'news',
+        isHomepageNews: true,
+        category: category,
+        categoryBadge: `✦ ${category}`,
+        date: dateStr,
+        displayDate: displayDate,
+        title: headline,
+        headline: headline,
+        summary: summary,
+        infoSummary: summary,
+        fullBody: formatParagraphs(fullBody),
+        fullInfo: formatParagraphs(fullBody),
+        photo: photo,
+        tags: tags,
+        link: 'javascript:void(0)',
+        timestamp: Date.now()
+      };
 
-    const sectionLabels = {
-      filmy_adda: 'Filmy Adda',
-      bizz_world: 'Bizz World',
-      women_inspiration: 'Women of Inspiration',
-      fashion_lifestyle: 'Fashion & Lifestyle'
-    };
-    showToast(`✦ ${sectionLabels[section]} published! It now leads 1st on the Homepage under ${sectionLabels[section]}.`);
-  }
+      syncResult = await saveCustomItem('screenlady_custom_news', newNews);
+    }
 
-  // -------------------------------------------------------------
-  // SECTION: SCREENLADY UPDATES
-  // -------------------------------------------------------------
-  else {
-    const type = currentUpdateType;
-    const venue = (document.getElementById('postUpdateVenue')?.value || '').trim() || 'Screenlady Headquarters, Mumbai';
-    const womanName = (document.getElementById('postWomanName')?.value || '').trim() || 'Accolade Screenlady Team';
-    const headline = (document.getElementById('postHeadline')?.value || '').trim() || womanName || 'Screenlady Milestone Update';
-    const summary = (document.getElementById('postSummary')?.value || '').trim() || headline;
-    const fullBody = (document.getElementById('postFullBody')?.value || '').trim() || summary;
+    // -------------------------------------------------------------
+    // SECTION: BUSINESS ADS / BRAND SPOTLIGHT (HOMEPAGE RIGHT COLUMN - business_ads table)
+    // -------------------------------------------------------------
+    else if (section === 'business_ads' || section === 'home_photos') {
+      sectionLabel = 'Brand Spotlight';
+      const brandName = (document.getElementById('postBrandName')?.value || document.getElementById('postHeadline')?.value || '').trim() || 'Featured Brand Partner';
+      const headline = (document.getElementById('postBrandHeadline')?.value || document.getElementById('postHeadline')?.value || '').trim() || brandName;
+      const tagline = (document.getElementById('postBrandTagline')?.value || '').trim();
+      const summary = (document.getElementById('postBrandSummary')?.value || document.getElementById('postSummary')?.value || '').trim();
+      const destUrl = (document.getElementById('postBrandDestUrl')?.value || '').trim() || 'https://instagram.com';
+      const brandCat = (document.getElementById('postBrandCategory')?.value || category || 'Enterprise').trim();
 
-    let newUpdate = {
-      id: (editingItem && editingItem.section === 'updates') ? editingItem.id : `update-custom-${Date.now()}`,
-      type: type,
-      date: dateStr,
-      displayDate: displayDate,
-      category: category,
-      photo: photo,
-      venue: venue,
-      location: venue,
-      womanName: womanName,
-      teamMembers: womanName,
-      tags: tags,
-      timestamp: Date.now()
-    };
+      const newAd = {
+        id: (editingItem && (editingItem.section === 'business_ads' || editingItem.section === 'home_photos')) ? editingItem.id : `ad-custom-${Date.now()}`,
+        section: 'business_ads',
+        brandName: brandName,
+        title: headline,
+        headline: headline,
+        tagline: tagline,
+        summary: summary,
+        infoSummary: summary,
+        category: brandCat,
+        categoryBadge: 'Brand Spotlight',
+        photo: photo,
+        image: photo,
+        destinationUrl: destUrl,
+        link: destUrl,
+        date: dateStr,
+        displayDate: displayDate,
+        timestamp: Date.now()
+      };
 
-    if (type === 'article') {
-      const articleTitle = (document.getElementById('postArticleTitle')?.value || '').trim() || headline;
-      const author = (document.getElementById('postAuthor')?.value || '').trim() || 'Accolade Screenlady Desk';
+      syncResult = await saveCustomItem('screenlady_custom_business_ads', newAd, 'business_ads');
+    }
 
-      newUpdate.title = articleTitle;
-      newUpdate.headline = articleTitle;
-      newUpdate.author = author;
-      newUpdate.infoSummary = summary;
-      newUpdate.summary = summary;
-      newUpdate.fullInfo = formatParagraphs(fullBody);
-      newUpdate.readTime = '4 Min Read';
-    } else if (type === 'photo') {
-      const photoTitle = (document.getElementById('postPhotoTitle')?.value || '').trim() || headline;
-      const credit = (document.getElementById('postCredit')?.value || '').trim() || 'Screenlady Official Archives';
-      const caption = summary;
+    // -------------------------------------------------------------
+    // SECTION: PHOTOS (ACCOLADE SCREENLADY GALLERY)
+    // -------------------------------------------------------------
+    else if (section === 'photos') {
+      sectionLabel = 'Gallery Photo';
+      const photoTitle = (document.getElementById('postPhotoTitle')?.value || '').trim() ||
+                         (document.getElementById('postPhotoCaption')?.value || '').trim() ||
+                         'Accolade Screenlady Gallery Photograph';
+      const venue = (document.getElementById('postPhotoVenue')?.value || '').trim() || 'Screenlady Studios, Mumbai';
+      const caption = (document.getElementById('postPhotoCaption')?.value || '').trim() || photoTitle;
 
-      newUpdate.title = photoTitle;
-      newUpdate.headline = photoTitle;
-      newUpdate.photoCaption = caption;
-      newUpdate.infoSummary = caption;
-      newUpdate.summary = caption;
-      newUpdate.credit = credit;
-      newUpdate.fullInfo = `<p>${caption}</p>`;
+      const newPhoto = {
+        id: (editingItem && editingItem.section === 'photos') ? editingItem.id : `photo-custom-${Date.now()}`,
+        title: photoTitle,
+        venue: venue,
+        location: venue,
+        caption: caption,
+        description: caption,
+        summary: caption,
+        date: dateStr,
+        displayDate: displayDate,
+        category: category || 'Gallery',
+        photo: photo,
+        credit: 'Official Screenlady Photography Archive',
+        tags: tags || ['Gallery'],
+        timestamp: Date.now()
+      };
+
+      syncResult = await saveCustomItem('screenlady_custom_photos', newPhoto);
+    }
+
+    // -------------------------------------------------------------
+    // SECTIONS: FILMY ADDA, BIZZ WORLD, WOMEN OF INSPIRATION, FASHION & LIFESTYLE
+    // -------------------------------------------------------------
+    else if (['filmy_adda', 'bizz_world', 'women_inspiration', 'fashion_lifestyle'].includes(section)) {
+      const sectionLabels = {
+        filmy_adda: 'Filmy Adda',
+        bizz_world: 'Bizz World',
+        women_inspiration: 'Women of Inspiration',
+        fashion_lifestyle: 'Fashion & Lifestyle'
+      };
+      sectionLabel = sectionLabels[section] || 'Curated Feature';
+
+      const womanName = (document.getElementById('postWomanName')?.value || '').trim();
+      const headline = (document.getElementById('postHeadline')?.value || '').trim();
+      const summary = (document.getElementById('postSummary')?.value || '').trim();
+      const fullBody = (document.getElementById('postFullBody')?.value || '').trim() || summary || headline;
+
+      let displayTitle = headline;
+      if (section === 'women_inspiration') {
+        displayTitle = womanName || headline || 'Inspirational Honoree';
+      } else if (!displayTitle) {
+        displayTitle = (section === 'filmy_adda' ? 'Filmy Adda Cinema Feature' :
+                       section === 'bizz_world' ? 'Bizz World Enterprise Feature' :
+                       'Fashion & Lifestyle Collection');
+      }
+
+      const defaultBadges = {
+        filmy_adda: '🎬 Cinema',
+        bizz_world: '💼 Business',
+        women_inspiration: '👑 Inspiration',
+        fashion_lifestyle: '✨ Fashion & Style'
+      };
+
+      const targetItemId = (editingItem && editingItem.section === section) ? editingItem.id : `curated-${section}-${Date.now()}`;
+
+      const sectionTargetUrls = {
+        filmy_adda: `${PUBLIC_FRONTEND_URL}/#filmyAddaSection`,
+        bizz_world: `${PUBLIC_FRONTEND_URL}/#bizzWorldSection`,
+        women_inspiration: `${PUBLIC_FRONTEND_URL}/#womenInspirationSection`,
+        fashion_lifestyle: `${PUBLIC_FRONTEND_URL}/#fashionLifestyleSection`
+      };
+
+      const newCuratedItem = {
+        id: targetItemId,
+        curatedSection: section,
+        type: 'photo-info',
+        isHomepageNews: false,
+        category: category,
+        categoryBadge: `✦ ${category || defaultBadges[section]}`,
+        date: dateStr,
+        displayDate: displayDate,
+        title: displayTitle,
+        headline: headline || displayTitle,
+        womanName: womanName || displayTitle,
+        summary: summary || displayTitle,
+        infoSummary: summary || displayTitle,
+        fullBody: formatParagraphs(fullBody),
+        fullInfo: formatParagraphs(fullBody),
+        photo: photo,
+        tags: tags,
+        link: sectionTargetUrls[section] || `${PUBLIC_FRONTEND_URL}/`,
+        timestamp: Date.now()
+      };
+
+      const targetStorageKey = section === 'filmy_adda' ? 'screenlady_custom_filmy' :
+                               section === 'bizz_world' ? 'screenlady_custom_bizz' :
+                               section === 'women_inspiration' ? 'screenlady_custom_inspiration' :
+                               'screenlady_custom_fashion';
+
+      syncResult = await saveCustomItem(targetStorageKey, newCuratedItem, section);
+    }
+
+    // -------------------------------------------------------------
+    // SECTION: SCREENLADY UPDATES
+    // -------------------------------------------------------------
+    else {
+      sectionLabel = 'Update';
+      const type = currentUpdateType;
+      const venue = (document.getElementById('postUpdateVenue')?.value || '').trim() || 'Screenlady Headquarters, Mumbai';
+      const womanName = (document.getElementById('postWomanName')?.value || '').trim() || 'Accolade Screenlady Team';
+      const headline = (document.getElementById('postHeadline')?.value || '').trim() || womanName || 'Screenlady Milestone Update';
+      const summary = (document.getElementById('postSummary')?.value || '').trim() || headline;
+      const fullBody = (document.getElementById('postFullBody')?.value || '').trim() || summary;
+
+      let newUpdate = {
+        id: (editingItem && editingItem.section === 'updates') ? editingItem.id : `update-custom-${Date.now()}`,
+        type: type,
+        date: dateStr,
+        displayDate: displayDate,
+        category: category,
+        photo: photo,
+        venue: venue,
+        location: venue,
+        womanName: womanName,
+        teamMembers: womanName,
+        tags: tags,
+        timestamp: Date.now()
+      };
+
+      if (type === 'article') {
+        const articleTitle = (document.getElementById('postArticleTitle')?.value || '').trim() || headline;
+        const author = (document.getElementById('postAuthor')?.value || '').trim() || 'Accolade Screenlady Desk';
+
+        newUpdate.title = articleTitle;
+        newUpdate.headline = articleTitle;
+        newUpdate.author = author;
+        newUpdate.infoSummary = summary;
+        newUpdate.summary = summary;
+        newUpdate.fullInfo = formatParagraphs(fullBody);
+        newUpdate.readTime = '4 Min Read';
+      } else if (type === 'photo') {
+        const photoTitle = (document.getElementById('postPhotoTitle')?.value || '').trim() || headline;
+        const credit = (document.getElementById('postCredit')?.value || '').trim() || 'Screenlady Official Archives';
+        const caption = summary;
+
+        newUpdate.title = photoTitle;
+        newUpdate.headline = photoTitle;
+        newUpdate.photoCaption = caption;
+        newUpdate.infoSummary = caption;
+        newUpdate.summary = caption;
+        newUpdate.credit = credit;
+        newUpdate.fullInfo = `<p>${caption}</p>`;
+      } else {
+        // photo-info (Meetings, Awards, Movie Talk, Meet & Greet, Events)
+        newUpdate.title = headline || womanName;
+        newUpdate.headline = headline || womanName;
+        newUpdate.infoSummary = summary;
+        newUpdate.summary = summary;
+        newUpdate.fullInfo = formatParagraphs(fullBody);
+      }
+
+      syncResult = await saveCustomItem('screenlady_custom_updates', newUpdate);
+    }
+
+    if (syncResult && syncResult.success) {
+      showToast(`✦ ${sectionLabel} published & synced live to website database!`);
     } else {
-      // photo-info (Meetings, Awards, Movie Talk, Meet & Greet, Events)
-      newUpdate.title = headline || womanName;
-      newUpdate.headline = headline || womanName;
-      newUpdate.infoSummary = summary;
-      newUpdate.summary = summary;
-      newUpdate.fullInfo = formatParagraphs(fullBody);
+      const errMsg = syncResult?.error || 'Database sync encountered an issue.';
+      console.warn('[Screenlady Desk] Publish sync warning:', errMsg);
+      alert(`Published locally, but live database sync reported:\n\n${errMsg}\n\nPlease check your internet connection or verify your Admin Passcode.`);
     }
 
-    saveCustomItem('screenlady_custom_updates', newUpdate);
-    showToast('✦ Update published! It now displays 1st on Screenlady Updates.');
+    resetForm();
+    loadAdminDashboard();
+    if (typeof switchAdminView === 'function') switchAdminView('panel-content');
+  } catch (err) {
+    console.error('[Screenlady Desk] Publish error:', err);
+    alert('An unexpected error occurred while saving: ' + err.message);
+  } finally {
+    if (submitBtn) {
+      submitBtn.disabled = false;
+      submitBtn.innerHTML = originalBtnHtml;
+    }
   }
-
-  resetForm();
-  loadAdminDashboard();
-  if (typeof switchAdminView === 'function') switchAdminView('panel-content');
 }
 
 /**
  * Save an item to the specified localStorage key (handles insert or update)
  * and dispatches live update to the Cloudflare Worker Backend API
  */
-function saveCustomItem(storageKey, item, sectionOverride) {
+async function saveCustomItem(storageKey, item, sectionOverride) {
   let list = [];
   try {
     const raw = localStorage.getItem(storageKey);
@@ -1367,7 +1395,6 @@ function saveCustomItem(storageKey, item, sectionOverride) {
     localStorage.setItem('screenlady_last_updated', Date.now().toString());
   } catch (err) {
     console.warn('LocalStorage quota limit reached, trimming older entries:', err);
-    // Prune oldest custom items if storage is near quota
     while (list.length > 8) {
       list.pop();
       try {
@@ -1378,6 +1405,7 @@ function saveCustomItem(storageKey, item, sectionOverride) {
   }
 
   // Live Backend Cloudflare Worker Synchronization
+  let syncResult = { success: true };
   if (window.ScreenladyAPI && typeof window.ScreenladyAPI.publishItem === 'function') {
     let targetSection = sectionOverride || currentSection || 'updates';
     if (storageKey === 'screenlady_custom_editorials') targetSection = 'editorials';
@@ -1390,16 +1418,29 @@ function saveCustomItem(storageKey, item, sectionOverride) {
     else if (storageKey === 'screenlady_custom_news') targetSection = 'news';
     else if (storageKey === 'screenlady_custom_updates') targetSection = 'updates';
 
-    window.ScreenladyAPI.publishItem(targetSection, item)
-      .then(res => {
-        if (res && res.success) {
-          console.log(`[Screenlady Desk] Synced live to backend (${targetSection}):`, item.id);
+    let pin = getSavedPin();
+    try {
+      syncResult = await window.ScreenladyAPI.publishItem(targetSection, item, pin);
+      // If 401 Unauthorized, prompt user to re-enter their passcode and retry
+      if (syncResult && !syncResult.success && syncResult.error && (syncResult.error.includes('Unauthorized') || syncResult.error.includes('Passcode') || syncResult.error.includes('PIN'))) {
+        const promptPin = prompt('Administrator passcode required to sync with live database. Enter active passcode:');
+        if (promptPin && promptPin.trim()) {
+          pin = promptPin.trim();
+          localStorage.setItem('screenlady_admin_pin', pin);
+          syncResult = await window.ScreenladyAPI.publishItem(targetSection, item, pin);
         }
-      })
-      .catch(err => {
-        console.warn(`[Screenlady Desk] Backend sync fallback notice:`, err.message);
-      });
+      }
+      if (syncResult && syncResult.success) {
+        console.log(`[Screenlady Desk] Synced live to database (${targetSection}):`, item.id);
+      } else {
+        console.warn(`[Screenlady Desk] Backend sync failed:`, syncResult?.error);
+      }
+    } catch (err) {
+      console.warn(`[Screenlady Desk] Backend sync error:`, err.message);
+      syncResult = { success: false, error: err.message };
+    }
   }
+  return syncResult;
 }
 
 /* =============================================================
@@ -2016,7 +2057,8 @@ window.deleteItem = function(id, section) {
   // Live Backend Cloudflare Worker Synchronization
   if (window.ScreenladyAPI && typeof window.ScreenladyAPI.deleteItem === 'function') {
     const targetSection = section;
-    window.ScreenladyAPI.deleteItem(targetSection, id)
+    const pin = getSavedPin();
+    window.ScreenladyAPI.deleteItem(targetSection, id, pin)
       .then(res => {
         if (res && res.success) console.log(`[Screenlady Desk] Live deleted on backend (${targetSection}):`, id);
       })

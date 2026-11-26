@@ -933,7 +933,7 @@ app.post('/api/publish', async (c) => {
       await db.prepare(`
         INSERT OR REPLACE INTO women_inspiration (
           id, title, woman_name, headline, category, category_badge, summary, full_body, photo, venue, date, display_date, timestamp, created_at, extra_data
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
       `).bind(
         id, title, item.womanName || item.name || '', headline, 'Women of Inspiration', 'Women of Inspiration',
         summary, fullBody, photo, item.venue || '', date, displayDate, timestamp, item.createdAt || now, null
@@ -961,7 +961,7 @@ app.post('/api/publish', async (c) => {
       await db.prepare(`
         INSERT OR REPLACE INTO editorials (
           id, title, author, author_designation, read_time, pull_quote, summary, full_body, photo, category, category_badge, date, display_date, timestamp, created_at, extra_data
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
       `).bind(
         id, title, item.author || 'Screenlady Editorial Board', item.authorDesignation || 'Senior Columnist',
         item.readTime || '5 Min Read', item.pullQuote || '', summary, fullBody, photo,
@@ -971,7 +971,7 @@ app.post('/api/publish', async (c) => {
       await db.prepare(`
         INSERT OR REPLACE INTO podcasts (
           id, title, host, guest, duration, social_link, audio_url, summary, photo, category, category_badge, date, display_date, timestamp, created_at, extra_data
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
       `).bind(
         id, title, item.host || 'Screenlady Studio', item.guest || '',
         item.duration || '35 Mins', item.socialLink || 'https://youtube.com', item.audioUrl || '',
