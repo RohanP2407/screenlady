@@ -271,7 +271,7 @@ function renderPodcasts(filter = 'all') {
             Official Broadcast Channels:
           </span>
           <div class="podcast-channels-btns">
-            <a href="https://www.youtube.com/@AccoladeScreenlady" target="_blank" rel="noopener" class="btn btn-gold">
+            <a href="https://www.youtube.com/@Accolade_Screenlady" target="_blank" rel="noopener" class="btn btn-gold">
               <span>YouTube (@AccoladeScreenlady)</span>
             </a>
             <a href="https://www.instagram.com/accoladescreenlady_official?obrf=M2plNzAza252NWlu" target="_blank" rel="noopener" class="btn btn-outline-gold">
